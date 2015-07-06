@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Application level Controller
  *
@@ -18,7 +19,6 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 App::uses('Controller', 'Controller');
 
 /**
@@ -31,4 +31,33 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+
+    public $components = array(
+        'Session',
+        'Auth' => array(
+            'loginAction' => array(
+                'controller' => 'users',
+                'action' => 'login'
+            ),
+            'loginRedirect' => array(
+                'controller' => 'users',
+                'action' => 'index'
+            ),
+            'authError' => 'Did you really think you are allowed to see that?',
+            'authenticate' => array(
+                'Form' => array(
+                    'fields' => array(
+                        'username' => 'email', //Default is 'username' in the userModel
+                        'password' => 'password'  //Default is 'password' in the userModel
+                    ), 
+//                    'scope' => array('is_active' => '1')
+                )
+            )
+        )
+    );
+
+    public function beforeFilter() {
+        $this->Auth->allow('login', 'register');
+    }
+
 }

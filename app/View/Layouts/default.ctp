@@ -51,10 +51,10 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     </div>
                     <div class="collapse navbar-collapse" id="myNavbar">
                         <ul class="nav navbar-nav">
-                            <?php if (!$this->Session->read('loggedIn')) { ?>
+                            <?php if (!AuthComponent::user('is_active')) { ?>
                                 <li class="active"><a href="<?php echo Router::fullBaseUrl(); ?>">Home</a></li>
                             <?php } ?>
-                            <?php if ($this->Session->read('loggedIn')) { ?>
+                            <?php if (AuthComponent::user('is_active')) { ?>
                                 <li class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
@@ -69,11 +69,16 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                             <?php } ?>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <?php if (!$this->Session->read('loggedIn')) { ?>
+                            <?php if (!AuthComponent::user('is_active')) { ?>
                                 <li><a href="<?php echo Router::fullBaseUrl() . '/users/register'; ?>"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
                             <?php } else { ?>
-                                <li><a href="#"><img /> <?php echo 'Hello, ' . $this->Session->read('name'); ?></a></li>
-                                <li><a href="<?php echo Router::fullBaseUrl() . '/users/logOut'; ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img /><?php echo 'Hello, ' . AuthComponent::user('name'); ?> <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/users/setting/password'; ?>"><span class="glyphicon glyphicon-repeat"></span> Change password</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/users/logOut'; ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                                    </ul>
+                                </li>
                             <?php } ?>
                         </ul>
                     </div>
