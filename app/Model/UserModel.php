@@ -11,6 +11,21 @@
  *
  * @author dungtq
  */
-class User extends AppModel{
-    //put your code here
+class User extends AppModel {
+
+    public $validate = array(
+        'email' => array(
+            'rule' => 'notBlank',
+            'massage' => 'Please fill out your email!'
+        ),
+        'password' => array(
+            'rule' => 'notBlank',
+            'massage' => 'Please fill out your password!'
+        ),
+        'name' => array(
+            'rule' => 'notBlank',
+            'massage' => 'Please fill out your name!'
+        ),
+    );
+
 }
