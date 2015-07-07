@@ -37,18 +37,13 @@ class UsersController extends AppController {
     }
 
     /**
-     * 
-     * @param type $option
+     * display form change password or change info when users redirect
+     * @param type $option : change password or infomation
      */
     public function setting($option = null) {
-        
-    }
-
-    /**
-     * function demo when user logged in system
-     */
-    public function listUser() {
-        $this->set('title_for_layout', "Welcome to Home");
+        if ($option != 'password' && $option != 'info') {
+            return $this->redirect(array('controller' => 'users', 'action' => 'index'));
+        }
     }
 
     /**
@@ -75,6 +70,14 @@ class UsersController extends AppController {
         $this->Session->setFlash(
                 __('Username or password is incorrect!'), 'default', array(), 'auth'
         );
+    }
+
+    /**
+     * when user logout in system
+     * @return type
+     */
+    public function logout() {
+        return $this->redirect($this->Auth->logout());
     }
 
     /**
@@ -188,8 +191,7 @@ class UsersController extends AppController {
         $new_pw = substr(str_shuffle($char), 0, 8);
 
         if ($this->User->updateAll(
-                        array('User.password' => '"' . $this->Auth->password($new_pw) . '"'), 
-                        array('User.email' => $userEmail))) {
+                        array('User.password' => '"' . $this->Auth->password($new_pw) . '"'), array('User.email' => $userEmail))) {
 
             //config email
             $this->Email->smtpOptions = array(
@@ -225,11 +227,46 @@ class UsersController extends AppController {
     }
 
     /**
-     * when user logout in system
-     * @return type
+     * check user password true or false (process by ajax)
      */
-    public function logout() {
-        return $this->redirect($this->Auth->logout());
+    public function checkOldPw() {
+        if ($this->request->is('get')) {
+            $this->redirect(array('controller' => 'users', 'action' => 'login'));
+        }
+        $send_pw = $this->Auth->password($this->request->data('value'));
+        $user = $this->User->findById($this->request->data('key'));
+
+        if (!empty($user) && ($user['User']['password'] === $send_pw)) {
+            echo 1;
+            exit;
+        }
+        echo 0;
+        exit;
+    }
+
+    /**
+     * 
+     * @param type $option
+     */
+    public function updateUser($option = null) {
+        if ($this->request->is('get')) {
+            return $this->redirect(array('controller' => 'users', 'action' => 'index'));
+        }
+
+        //if user want to change password
+        if ($option === 'password') {
+            if ($this->User->updateAll(
+                            array('User.password' => '"' . $this->Auth->password($this->request->data('new_pw')) . '"'), 
+                            array('User.id' => AuthComponent::user('id'))
+                    )) {
+                $this->Session->setFlash("Change password completed!");
+                return $this->redirect(array('controller' => 'users', 'action' => 'index'));
+            }
+            $this->Session->setFlash("Have error. Please try again!");
+            return $this->redirect(array('controller' => 'users', 'action' => 'setting', "param1" => "password",));
+        } elseif ($option === 'info') {
+            
+        }
     }
 
     /**

@@ -49,7 +49,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                         </button>
 <!--                        <a class="navbar-brand" href="<?php echo Router::fullBaseUrl(); ?>">Money Lover</a>-->
                     </div>
-                    <div class="collapse navbar-collapse" id="myNavbar">
+                    <div class="collapse navbar-collapse" id="myNavbar" data-url="<?php echo Router::fullBaseUrl(); ?>"
+                         data-user="<?php echo AuthComponent::user('id'); ?>">
                         <ul class="nav navbar-nav">
                             <?php if (!AuthComponent::user('is_active')) { ?>
                                 <li class="active"><a href="<?php echo Router::fullBaseUrl() . '/login'; ?>">Home</a></li>
