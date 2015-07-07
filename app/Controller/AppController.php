@@ -49,7 +49,7 @@ class AppController extends Controller {
                     'fields' => array(
                         'username' => 'email', //Default is 'username' in the userModel
                         'password' => 'password'  //Default is 'password' in the userModel
-                    ), 
+                    ),
 //                    'scope' => array('is_active' => '1')
                 )
             )
@@ -57,7 +57,7 @@ class AppController extends Controller {
     );
 
     public function beforeFilter() {
-        $this->Auth->allow('login', 'register');
+        $this->Auth->allow('login', 'register', 'verify');
     }
 
 }
