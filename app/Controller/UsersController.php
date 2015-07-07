@@ -30,7 +30,7 @@ class UsersController extends AppController {
     );
 
     /**
-     * index() - when guess visited website -> redirect to this function
+     * when guess visited website -> redirect to this function
      */
     public function index() {
         
@@ -45,14 +45,14 @@ class UsersController extends AppController {
     }
 
     /**
-     * listUser() - function demo when user logged in system
+     * function demo when user logged in system
      */
     public function listUser() {
         $this->set('title_for_layout', "Welcome to Home");
     }
 
     /**
-     * login() - use for user want to login in system
+     * use for user want to login in system
      */
     public function login() {
         $this->set('title_for_layout', "Home");
@@ -68,17 +68,17 @@ class UsersController extends AppController {
             //if account not active => session destroy
             $this->Session->destroy();
             $this->Session->setFlash(
-                    __('Sorry, your account not active !'), 'default', array(), 'auth'
+                    __('Sorry, your account not active!'), 'default', array(), 'auth'
             );
             return;
         }
         $this->Session->setFlash(
-                __('Username or password is incorrect'), 'default', array(), 'auth'
+                __('Username or password is incorrect!'), 'default', array(), 'auth'
         );
     }
 
     /**
-     *  register() - when guess want to create account    
+     *  when guess want to create account    
      */
     public function register() {
         $this->set('title_for_layout', 'Register');
@@ -115,16 +115,17 @@ class UsersController extends AppController {
             //Process send email
             $userEmail = $this->request->data('email');
             $subject = 'Confirm Registration for Training.dev - register';
-            $msg = 'Hi! ' . $this->request->data('name') . '<br />';
-            $msg = 'Click on the link below to complete registration <br />';
+            $msg = 'Hi! ' . $this->request->data('name') . '\n';
+            $msg .= "Click on the link below to complete registration \n";
             $msg .= 'http://training.dev/users/verify/' . $activeCode . '/' . $this->request->data('email');
 
             $this->Email->to = $userEmail;
             $this->Email->subject = $subject;
             $this->Email->from = 'timetolove9x36@gmail.com';
             $this->Email->delivery = 'smtp';
+
             if ($this->Email->send($msg)) {
-                $this->Session->setFlash('Please Check your email for validation link');
+                $this->Session->setFlash('Please check your email for validation link!');
                 return;
             }
             $this->Session->setFlash('Have error! We cheking it!');
@@ -135,7 +136,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * verify() - verify email when user register on system
+     * verify email when user register on system
      * @param type $activeCode - active code
      * @param type $email - user use for register
      */
@@ -155,7 +156,7 @@ class UsersController extends AppController {
                     $result['User']['is_active'] = ACTIVED;
                     $this->User->save($result);
 
-                    $this->Session->setFlash('Your registration is complete');
+                    $this->Session->setFlash('Your registration is complete!');
                     $this->redirect('/users/index');
                     exit;
                 } else {
@@ -164,13 +165,67 @@ class UsersController extends AppController {
                 }
             }
         } else {
-            $this->Session->setFlash('Active code corrupted. Please re-register');
+            $this->Session->setFlash('Active code corrupted. Please re-register!');
             $this->redirect('/users/register');
         }
     }
 
     /**
-     * logout() - when user logout in system
+     * get new password for user when they forgot
+     * @return type
+     */
+    public function forgot_pw() {
+        $this->set('title_for_layout', 'Forgot password');
+
+        if ($this->request->is('get')) {
+            return;
+        }
+
+        $userEmail = $this->request->data['User']['email'];
+
+        //random password => send to user
+        $char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $new_pw = substr(str_shuffle($char), 0, 8);
+
+        if ($this->User->updateAll(
+                        array('User.password' => '"' . $this->Auth->password($new_pw) . '"'), 
+                        array('User.email' => $userEmail))) {
+
+            //config email
+            $this->Email->smtpOptions = array(
+                'port' => '465',
+                'timeout' => '30',
+                'host' => 'ssl://smtp.gmail.com',
+                'username' => 'timetolove9x36@gmail.com',
+                'password' => 'lybeauty36'
+            );
+
+            //Process send email 
+            $userEmail = $this->request->data['User']['email'];
+            $subject = 'Training.dev - Forgot password';
+            $msg = "Hi! We send you new password: \n";
+            $msg .= "Your email: " . $userEmail . "\n";
+            $msg .= "New password: " . $new_pw;
+
+            $this->Email->to = $userEmail;
+            $this->Email->subject = $subject;
+            $this->Email->from = 'timetolove9x36@gmail.com';
+            $this->Email->delivery = 'smtp';
+
+            if ($this->Email->send($msg)) {
+                $this->Session->setFlash('Please check your email for new password!');
+                return;
+            }
+            $this->Session->setFlash('Have error! We cheking it!');
+            return;
+        } else {
+            $this->Session->setFlash('Get new password failed. Please try again!');
+            $this->redirect('/users/forgot_pw');
+        }
+    }
+
+    /**
+     * when user logout in system
      * @return type
      */
     public function logout() {
@@ -178,7 +233,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * beforFilter() - allow go to actions in controller without login 
+     * allow go to actions in controller without login 
      */
     public function beforeFilter() {
         parent::beforeFilter();

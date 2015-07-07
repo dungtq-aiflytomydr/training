@@ -52,7 +52,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     <div class="collapse navbar-collapse" id="myNavbar">
                         <ul class="nav navbar-nav">
                             <?php if (!AuthComponent::user('is_active')) { ?>
-                                <li class="active"><a href="<?php echo Router::fullBaseUrl(); ?>">Home</a></li>
+                                <li class="active"><a href="<?php echo Router::fullBaseUrl() . '/login'; ?>">Home</a></li>
                             <?php } ?>
                             <?php if (AuthComponent::user('is_active')) { ?>
                                 <li class="dropdown">
