@@ -245,8 +245,8 @@ class UsersController extends AppController {
     }
 
     /**
-     * 
-     * @param type $option
+     * update user info when user change password or change info
+     * @param type $option: change password or info
      */
     public function updateUser($option = null) {
         if ($this->request->is('get')) {
@@ -256,8 +256,7 @@ class UsersController extends AppController {
         //if user want to change password
         if ($option === 'password') {
             if ($this->User->updateAll(
-                            array('User.password' => '"' . $this->Auth->password($this->request->data('new_pw')) . '"'), 
-                            array('User.id' => AuthComponent::user('id'))
+                            array('User.password' => '"' . $this->Auth->password($this->request->data('new_pw')) . '"'), array('User.id' => AuthComponent::user('id'))
                     )) {
                 $this->Session->setFlash("Change password completed!");
                 return $this->redirect(array('controller' => 'users', 'action' => 'index'));
