@@ -1,5 +1,3 @@
-<?php echo $this->Html->script('Users/processUser'); ?>;
-
 <?php
 if (strpos(Router::url(), 'password') !== false) {
     require 'change_pw.ctp';
@@ -7,9 +5,3 @@ if (strpos(Router::url(), 'password') !== false) {
     require 'change_info.ctp';
 }
 ?>
-
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        Users.init();
-    });
-</script>

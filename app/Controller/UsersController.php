@@ -44,6 +44,42 @@ class UsersController extends AppController {
         if ($option != 'password' && $option != 'info') {
             return $this->redirect(array('controller' => 'users', 'action' => 'index'));
         }
+
+        if (!$this->request->is('post')) {
+            return;
+        }
+
+        //if user choose change password
+        if ($option == 'password') {
+
+            //compare old_pw with password in database
+            $query = $this->User->find('first', array(
+                'conditions' => array(
+                    'User.id' => AuthComponent::user('id'),
+                    'User.password' => $this->Auth->password($this->request->data['User']['old_pw'])
+                )
+            ));
+
+            if (empty($query)) {
+                $this->Session->setFlash("Old password incorrect.");
+                return;
+            }
+
+            //compare new_pw with confirm_pw, if not equal => false
+            if ($this->request->data['User']['new_pw'] !== $this->request->data['User']['confirm_pw']) {
+                $this->Session->setFlash("Confirm password incorrect.");
+                return;
+            }
+
+            if ($this->User->updateAll(array(
+                        'User.password' => '"' . $this->Auth->password($this->request->data['User']['new_pw']) . '"'
+                            ), array(
+                        'User.id' => AuthComponent::user('id'))
+                    )) {
+                $this->Session->setFlash("Change password complete.");
+                return $this->redirect(Router::url());
+            }
+        }
     }
 
     /**
@@ -90,46 +126,31 @@ class UsersController extends AppController {
             return;
         }
 
-        //check email if exists
-        $query = $this->User->find('all', array(
-            'conditions' => array('email' => $this->request->data('email')))
-        );
-        if (!empty($query)) {
-            $this->Session->setFlash("Sorry, your email had been used!");
-            return;
-        }
-
         //encrypt password
-        $this->request->data['password'] = $this->Auth->password($this->request->data('password'));
+        $this->request->data['User']['password'] = $this->Auth->password($this->request->data['User']['password']);
         //if email not exists => insert
-        $activeCode = sha1($this->request->data('email') . rand(0, 100));
-        $this->request->data['active_code'] = $activeCode;
+        $activeCode = sha1($this->request->data['User']['email'] . rand(0, 100));
+        $this->request->data['User']['active_code'] = $activeCode;
 
         if ($this->User->save($this->request->data)) {
 
-            $this->Email->smtpOptions = array(
-                'port' => '465',
-                'timeout' => '30',
-                'host' => 'ssl://smtp.gmail.com',
-                'username' => 'timetolove9x36@gmail.com',
-                'password' => 'lybeauty36'
-            );
-
             //Process send email
-            $userEmail = $this->request->data('email');
-            $subject = 'Confirm Registration for Training.dev - register';
-            $msg = 'Hi! ' . $this->request->data('name') . '\n';
+            App::uses('CakeEmail', 'Network/Email');
+
+            $userEmail = $this->request->data['User']['email'];
+            $msg = 'Hi! ' . $this->request->data('name') . "\n";
             $msg .= "Click on the link below to complete registration \n";
-            $msg .= 'http://training.dev/users/verify/' . $activeCode . '/' . $this->request->data('email');
+            $msg .= 'http://training.dev/users/verify/' . $activeCode . '/' . $this->request->data['User']['email'];
 
-            $this->Email->to = $userEmail;
-            $this->Email->subject = $subject;
-            $this->Email->from = 'timetolove9x36@gmail.com';
-            $this->Email->delivery = 'smtp';
+            $Email = new CakeEmail();
+            $Email->config('default');
+            $Email->from(array('timetolove9x36@gmail.com' => 'Administrator Training.dev'));
+            $Email->to($userEmail);
+            $Email->subject('Confirm Registration for Training.dev - register');
 
-            if ($this->Email->send($msg)) {
-                $this->Session->setFlash('Please check your email for validation link!');
-                return;
+            if ($Email->send($msg)) {
+                $this->Session->setFlash('Register completed! Please check your email for validation link!');
+                $this->redirect(array('controller' => 'users', 'action' => 'register'));
             }
             $this->Session->setFlash('Have error! We cheking it!');
             return;
@@ -159,7 +180,7 @@ class UsersController extends AppController {
                     $result['User']['is_active'] = ACTIVED;
                     $this->User->save($result);
 
-                    $this->Session->setFlash('Your registration is complete!');
+                    $this->Session->setFlash('Your registration is complete! You can login to system.');
                     $this->redirect('/users/index');
                     exit;
                 } else {
@@ -193,28 +214,19 @@ class UsersController extends AppController {
         if ($this->User->updateAll(
                         array('User.password' => '"' . $this->Auth->password($new_pw) . '"'), array('User.email' => $userEmail))) {
 
-            //config email
-            $this->Email->smtpOptions = array(
-                'port' => '465',
-                'timeout' => '30',
-                'host' => 'ssl://smtp.gmail.com',
-                'username' => 'timetolove9x36@gmail.com',
-                'password' => 'lybeauty36'
-            );
-
             //Process send email 
-            $userEmail = $this->request->data['User']['email'];
             $subject = 'Training.dev - Forgot password';
             $msg = "Hi! We send you new password: \n";
             $msg .= "Your email: " . $userEmail . "\n";
             $msg .= "New password: " . $new_pw;
 
-            $this->Email->to = $userEmail;
-            $this->Email->subject = $subject;
-            $this->Email->from = 'timetolove9x36@gmail.com';
-            $this->Email->delivery = 'smtp';
+            $Email = new CakeEmail();
+            $Email->config('default')
+                    ->from(array('timetolove9x36@gmail.com' => 'Administrator Training.dev'))
+                    ->to($userEmail)
+                    ->subject($subject);
 
-            if ($this->Email->send($msg)) {
+            if ($Email->send($msg)) {
                 $this->Session->setFlash('Please check your email for new password!');
                 return;
             }
