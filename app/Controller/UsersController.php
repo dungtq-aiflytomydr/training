@@ -49,7 +49,7 @@ class UsersController extends AppController {
             return;
         }
 
-        //if user choose change password
+        //if user select change password
         if ($option == 'password') {
 
             //compare old_pw with password in database
@@ -79,7 +79,58 @@ class UsersController extends AppController {
                 $this->Session->setFlash("Change password complete.");
                 return $this->redirect(Router::url());
             }
+        } elseif ($option == 'info') {
+            //if user select change info
+            $rootFolder = "uploads/"; //folder contains image file
+            //process upload avatar
+            $userAvatar = AuthComponent::user('avatar');
+            if (!empty($this->request->data['User']['avatar']['size'])) {
+                $userAvatar = $this->processUploadImage($rootFolder, $this->request->data['User']['avatar']);
+            }
+
+            if ($this->User->updateAll(array(
+                        'User.name' => '"' . $this->request->data['User']['name'] . '"',
+                        'User.avatar' => '"' . $userAvatar . '"',
+                        'User.address' => '"' . $this->request->data['User']['address'] . '"'), array(
+                        'User.id' => AuthComponent::user('id')
+                    ))) {
+
+                //update success => update auth session
+                $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
+                $this->Session->setFlash("Update profile complete.");
+                return $this->redirect(Router::url());
+            }
+            $this->Session->setFlash("Have error. Please try again.");
+            return;
         }
+    }
+
+    /**
+     * process image file upload
+     * @param type $rootFolder : folder contain file images
+     * @param type $fileObj : file image upload
+     * @return string
+     */
+    private function processUploadImage($rootFolder, $fileObj) {
+        $target_dir = WWW_ROOT . $rootFolder;
+        $target_file = $target_dir . basename($fileObj["name"]);
+
+        // Allow certain file formats
+        if ($fileObj["type"] !== "image/jpg" && $fileObj["type"] !== "image/png" && $fileObj["type"] !== "image/jpeg" && $fileObj["type"] !== "image/gif") {
+            $this->Session->setFlash("Sorry, your format image incorrect.");
+            return;
+        }
+
+        if ($fileObj['size'] > 3000000) {
+            $this->Session->setFlash("Sorry, your image is too large.");
+            return;
+        }
+
+        if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
+            $this->Session->setFlash("Have error. Please try again.");
+            return;
+        }
+        return '/' . $rootFolder . $fileObj['name'];
     }
 
     /**

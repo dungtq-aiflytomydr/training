@@ -52,10 +52,9 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     <div class="collapse navbar-collapse" id="myNavbar" data-url="<?php echo Router::fullBaseUrl(); ?>"
                          data-user="<?php echo AuthComponent::user('id'); ?>">
                         <ul class="nav navbar-nav">
-                            <?php if (!AuthComponent::user('is_active')) { ?>
+                            <?php if (!AuthComponent::user('id')) : ?>
                                 <li class="active"><a href="<?php echo Router::fullBaseUrl() . '/login'; ?>">Home</a></li>
-                            <?php } ?>
-                            <?php if (AuthComponent::user('is_active')) { ?>
+                            <?php else : ?>
                                 <li class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
@@ -67,21 +66,22 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                 <li><a href="#">Wallets</a></li>
                                 <li><a href="#">Transaction</a></li>
                                 <li><a href="#">Trends</a></li>
-                            <?php } ?>
+                            <?php endif; ?>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <?php if (!AuthComponent::user('is_active')) { ?>
+                            <?php if (!AuthComponent::user('id')) : ?>
                                 <li><a href="<?php echo Router::fullBaseUrl() . '/users/register'; ?>"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                            <?php } else { ?>
+                            <?php else : ?>
                                 <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img /><?php echo 'Hello, ' . AuthComponent::user('name'); ?> <span class="caret"></span></a>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="u-ava" src="<?php echo AuthComponent::user('avatar'); ?>" />
+                                        <?php echo 'Hello, ' . AuthComponent::user('name'); ?> <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/users/setting/password'; ?>"><span class="glyphicon glyphicon-repeat"></span> Change password</a></li>
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/users/setting/info'; ?>"><span class="glyphicon glyphicon-user"></span> Change my profile</a></li>
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/users/logOut'; ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                                     </ul>
                                 </li>
-                            <?php } ?>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>

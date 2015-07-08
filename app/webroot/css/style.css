@@ -44,3 +44,25 @@ footer{
 .error-message{
     color: red;
 }
+
+textarea#UserAddress{
+    resize: vertical;
+}
+
+.u-ava{
+    width: 22px;
+    height: 22px;
+}
+
+.ava-preview{
+    width: 150px;
+    height: 150px;
+    padding: 4px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.ava-preview > img{
+    width: 100%;
+    height: 100%;
+}

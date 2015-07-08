@@ -1,20 +1,45 @@
+<?php
+echo $this->Html->script('Users/processUser');
+$userAva = AuthComponent::user('avatar');
+?>
 <div class="popupLogin">
-    <form id="frmChangePw" action="/users/updateUser/password" method="post" autocomplete="off">
-        <div class="form-group">
-            <label>Old password</label>
-            <input type="password" id="u-oldpw" name="old_pw" class="form-control">
-            <small class="msg-error"></small>
-        </div>
-        <div class="form-group">
-            <label for="">New password</label>
-            <input type="password" id="u-newpw" name="new_pw" class="form-control">
-            <small class="msg-error"></small>
-        </div>
-        <div class="form-group">
-            <label for="">Confirm password</label>
-            <input type="password" id="u-confirmpw" name="confirm_pw" class="form-control">
-            <small class="msg-error"></small>
-        </div>
-        <button type="button" id="btn-changepw" disabled class="btn btn-default">Change password</button>
-    </form>
+    <?php
+    echo $this->Form->create('User', array(
+        'type' => 'file',
+        'inputDefaults' => array(
+            'div' => array(
+                'class' => 'form-group'
+            )
+        )
+    ));
+    echo $this->Form->input('name', array(
+        'label' => 'Your name',
+        'class' => 'form-control',
+        'value' => AuthComponent::user('name')
+    ));
+    echo $this->Form->input('avatar', array(
+        'type' => 'file',
+        'label' => 'Avatar',
+        'class' => 'form-control',
+        'between' => "<div class='ava-preview form-group'><img class='u-ava-preview' src='" . $userAva . "'/></div>"
+    ));
+    echo $this->Form->input('address', array(
+        'label' => 'Address',
+        'class' => 'form-control',
+        'rows' => 3,
+        'value' => AuthComponent::user('address')
+    ));
+    echo $this->Form->end(array(
+        'label' => 'Update profile',
+        'div' => array(
+            'class' => 'form-group'
+        ),
+        'class' => 'btn btn-default'
+    ));
+    ?>
 </div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        Users.init();
+    });
+</script>

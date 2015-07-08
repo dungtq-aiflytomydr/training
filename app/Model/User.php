@@ -76,16 +76,4 @@ class User extends AppModel {
         )
     );
 
-    public function checkOldPw($check) {
-        debug($check);die;
-        $condition = array(
-            "User.id" => AuthComponent::user('id'),
-            "User.password" => AuthComponent::password($this->data["User"]["old_pw"])
-        );
-
-        $result = $this->find("count", array("conditions" => $condition));
-
-        return ($result == 1);
-    }
-
 }
