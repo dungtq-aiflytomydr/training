@@ -41,17 +41,6 @@ footer{
     line-height: 30px;
 }
 
-.border-error{
-    border: 1px solid #B24B4B !important;
-}
-
-.border-success{
-    border: 1px solid #489F59 !important;
-}
-
-.text-error{
-    color: #b24b4b !important;
-}
-.text-success{
-    color: #489F59 !important;
+.error-message{
+    color: red;
 }
