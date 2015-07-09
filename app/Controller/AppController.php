@@ -30,34 +30,44 @@ App::uses('Controller', 'Controller');
  * @package		app.Controller
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller {
+class AppController extends Controller
+{
 
     public $components = array(
         'Session',
         'Auth' => array(
-            'loginAction' => array(
+            'loginAction'    => array(
                 'controller' => 'users',
-                'action' => 'login'
+                'action'     => 'login'
             ),
-            'loginRedirect' => array(
+            'loginRedirect'  => array(
                 'controller' => 'users',
-                'action' => 'index'
+                'action'     => 'index'
             ),
-            'authError' => 'Did you really think you are allowed to see that?',
-            'authenticate' => array(
+            'logoutRedirect' => array(
+                'controller' => 'users',
+                'action'     => 'login'
+            ),
+            'authError'      => 'Did you really think you are allowed to see that?',
+            'authenticate'   => array(
                 'Form' => array(
-                    'fields' => array(
+                    'passwordHasher' => array(
+                        'className' => 'Simple',
+                        'hashType'  => 'sha256'
+                    ),
+                    'fields'         => array(
                         'username' => 'email', //Default is 'username' in the userModel
                         'password' => 'password'  //Default is 'password' in the userModel
-                    )
-//                    'scope' => array('is_active' => '1')
+                    ),
+                    'scope'          => array('is_active' => true)
                 )
             )
         )
     );
 
-    public function beforeFilter() {
-        $this->Auth->allow('login', 'register', 'verify', 'forgot_pw');
+    public function beforeFilter()
+    {
+        $this->Auth->allow('login');
     }
 
 }

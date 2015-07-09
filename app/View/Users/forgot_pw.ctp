@@ -3,19 +3,22 @@
     echo $this->Form->create('User', array(
         'inputDefaults' => array(
             'div' => array(
-                'class' => 'form-group'
+                'class' => 'form-group',
             )
         )
     ));
-    echo $this->Form->input('email', array(
-        'label' => 'Email had been registed',
-        'class' => 'form-control'));
+    echo $this->Form->input('email_forgot_pw', array(
+        'type'     => 'text',
+        'label'    => 'Your email',
+        'class'    => 'form-control',
+        'required' => false,
+    ));
     echo $this->Form->end(array(
         'label' => 'Send me password',
-        'div' => array(
+        'div'   => array(
             'class' => 'form-group'
         ),
-        'class' => 'btn btn-default'
+        'class' => 'btn btn-default',
     ));
     ?>
 </div>
