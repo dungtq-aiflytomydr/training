@@ -18,13 +18,19 @@ class UsersController extends AppController
      *
      * @var array
      */
-    public $helpers    = array(
+    public $helpers = array(
         'Html',
         'Form',
         'Session',
         'Time',
         'Text'
     );
+
+    /**
+     * Components
+     *
+     * @var array
+     */
     public $components = array(
         'Email'
     );
@@ -39,7 +45,8 @@ class UsersController extends AppController
 
     /**
      * display form change password or change info when users redirect
-     * @param type $option : change password or infomation
+     * 
+     * @param string $option Change password or infomation
      */
     public function setting($option = null)
     {
@@ -56,63 +63,62 @@ class UsersController extends AppController
         //if user select change password
         if ($option == 'password') {
 
-            //compare old_pw with password in database
-            $query = $this->User->find('first', array(
-                'conditions' => array(
-                    'User.id'       => AuthComponent::user('id'),
-                    'User.password' => $this->Auth->password($this->request->data['User']['old_pw'])
-                )
-            ));
+            $this->User->set($this->request->data);
 
-            if (empty($query)) {
-                $this->Session->setFlash("Old password incorrect.");
+            if ($this->User->validates()) {
+
+                $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
+                $pwdUser        = $passwordHasher->hash($this->request->data['User']['password']);
+
+                if ($this->User->updateAll(array(
+                            'User.password' => '"' . $pwdUser . '"'
+                                ), array(
+                            'User.id' => AuthComponent::user('id'))
+                        )) {
+                    $this->Session->setFlash("Change password complete.");
+                    return $this->redirect(Router::url());
+                }
+                $this->Session->setFlash("Have error! Please try again.");
                 return;
             }
-
-            //compare new_pw with confirm_pw, if not equal => false
-            if ($this->request->data['User']['new_pw'] !== $this->request->data['User']['confirm_pw']) {
-                $this->Session->setFlash("Confirm password incorrect.");
-                return;
-            }
-
-            if ($this->User->updateAll(array(
-                        'User.password' => '"' . $this->Auth->password($this->request->data['User']['new_pw']) . '"'
-                            ), array(
-                        'User.id' => AuthComponent::user('id'))
-                    )) {
-                $this->Session->setFlash("Change password complete.");
-                return $this->redirect(Router::url());
-            }
+            return;
         } elseif ($option == 'info') {
-            //if user select change info
-            $rootFolder = "uploads/"; //folder contains image file
-            //process upload avatar
-            $userAvatar = AuthComponent::user('avatar');
-            if (!empty($this->request->data['User']['avatar']['size'])) {
-                $userAvatar = $this->processUploadImage($rootFolder, $this->request->data['User']['avatar']);
-            }
 
-            if ($this->User->updateAll(array(
-                        'User.name'    => '"' . $this->request->data['User']['name'] . '"',
-                        'User.avatar'  => '"' . $userAvatar . '"',
-                        'User.address' => '"' . $this->request->data['User']['address'] . '"'), array(
-                        'User.id' => AuthComponent::user('id')
-                    ))) {
+            $this->User->set($this->request->data);
 
-                //update success => update auth session
-                $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
-                $this->Session->setFlash("Update profile complete.");
-                return $this->redirect(Router::url());
+            if ($this->User->validates()) {
+                //if user select change info
+                $rootFolder = "uploads/"; //folder contains image file
+                //process upload avatar
+                $userAvatar = AuthComponent::user('avatar');
+                if (!empty($this->request->data['User']['avatar']['size'])) {
+                    $userAvatar = $this->processUploadImage($rootFolder, $this->request->data['User']['avatar']);
+                }
+
+                if ($this->User->updateAll(array(
+                            'User.name'    => '"' . $this->request->data['User']['name'] . '"',
+                            'User.avatar'  => '"' . $userAvatar . '"',
+                            'User.address' => '"' . $this->request->data['User']['address'] . '"'), array(
+                            'User.id' => AuthComponent::user('id')
+                        ))) {
+
+                    //update success => update auth session
+                    $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
+                    $this->Session->setFlash("Update profile complete.");
+                    return $this->redirect(Router::url());
+                }
+                $this->Session->setFlash("Have error. Please try again.");
+                return;
             }
-            $this->Session->setFlash("Have error. Please try again.");
             return;
         }
     }
 
     /**
      * process image file upload
-     * @param type $rootFolder : folder contain file images
-     * @param type $fileObj : file image upload
+     * 
+     * @param type $rootFolder Folder contain file images
+     * @param type $fileObj File image upload
      * @return string
      */
     private function processUploadImage($rootFolder, $fileObj)
@@ -160,6 +166,7 @@ class UsersController extends AppController
 
     /**
      * when user logout in system
+     * 
      * @return type
      */
     public function logout()
@@ -197,6 +204,7 @@ class UsersController extends AppController
 
     /**
      * Activate user after registration
+     * 
      * @param int $id User id
      * @param string $activeCode Active code
      */
@@ -260,6 +268,7 @@ class UsersController extends AppController
 
     /**
      * get new password for user when they forgot
+     * 
      * @return type
      */
     public function forgot_pw()
@@ -308,7 +317,7 @@ class UsersController extends AppController
     }
 
     /**
-     * when user click link from email
+     * when user click to link from email forgot password
      * 
      * @param int $id User id
      * @param string $forgot_pw_code Forgot_code to confirm users' email
@@ -344,60 +353,6 @@ class UsersController extends AppController
                 ));
             }
             return;
-        }
-    }
-
-    /**
-     * check user password true or false (process by ajax)
-     */
-    public function checkOldPw()
-    {
-        if ($this->request->is('get')) {
-            $this->redirect(array(
-                'controller' => 'users',
-                'action'     => 'login'));
-        }
-        $send_pw = $this->Auth->password($this->request->data('value'));
-        $user    = $this->User->findById($this->request->data('key'));
-
-        if (!empty($user) && ($user['User']['password'] === $send_pw)) {
-            echo 1;
-            exit;
-        }
-        echo 0;
-        exit;
-    }
-
-    /**
-     * update user info when user change password or change info
-     * @param type $option: change password or info
-     */
-    public function updateUser($option = null)
-    {
-        if ($this->request->is('get')) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index'));
-        }
-
-        //if user want to change password
-        if ($option === 'password') {
-            if ($this->User->updateAll(array(
-                        'User.password' => '"' . $this->Auth->password($this->request->data('new_pw')) . '"'), array(
-                        'User.id' => AuthComponent::user('id'))
-                    )) {
-                $this->Session->setFlash("Change password completed!");
-                return $this->redirect(array(
-                            'controller' => 'users',
-                            'action'     => 'index'));
-            }
-            $this->Session->setFlash("Have error. Please try again!");
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'setting',
-                        'param1'     => 'password',));
-        } elseif ($option === 'info') {
-            
         }
     }
 

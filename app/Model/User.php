@@ -55,10 +55,10 @@ class User extends AppModel
                 'message' => 'Your name length must be greater than 4 characters.'
             )
         ),
-        'old_pw'          => array(
+        'current_pw'          => array(
             'required'      => array(
                 'rule'    => 'notBlank',
-                'message' => 'Please fill out your old password.'
+                'message' => 'Please fill out your current password.'
             ),
             'checkPassword' => array(
                 'rule'    => 'checkPassword',
@@ -124,14 +124,15 @@ class User extends AppModel
      */
     public function checkPassword()
     {
-        $user = $this->getById($this->data[$this->alias]['id']);
-        if (empty($user['User']['password'])) {
+        $user = $this->getById(AuthComponent::user('id'));
+
+        if (empty($user['User'])) {
             return false;
         }
 
         // Get hash of input password
         $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
-        $pwdHash        = $passwordHasher->hash($this->data[$this->alias]['password']);
+        $pwdHash        = $passwordHasher->hash($this->data[$this->alias]['current_pw']);
 
         // Compare above hash with user's password
         return $pwdHash == $user['User']['password'];
