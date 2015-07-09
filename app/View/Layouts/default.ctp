@@ -49,7 +49,7 @@
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="<?php echo Router::fullBaseUrl() . '/wallets' ?>">Wallets <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/add' ?>">New wallet</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/list' ?>">List wallet</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/listWallet' ?>">List wallet</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="#">Transaction</a></li>
