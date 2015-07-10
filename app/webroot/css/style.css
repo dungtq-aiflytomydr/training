@@ -94,3 +94,13 @@ img.wl-icon-preview{
     width: 26px;
     height: 26px;
 }
+
+.cat-in, .cat-out{
+    float: left;
+    display: block;
+    width: 45%;
+}
+
+.cat-out{
+    margin-left: 10%;
+}

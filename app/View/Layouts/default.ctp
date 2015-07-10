@@ -53,9 +53,8 @@
                                 <li class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="#">Flower</a></li>
-                                        <li><a href="#">Food & Drink</a></li>
-                                        <li><a href="#">Sports</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/categories/add' ?>">New Category</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/categories/listCategories' ?>">List Categories</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="#">Transaction</a></li>
