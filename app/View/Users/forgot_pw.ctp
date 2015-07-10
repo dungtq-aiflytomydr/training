@@ -7,7 +7,7 @@
             )
         )
     ));
-    echo $this->Form->input('email_forgot_pw', array(
+    echo $this->Form->input('email', array(
         'type'     => 'text',
         'label'    => 'Your email',
         'class'    => 'form-control',

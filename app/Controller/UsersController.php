@@ -131,17 +131,6 @@ class UsersController extends AppController
         $target_dir  = WWW_ROOT . $rootFolder;
         $target_file = $target_dir . basename($fileObj["name"]);
 
-        // Allow certain file formats
-        if ($fileObj["type"] !== "image/jpg" && $fileObj["type"] !== "image/png" && $fileObj["type"] !== "image/jpeg" && $fileObj["type"] !== "image/gif") {
-            $this->Session->setFlash("Sorry, your format image incorrect.");
-            return;
-        }
-
-        if ($fileObj['size'] > 3000000) {
-            $this->Session->setFlash("Sorry, your image is too large.");
-            return;
-        }
-
         if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
             $this->Session->setFlash("Have error. Please try again.");
             return;
@@ -161,7 +150,7 @@ class UsersController extends AppController
         }
 
         if ($this->Auth->login()) {
-            $walletInfo = $this->User->getCurrenWalletInfo($this->Auth->user('current_wallet'));
+            $walletInfo = $this->User->Wallet->getWalletById($this->Auth->user('current_wallet'));
             $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
             return $this->redirect($this->Auth->redirectUrl());
         }
@@ -286,12 +275,14 @@ class UsersController extends AppController
             return;
         }
 
-        $userEmail = $this->request->data['User']['email_forgot_pw'];
+        $userEmail = $this->request->data['User']['email'];
 
         //random password => create new password for user account
         $forgot_pw_code = uniqid();
 
         $this->User->set($this->request->data);
+        $this->User->validator()->remove('email', 'unique');
+
         if ($this->User->validates()) {
             if ($this->User->updateAll(array(
                         'User.forgot_pw_code' => '"' . $forgot_pw_code . '"'), array(

@@ -16,7 +16,7 @@ class User extends AppModel
      * @var array 
      */
     public $validate = array(
-        'email'           => array(
+        'email'      => array(
             'required' => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please fill out your email.'
@@ -30,17 +30,7 @@ class User extends AppModel
                 'message' => 'This email had been already used.'
             )
         ),
-        'email_forgot_pw' => array(
-            'required' => array(
-                'rule'    => 'notBlank',
-                'message' => 'Please fill out your email.'
-            ),
-            'format'   => array(
-                'rule'    => 'email',
-                'message' => 'Email not correct.',
-            ),
-        ),
-        'password'        => array(
+        'password'   => array(
             'required' => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please fill out your password.'
@@ -50,7 +40,7 @@ class User extends AppModel
                 'message' => 'Password length must be greater than 6 characters.',
             ),
         ),
-        'name'            => array(
+        'name'       => array(
             'required' => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please fill out your name.'
@@ -60,7 +50,19 @@ class User extends AppModel
                 'message' => 'Your name length must be greater than 4 characters.'
             )
         ),
-        'current_pw'      => array(
+        'avatar'     => array(
+            'fileType' => array(
+                'rule'    => array(
+                    'extension' => array('jpg', 'png', 'gif', 'jpeg'),
+                ),
+                'message' => 'Please supply a valid image (.gif, .jpeg, .png, .jpg).'
+            ),
+            'size'     => array(
+                'rule'    => array('fileSize', '<=', '1MB'),
+                'message' => 'Image must be less than 1MB'
+            ),
+        ),
+        'current_pw' => array(
             'required'      => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please fill out your current password.'
@@ -70,7 +72,7 @@ class User extends AppModel
                 'message' => 'Password is not correct.'
             )
         ),
-        'confirm_pw'      => array(
+        'confirm_pw' => array(
             'required' => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please fill out your confirm password.'
@@ -161,11 +163,6 @@ class User extends AppModel
     public function matchPassword()
     {
         return $this->data[$this->alias]['password'] === $this->data[$this->alias]['confirm_pw'];
-    }
-
-    public function getCurrenWalletInfo($id)
-    {
-        return $this->Wallet->findById($id);
     }
 
 }
