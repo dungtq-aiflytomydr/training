@@ -10,6 +10,11 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class User extends AppModel
 {
 
+    /**
+     * validates
+     * 
+     * @var array 
+     */
     public $validate = array(
         'email'           => array(
             'required' => array(
@@ -55,7 +60,7 @@ class User extends AppModel
                 'message' => 'Your name length must be greater than 4 characters.'
             )
         ),
-        'current_pw'          => array(
+        'current_pw'      => array(
             'required'      => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please fill out your current password.'
@@ -74,6 +79,18 @@ class User extends AppModel
                 'rule'    => 'matchPassword',
                 'message' => 'Passwords do not match.'
             )
+        )
+    );
+
+    /**
+     * relationship model
+     * 
+     * @var array
+     */
+    public $hasMany = array(
+        'Wallet' => array(
+            'className'  => 'Wallet',
+            'foreignKey' => 'id',
         )
     );
 
@@ -144,6 +161,11 @@ class User extends AppModel
     public function matchPassword()
     {
         return $this->data[$this->alias]['password'] === $this->data[$this->alias]['confirm_pw'];
+    }
+
+    public function getCurrenWalletInfo($id)
+    {
+        return $this->Wallet->findById($id);
     }
 
 }

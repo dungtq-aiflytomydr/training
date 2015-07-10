@@ -57,6 +57,11 @@ class UsersController extends AppController
         }
 
         if (!$this->request->is('post')) {
+            if ($option == 'password') {
+                $this->set('title_for_layout', "Change password");
+            } elseif ($option == 'info') {
+                $this->set('title_for_layout', "Change profile");
+            }
             return;
         }
 
@@ -156,6 +161,8 @@ class UsersController extends AppController
         }
 
         if ($this->Auth->login()) {
+            $walletInfo = $this->User->getCurrenWalletInfo($this->Auth->user('current_wallet'));
+            $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
             return $this->redirect($this->Auth->redirectUrl());
         }
 
