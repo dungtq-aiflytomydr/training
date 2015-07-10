@@ -273,17 +273,6 @@ class WalletsController extends AppController
         $target_dir  = WWW_ROOT . $rootFolder;
         $target_file = $target_dir . basename($fileObj["name"]);
 
-        // Allow certain file formats
-        if ($fileObj["type"] !== "image/jpg" && $fileObj["type"] !== "image/png" && $fileObj["type"] !== "image/jpeg" && $fileObj["type"] !== "image/gif") {
-            $this->Session->setFlash("Sorry, your format image incorrect.");
-            return;
-        }
-
-        if ($fileObj['size'] > 1000000) {
-            $this->Session->setFlash("Sorry, your image is too large.");
-            return;
-        }
-
         if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
             $this->Session->setFlash("Have error. Please try again.");
             return;

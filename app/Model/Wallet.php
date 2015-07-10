@@ -43,6 +43,10 @@ class Wallet extends AppModel
                 ),
                 'message' => 'Please supply a valid image (.gif, .jpeg, .png, .jpg).'
             ),
+            'size'     => array(
+                'rule'    => array('fileSize', '<=', '1MB'),
+                'message' => 'Image must be less than 1MB'
+            ),
         ),
     );
 
@@ -82,6 +86,17 @@ class Wallet extends AppModel
         }
 
         return true;
+    }
+
+    /**
+     * get Wallet information by id
+     * 
+     * @param int $id Wallet id
+     * @return mixed
+     */
+    public function getWalletById($id)
+    {
+        return $this->findById($id);
     }
 
 }
