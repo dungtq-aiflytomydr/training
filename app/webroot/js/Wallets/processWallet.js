@@ -12,8 +12,6 @@ var Wallets = function () {
                         && fileType !== 'image/jpg'
                         && fileType !== 'image/gif'
                         && fileType !== 'image/png') {
-                    $('.wl-icon-preview').attr('src', '/img/wallet.png');
-                    alert('Image format incorrect.');
                     return false;
                 }
 

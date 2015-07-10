@@ -10,7 +10,7 @@
                     <th>Name</th>
                     <th>Balance</th>
                     <th>Unit</th>
-                    <th>Action</th>
+                    <th colspan="2">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,6 +25,12 @@
                             echo $this->Html->link('Edit', array(
                                 'controller' => 'wallets',
                                 'action'     => 'edit',
+                                $wallet['Wallet']['id']));
+                            ?></td>
+                        <td><?php
+                            echo $this->Html->link('Delete', array(
+                                'controller' => 'wallets',
+                                'action'     => 'delete',
                                 $wallet['Wallet']['id']));
                             ?></td>
                     </tr>

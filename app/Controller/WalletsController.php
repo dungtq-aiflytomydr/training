@@ -90,6 +90,61 @@ class WalletsController extends AppController
     }
 
     /**
+     * edit wallet information
+     * 
+     * @param int $id Wallet's id
+     */
+    public function edit($id)
+    {
+        if (empty($id)) {
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',));
+        }
+
+        $walletObj = $this->Wallet->findById($id);
+        if (empty($walletObj)) {
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',));
+        }
+
+        $this->set('unitObj', $this->Wallet->Unit->find('all'));
+        $this->set('wallet', $walletObj);
+
+        if ($this->request->is('get')) {
+            return;
+        }
+
+        $this->Wallet->set($this->request->data);
+        if ($this->Wallet->validates()) {
+            //process wallet's icon
+            $walletIcon = $walletObj['Wallet']['icon'];
+            if ($this->request->data['Wallet']['icon']['size'] > 0) {
+                $walletIcon = $this->_processUploadImage('uploads/', $this->request->data['Wallet']['icon']);
+            }
+
+            //update wallet's info
+            if ($this->Wallet->updateAll(array(
+                        'Wallet.name'    => '"' . $this->request->data['Wallet']['name'] . '"',
+                        'Wallet.icon'    => '"' . $walletIcon . '"',
+                        'Wallet.unit_id' => $this->request->data['Wallet']['unit_id']), array(
+                        'Wallet.id' => $id
+                    ))) {
+
+                $this->Session->setFlash("Update Wallet's information complete.");
+                $this->redirect(array(
+                    'controller' => 'wallets',
+                    'action'     => 'listWallet',
+                ));
+            }
+            $this->Session->setFlash("Have error! Please try again.");
+            return;
+        }
+        return;
+    }
+
+    /**
      * process image file upload
      * 
      * @param type $rootFolder Folder contain file images

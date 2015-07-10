@@ -35,6 +35,15 @@ class Wallet extends AppModel
                 'message' => "Please select unit."
             ),
         ),
+        'icon'    => array(
+            'fileType' => array(
+                'rule'    => array(
+                    'extension',
+                    array('gif', 'jpeg', 'png', 'jpg')
+                ),
+                'message' => 'Please supply a valid image (.gif, .jpeg, .png, .jpg).'
+            ),
+        ),
     );
 
     /**
@@ -48,5 +57,19 @@ class Wallet extends AppModel
             'foreignKey' => 'id',
         ),
     );
+
+    /**
+     * if user not setup icon => unset property icon
+     * 
+     * @return boolean
+     */
+    public function beforeValidate($options = array())
+    {
+        if (empty($this->data[$this->alias]['icon']['size'])) {
+            unset($this->validate['icon']);
+        }
+
+        return true;
+    }
 
 }
