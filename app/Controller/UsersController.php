@@ -181,6 +181,7 @@ class UsersController extends AppController
             return;
         }
 
+        $this->User->validator()->remove('avatar');
         $this->request->data['User']['avatar'] = '/img/ava_default.jpeg'; //set user's avatar default
         $createdUser                           = $this->User->createUser($this->request->data);
 
@@ -195,7 +196,10 @@ class UsersController extends AppController
         );
         $this->_sendActivationEmail($createdUser['User'], $emailConfig);
         $this->Session->setFlash('Register completed! Please check your email for validation link!');
-        $this->redirect('/');
+        $this->redirect(array(
+            'controller' => 'users',
+            'action'     => 'login',
+        ));
     }
 
     /**
