@@ -20,13 +20,13 @@ class Wallet extends AppModel
             ),
         ),
         'balance' => array(
-            'required' => array(
+            'required'      => array(
                 'rule'    => 'notBlank',
                 'message' => "Please fill out Wallet's value."
             ),
-            'numeric'  => array(
-                'rule'    => 'numeric',
-                'message' => "Wallet's value contain only numberic."
+            'naturalNumber' => array(
+                'rule'    => 'naturalNumber',
+                'message' => "Wallet's value contain only numberic and value > 0."
             ),
         ),
         'unit_id' => array(
@@ -47,13 +47,25 @@ class Wallet extends AppModel
     );
 
     /**
-     * relation model
+     * relationship hasOne Unit
      * 
      * @var array 
      */
     public $hasOne = array(
         'Unit' => array(
             'className'  => 'Unit',
+            'foreignKey' => 'id',
+        ),
+    );
+
+    /**
+     * relationship belongsTo User
+     * 
+     * @var array 
+     */
+    public $belongsTo = array(
+        'User' => array(
+            'className'  => 'User',
             'foreignKey' => 'id',
         ),
     );

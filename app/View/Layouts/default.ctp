@@ -38,18 +38,24 @@
                                 <li class="active"><a href="<?php echo Router::fullBaseUrl() . '/login'; ?>">Home</a></li>
                             <?php else : ?>
                                 <li class="dropdown">
+                                    <?php if (!empty(AuthComponent::user('current_wallet'))): ?>
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="u-ava" src="<?php echo AuthComponent::user('current_wallet')['icon']; ?>" />
+                                            <?php echo AuthComponent::user('current_wallet')['name']; ?> <span class="caret"></span></a>
+                                        <?php else: ?>
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Wallet <span class="caret"></span></a>
+                                    <?php endif; ?>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/add' ?>">New wallet</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/listWallet' ?>">List wallet</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/edit/' . AuthComponent::user('current_wallet')['id']; ?>">Edit</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="#">Flower</a></li>
                                         <li><a href="#">Food & Drink</a></li>
                                         <li><a href="#">Sports</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="<?php echo Router::fullBaseUrl() . '/wallets' ?>">Wallets <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/add' ?>">New wallet</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/listWallet' ?>">List wallet</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="#">Transaction</a></li>

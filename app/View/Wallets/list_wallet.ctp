@@ -10,7 +10,7 @@
                     <th>Name</th>
                     <th>Balance</th>
                     <th>Unit</th>
-                    <th colspan="2">Action</th>
+                    <th colspan="3">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,6 +21,12 @@
                         <td><?php echo $wallet['Wallet']['name']; ?></td>
                         <td><?php echo $wallet['Wallet']['balance']; ?></td>
                         <td><?php echo $wallet['Unit']['name'] . ' (' . $wallet['Unit']['signature'] . ')'; ?></td>
+                        <td><?php
+                            echo $this->Html->link('Select', array(
+                                'controller' => 'wallets',
+                                'action'     => 'select',
+                                $wallet['Wallet']['id']));
+                            ?></td>
                         <td><?php
                             echo $this->Html->link('Edit', array(
                                 'controller' => 'wallets',

@@ -33,6 +33,7 @@ class WalletsController extends AppController
      */
     public function add()
     {
+        $this->set('title_for_layout', "New wallet");
         $this->set('unitObj', $this->Wallet->Unit->find('all'));
 
         if ($this->request->is('get')) {
@@ -61,6 +62,26 @@ class WalletsController extends AppController
             );
 
             if ($this->Wallet->save($walletData)) {
+                //check if user have not anything wallet => set default wallet
+                $manyWallet = $this->Wallet->find('count', array(
+                    'conditions' => array(
+                        'user_id' => AuthComponent::user('id'),
+                    ),
+                ));
+
+                if ($manyWallet == 1) {
+                    $currentWallet_id = $this->Wallet->getInsertID();
+
+                    $this->Wallet->User->updateAll(array(
+                        'User.current_wallet' => $currentWallet_id), array(
+                        'User.id' => AuthComponent::user('id')
+                    ));
+
+                    //update session for current_wallet property
+                    $currentWallet = $this->Wallet->findById($currentWallet_id);
+                    $this->Session->write('Auth.User.current_wallet', $currentWallet['Wallet']);
+                }
+
                 $this->Session->setFlash("Create your wallet complete.");
                 return $this->redirect(array(
                             'action' => 'listWallet'));
@@ -74,6 +95,8 @@ class WalletsController extends AppController
      */
     public function listWallet()
     {
+        $this->set('title_for_layout', "List wallet");
+
         $listWallet = $this->Wallet->find('all', array(
             'conditions' => array(
                 'Wallet.user_id' => AuthComponent::user('id'),
@@ -96,6 +119,7 @@ class WalletsController extends AppController
      */
     public function edit($id)
     {
+        //process request url
         if (empty($id)) {
             $this->redirect(array(
                 'controller' => 'users',
@@ -109,6 +133,8 @@ class WalletsController extends AppController
                 'action'     => 'index',));
         }
 
+        //setup layout
+        $this->set('title_for_layout', "Edit wallet");
         $this->set('unitObj', $this->Wallet->Unit->find('all'));
         $this->set('wallet', $walletObj);
 
@@ -142,6 +168,97 @@ class WalletsController extends AppController
             return;
         }
         return;
+    }
+
+    /**
+     * select wallet for transactions
+     * 
+     * @param int $id Wallet id
+     */
+    public function select($id)
+    {
+        //process request url
+        if (empty($id)) {
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',));
+        }
+
+        $walletObj = $this->Wallet->findById($id);
+        if (empty($walletObj)) {
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',));
+        }
+
+        //update current_wallet for user
+        if ($this->Wallet->User->updateAll(array(
+                    'User.current_wallet' => $id), array(
+                    'User.id' => AuthComponent::user('id')
+                ))) {
+
+            //get wallet info => update session Auth.User.current_wallet
+            $walletObj = $this->Wallet->findById($id);
+            //update session Auth.User.current_wallet
+            $this->Session->write('Auth.User.current_wallet', $walletObj['Wallet']);
+
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',
+            ));
+        }
+        // this code is used for function without view
+        $this->autoRender = false;
+    }
+
+    /**
+     * delte wallet by id
+     * 
+     * @param int $id Wallet id
+     */
+    public function delete($id)
+    {
+        //process request url
+        if (empty($id)) {
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',));
+        }
+
+        $walletObj = $this->Wallet->findById($id);
+        if (empty($walletObj)) {
+            $this->redirect(array(
+                'controller' => 'users',
+                'action'     => 'index',));
+        }
+
+        //if wallet want to delete have id equals current wallet id => update current_wallet  = next wallet
+        if ($walletObj['Wallet']['id'] == AuthComponent::user('current_wallet')['id']) {
+            //wallet choose
+            $walletChoose = $this->Wallet->find('first', array(
+                'conditions' => array(
+                    'user_id' => AuthComponent::user('id'),
+                )
+            ));
+
+            //update current_wallet for user
+            $this->Wallet->User->updateAll(array(
+                'User.current_wallet' => $walletChoose['Wallet']['id']), array(
+                'User.id' => AuthComponent::user('id')
+            ));
+
+            //update session Auth.User.current_wallet
+            $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']);
+        }
+
+        //update data
+        $this->Wallet->delete($id);
+        $this->redirect(array(
+            'controller' => 'wallets',
+            'action'     => 'listWallet',
+        ));
+        // this code is used for function without view
+        $this->autoRender = false;
     }
 
     /**
