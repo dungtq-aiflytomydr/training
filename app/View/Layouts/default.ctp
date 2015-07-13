@@ -57,7 +57,13 @@
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/categories/listCategories' ?>">List Categories</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="#">Transaction</a></li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transaction <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/add' ?>">New Transaction</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listTransaction' ?>">List Transaction</a></li>
+                                    </ul>
+                                </li>
                                 <li><a href="#">Trends</a></li>
                             <?php endif; ?>
                         </ul>
