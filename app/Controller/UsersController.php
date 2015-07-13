@@ -11,7 +11,7 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AppController
 {
 
-    public $uses = array('User');
+    public $uses = array('User', 'Wallet');
 
     /**
      * Helpers
@@ -150,7 +150,7 @@ class UsersController extends AppController
         }
 
         if ($this->Auth->login()) {
-            $walletInfo = $this->User->Wallet->getWalletById($this->Auth->user('current_wallet'));
+            $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
             $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
             return $this->redirect($this->Auth->redirectUrl());
         }
@@ -271,7 +271,7 @@ class UsersController extends AppController
      * 
      * @return type
      */
-    public function forgot_pw()
+    public function forgotPw()
     {
         $this->set('title_for_layout', 'Forgot password');
 
@@ -325,7 +325,7 @@ class UsersController extends AppController
      * @param string $forgot_pw_code Forgot_code to confirm users' email
      * @return type
      */
-    public function reset_pw($id = null, $forgot_pw_code = null)
+    public function resetPw($id = null, $forgot_pw_code = null)
     {
         if (empty($id) || empty($forgot_pw_code)) {
             $this->redirect(array(
@@ -365,7 +365,7 @@ class UsersController extends AppController
     {
         parent::beforeFilter();
         // Allow users to register and logout.
-        $this->Auth->allow('register', 'activate', 'forgot_pw', 'reset_pw');
+        $this->Auth->allow('register', 'activate', 'forgotPw', 'resetPw');
     }
 
 }

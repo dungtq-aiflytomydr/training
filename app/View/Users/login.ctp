@@ -11,6 +11,6 @@
             <input type="password" id="u-pw" name="data[User][password]" class="form-control" placeholder="Password">
         </div>
         <button type="submit" id="btn-login" class="btn btn-default">Login</button>
-        <a href="/users/forgot_pw">Forgot password?</a>
+        <a href="/users/forgotPw">Forgot password?</a>
     </form>
 </div>
