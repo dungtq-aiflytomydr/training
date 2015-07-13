@@ -4,6 +4,13 @@ class CategoriesController extends AppController
 {
 
     /**
+     * uses
+     * 
+     * @var array 
+     */
+    public $uses = array('Category', 'Transaction');
+
+    /**
      * Helpers
      *
      * @var array
@@ -16,9 +23,15 @@ class CategoriesController extends AppController
         'Text'
     );
 
+    /**
+     * default function => redirect to listCategories
+     */
     public function index()
     {
-        
+        $this->redirect(array(
+            'controller' => 'categories',
+            'action'     => 'listCategories',
+        ));
     }
 
     /**
@@ -164,6 +177,8 @@ class CategoriesController extends AppController
 
         //delete category
         $this->Category->delete($id);
+        //delete all transactions have category_id equals $id
+        $this->Transaction->deleteTransactionsByCategoryId($id);
         $this->redirect(array(
             'controller' => 'categories',
             'action'     => 'listCategories',

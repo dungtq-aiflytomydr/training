@@ -8,7 +8,7 @@ class WalletsController extends AppController
      * 
      * @var array 
      */
-    public $uses = array('Wallet', 'Unit', 'User');
+    public $uses = array('Wallet', 'Unit', 'User', 'Category', 'Transaction');
 
     /**
      * $helpers
@@ -23,7 +23,7 @@ class WalletsController extends AppController
     );
 
     /**
-     * 
+     * default function => redirect to /wallets/listWallet
      */
     public function index()
     {
@@ -101,6 +101,10 @@ class WalletsController extends AppController
     {
         $this->set('title_for_layout', "List wallet");
 
+        //unbindmodel user
+        $this->Wallet->unbindModel(array('belongsTo' => array('User')));
+
+        //get listWalet of user
         $listWallet = $this->Wallet->find('all', array(
             'conditions' => array(
                 'Wallet.user_id' => AuthComponent::user('id'),
@@ -136,6 +140,9 @@ class WalletsController extends AppController
                 'controller' => 'users',
                 'action'     => 'index',));
         }
+
+        //unbindmodel user
+        $this->Wallet->unbindModel(array('belongsTo' => array('User')));
 
         //setup layout
         $this->set('title_for_layout', "Edit wallet");
@@ -236,8 +243,30 @@ class WalletsController extends AppController
                 'action'     => 'index',));
         }
 
+        //bindModel Category & Transaction
+        $this->Wallet->bindModel(array(
+            'hasMany' => array(
+                'Category'    => array(
+                    'className' => 'Category',
+                ),
+                'Transaction' => array(
+                    'className' => 'Transaction',
+                ),
+            ),
+        ));
+        //delete all categories have wallet_id equal id of wallet was delete
+        $listCatDel = $this->Category->deleteCategoriesByWalletId($id);
+
+        //delete all transactions have category_id equal id of category was delete
+        foreach ($listCatDel as $key => $category) {
+            $this->Transaction->deleteTransactionsByCategoryId($category['Category']['id']);
+        }
+
+        //delete wallet
+        $this->Wallet->delete($id);
+
         //if wallet want to delete have id equals current wallet id => update current_wallet  = next wallet
-        if ($walletObj['Wallet']['id'] == AuthComponent::user('current_wallet')['id']) {
+        if ($id == AuthComponent::user('current_wallet')['id']) {
             //wallet choose
             $walletChoose = $this->Wallet->find('first', array(
                 'conditions' => array(
@@ -255,8 +284,6 @@ class WalletsController extends AppController
             $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']);
         }
 
-        //update data
-        $this->Wallet->delete($id);
         $this->redirect(array(
             'controller' => 'wallets',
             'action'     => 'listWallet',

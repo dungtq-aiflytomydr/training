@@ -50,4 +50,51 @@ class Category extends AppModel
         return true;
     }
 
+    /**
+     * get category information by id
+     * 
+     * @param int $id Category id
+     * @return mixed
+     */
+    public function getCategoryById($id)
+    {
+        return $this->findById($id)['Category'];
+    }
+
+    /**
+     * get list category by wallet id
+     * 
+     * @param int $name Wallet id
+     * @return array|null
+     */
+    public function getListCategoryByWalletId($walletId)
+    {
+        return $this->find('all', array(
+                    'conditions' => array(
+                        'Category.wallet_id' => array(0, $walletId),
+                    ),
+        ));
+    }
+
+    /**
+     * delete all categories have $wallet_id equals id of current wallet
+     * 
+     * @param int $walletId Wallet id
+     */
+    public function deleteCategoriesByWalletId($walletId)
+    {
+        //get listCategory will be delete => delete transactions
+        $listCategory = $this->find('all', array(
+            'conditions' => array(
+                'wallet_id' => $walletId,
+            ),
+        ));
+        //delete
+        $this->deleteAll(array(
+            'wallet_id' => $walletId,
+        ));
+
+        return $listCategory;
+    }
+
 }

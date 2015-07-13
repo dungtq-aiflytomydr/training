@@ -34,4 +34,16 @@ class Transaction extends AppModel
         )
     );
 
+    /**
+     * delete multiple transactions have category_id equals category id identify
+     * 
+     * @param int $categoryId Category id
+     */
+    public function deleteTransactionsByCategoryId($categoryId)
+    {
+        $this->deleteAll(array(
+            'category_id' => $categoryId,
+        ));
+    }
+
 }
