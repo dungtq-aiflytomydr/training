@@ -1,10 +1,14 @@
 <?php
 
-define('SETUP', 1);
-define('NOT_SETUP', 0);
-
 class WalletsController extends AppController
 {
+
+    /**
+     * $uses
+     * 
+     * @var array 
+     */
+    public $uses = array('Wallet', 'Unit', 'User');
 
     /**
      * $helpers
@@ -34,7 +38,7 @@ class WalletsController extends AppController
     public function add()
     {
         $this->set('title_for_layout', "New wallet");
-        $this->set('unitObj', $this->Wallet->Unit->find('all'));
+        $this->set('unitObj', $this->Unit->find('all'));
 
         if ($this->request->is('get')) {
             return;
@@ -72,7 +76,7 @@ class WalletsController extends AppController
                 if ($manyWallet == 1) {
                     $currentWallet_id = $this->Wallet->getInsertID();
 
-                    $this->Wallet->User->updateAll(array(
+                    $this->User->updateAll(array(
                         'User.current_wallet' => $currentWallet_id), array(
                         'User.id' => AuthComponent::user('id')
                     ));
@@ -135,7 +139,7 @@ class WalletsController extends AppController
 
         //setup layout
         $this->set('title_for_layout', "Edit wallet");
-        $this->set('unitObj', $this->Wallet->Unit->find('all'));
+        $this->set('unitObj', $this->Unit->find('all'));
         $this->set('wallet', $walletObj);
 
         if ($this->request->is('get')) {
@@ -192,7 +196,7 @@ class WalletsController extends AppController
         }
 
         //update current_wallet for user
-        if ($this->Wallet->User->updateAll(array(
+        if ($this->User->updateAll(array(
                     'User.current_wallet' => $id), array(
                     'User.id' => AuthComponent::user('id')
                 ))) {
@@ -203,8 +207,8 @@ class WalletsController extends AppController
             $this->Session->write('Auth.User.current_wallet', $walletObj['Wallet']);
 
             $this->redirect(array(
-                'controller' => 'users',
-                'action'     => 'index',
+                'controller' => 'transactions',
+                'action'     => 'listTransaction',
             ));
         }
         // this code is used for function without view
@@ -242,7 +246,7 @@ class WalletsController extends AppController
             ));
 
             //update current_wallet for user
-            $this->Wallet->User->updateAll(array(
+            $this->User->updateAll(array(
                 'User.current_wallet' => $walletChoose['Wallet']['id']), array(
                 'User.id' => AuthComponent::user('id')
             ));
@@ -287,7 +291,7 @@ class WalletsController extends AppController
      */
     private function _getUnitById($unit_id)
     {
-        return $this->Wallet->Unit->findById($unit_id)['Unit'];
+        return $this->Unit->findById($unit_id)['Unit'];
     }
 
     /**
