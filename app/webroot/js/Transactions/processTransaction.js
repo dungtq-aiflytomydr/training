@@ -1,36 +1,27 @@
-var Wallets = function () {
+var Transactions = function () {
 
-    var previewIcon = function () {
+    var processCreateTime = function () {
+        $("#TransactionCreateTime").kendoDatePicker({
+            format: "dd/MM/yyyy"
+        });
 
-        function readURL(input) {
+        var day = $(".k-input").val().split('-');
+        day = new Date(day[2], day[1] - 1, day[0]);
 
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                var fileType = input.files[0]['type'];
+        $('.k-input').data("kendoDatePicker").value(day);
+    };
 
-                if (fileType !== 'image/jpeg'
-                        && fileType !== 'image/jpg'
-                        && fileType !== 'image/gif'
-                        && fileType !== 'image/png') {
-                    return false;
-                }
-
-                reader.onload = function (e) {
-                    $('.wl-icon-preview').attr('src', e.target.result);
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        $("#WalletIcon").change(function () {
-            readURL(this);
+    var processSortBy = function () {
+        $('#sortBy').change(function () {
+            var url = $('#myNavbar').attr('data-url');
+            window.location.href = url + '/transactions/listTransaction/' + $(this).val();
         });
     };
 
     return{
         init: function () {
-            previewIcon();
+            processCreateTime();
+            processSortBy();
         }
     };
 }();

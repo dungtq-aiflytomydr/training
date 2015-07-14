@@ -1,4 +1,6 @@
 <?php
+echo $this->Html->script('Transactions/processTransaction');
+
 //format category for input select option category
 $catSelect = array();
 
@@ -40,6 +42,13 @@ foreach ($listCategory as $key => $category) {
         'required' => false,
     ));
 
+    echo $this->Form->input('create_time', array(
+        'type'     => 'text',
+        'label'    => 'Time',
+        'class'    => 'form-control',
+        'required' => false,
+    ));
+
     echo $this->Form->end(array(
         'label' => 'Save',
         'div'   => array(
@@ -49,3 +58,8 @@ foreach ($listCategory as $key => $category) {
     ));
     ?>
 </div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        Transactions.init();
+    });
+</script>

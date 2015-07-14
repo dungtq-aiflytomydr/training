@@ -14,7 +14,6 @@
         echo $this->fetch('meta');
         echo $this->fetch('css');
         echo $this->fetch('script');
-
         ?>
         <link href="http://cdn.kendostatic.com/2015.2.624/styles/kendo.material.min.css" rel="stylesheet" />
         <link href="http://cdn.kendostatic.com/2015.2.624/styles/kendo.common-material.min.css" rel="stylesheet" />
@@ -67,7 +66,7 @@
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transaction <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/add' ?>">New Transaction</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listTransaction' ?>">List Transaction</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listTransaction/sort_by_date' ?>">List Transaction</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="#">Trends</a></li>

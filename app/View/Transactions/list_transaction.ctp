@@ -1,63 +1,37 @@
 <?php
+echo $this->Html->script('Transactions/processTransaction');
+
 if (!empty($listTransaction)):
     ?>
-    <div class="table-responsive">
-        <h3 class="align-center">List transaction</h3>
-        <table class="table">
-            <thead><tr>
-                    <th>Icon</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-                    <th>Expense Type</th>
-                    <th>Note</th>
-                    <th colspan="3">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($listTransaction as $transaction): ?>
-                    <tr>
-                        <td><img class="img-26px" src="<?php echo $transaction['Transaction']['category_id']['icon']; ?>" /></td>
-                        <td><?php echo $transaction['Transaction']['category_id']['name']; ?></td>
-                        <td><?php echo $transaction['Transaction']['amount']; ?></td>
-                        <td><?php
-                            if ($transaction['Transaction']['category_id']['expense_type'] == 'in') {
-                                echo 'Income';
-                            } else {
-                                echo 'Expense';
-                            }
-                            ?></td>
-                        <td><?php
-                            if (!empty($transaction['Transaction']['note'])):
-                                echo $transaction['Transaction']['note'];
-                            else:
-                                echo 'None';
-                            endif;
-                            ?></td>
-                        <td><?php
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'transactions',
-                                'action'     => 'edit',
-                                $transaction['Transaction']['id'],
-                            ));
-                            ?></td>
-                        <td><?php
-                            echo $this->Html->link('Delete', array(
-                                'controller' => 'transactions',
-                                'action'     => 'delete',
-                                $transaction['Transaction']['id'],
-                            ));
-                            ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <h3 class="align-center">List transaction</h3>
+    <div class="right">
+        <h3 style="text-align: right; display: inline-block">Sort by: </h3>
+        <select id="sortBy">
+            <option value="sort_by_date" <?php
+            if (strpos(Router::url(), 'sort_by_date') !== false) : echo 'selected';
+            endif;
+            ?>>Date</option>
+            <option value="sort_by_category" <?php
+            if (strpos(Router::url(), 'sort_by_category') !== false) : echo 'selected';
+            endif;
+            ?>>Category</option>
+        </select>
     </div>
+    <?php
+    if (strpos(Router::url(), 'sort_by_date') !== false) :
+        require 'sort_by_date.ctp';
+    elseif (strpos(Router::url(), 'sort_by_category') !== false) :
+        require 'sort_by_category.ctp';
+    endif;
+    ?>
+
     <h3 class="align-center"><?php
         echo $this->Html->link('Add new transaction', array(
             'controller' => 'transactions',
             'action'     => 'add',
         ));
         ?></h3>
+    <!--statistical transactions-->
     <div class="table-responsive popupLogin">
         <h3>Statistical</h3>
         <hr/>
@@ -94,3 +68,9 @@ else:
         'action'     => 'add',
     ));
 endif;
+?>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        Transactions.init();
+    });
+</script>

@@ -40,9 +40,10 @@ footer{
     width: 100%;
     height: 30px;
     line-height: 30px;
+    background-color: #fff;
 }
 
-.error-message{
+.error-message, .clr-red{
     color: red;
 }
 
@@ -106,5 +107,13 @@ img.wl-icon-preview{
 }
 
 .align-right{
+    text-align: right;
+}
+
+.right{
+    float: right;
+    width: 100%;
+    margin: 0 auto;
+    margin-bottom: 3%;
     text-align: right;
 }

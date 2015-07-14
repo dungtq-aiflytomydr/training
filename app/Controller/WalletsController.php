@@ -216,6 +216,7 @@ class WalletsController extends AppController
             $this->redirect(array(
                 'controller' => 'transactions',
                 'action'     => 'listTransaction',
+                'sort_by_date'
             ));
         }
         // this code is used for function without view
