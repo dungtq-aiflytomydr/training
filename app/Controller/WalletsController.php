@@ -169,6 +169,11 @@ class WalletsController extends AppController
                         'Wallet.id' => $id
                     ))) {
 
+                //get wallet info => update session Auth.User.current_wallet
+                $walletUpdated = $this->Wallet->findById($id);
+                //update session
+                $this->Session->write('Auth.User.current_wallet', $walletUpdated['Wallet']);
+
                 $this->Session->setFlash("Update Wallet's information complete.");
                 $this->redirect(array(
                     'controller' => 'wallets',

@@ -4,14 +4,15 @@
         ?>
         <h3 class="clr-red"><?php
             if (date('d-m-Y', $listChild['create_time']) == date('d-m-Y', time())):
-                echo 'Today';
+                echo "Today (" . date('d-m-Y', $listChild['create_time']) . ")";
             else:
                 echo date('d-m-Y', $listChild['create_time']);
             endif;
             ?></h3>
         <div class="table-responsive">
             <table class="table">
-                <thead><tr>
+                <thead>
+                    <tr>
                         <th>Icon</th>
                         <th>Category</th>
                         <th>Amount</th>

@@ -5,7 +5,8 @@
         <h3 class="clr-red"><img class="img-26px" src="<?php echo $listChild['category']['icon']; ?>"/> <?php echo $listChild['category']['name']; ?></h3>
         <div class="table-responsive">
             <table class="table">
-                <thead><tr>
+                <thead>
+                    <tr>
                         <th>Date</th>
                         <th>Amount</th>
                         <th>Expense Type</th>

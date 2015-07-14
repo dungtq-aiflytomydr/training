@@ -39,15 +39,15 @@ if (!empty($listTransaction)):
             <tbody>
                 <tr>
                     <td>Income</td>
-                    <td><?php echo $otherTransaction['income']; ?></td>
+                    <td><?php echo $otherTransaction['income'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
                 </tr>
                 <tr>
                     <td>Expense</td>
-                    <td><?php echo $otherTransaction['expense']; ?></td>
+                    <td><?php echo $otherTransaction['expense'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
                 </tr>
                 <tr>
                     <td>Balance</td>
-                    <td><?php echo $otherTransaction['balance']; ?></td>
+                    <td><?php echo $otherTransaction['balance'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -55,7 +55,7 @@ if (!empty($listTransaction)):
                 </tr>
                 <tr>
                     <td>Total</td>
-                    <td><?php echo $otherTransaction['total']; ?></td>
+                    <td><?php echo $otherTransaction['total'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
                 </tr>
             </tbody>
         </table>

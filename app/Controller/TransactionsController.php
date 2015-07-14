@@ -3,7 +3,7 @@
 class TransactionsController extends AppController
 {
 
-    public $uses = array('Transaction', 'Category');
+    public $uses = array('Transaction', 'Category', 'Unit');
 
     /**
      * params for get information from transaction like: total income, total expense
@@ -114,6 +114,15 @@ class TransactionsController extends AppController
             $listTransaction = $this->showListTransactionByCategory($listTransaction);
         }
 
+        $this->Category->bindModel(array(
+            'hasOne' => array(
+                'Unit' => array(
+                    'className'  => 'Unit',
+                    'foreignKey' => 'id',
+                )
+            ),
+        ));
+
         //process other information of transaction like: total income, total expense,...
         $otherTransaction = array(
             'income'  => $this->convertMoney($this->_totalIncome),
@@ -122,6 +131,11 @@ class TransactionsController extends AppController
             'total'   => $this->convertMoney(
                     AuthComponent::user('current_wallet')['balance'] + $this->_totalIncome - $this->_totalExpense
             ),
+            'unit'    => $this->Unit->find('first', array(
+                'conditions' => array(
+                    'Unit.id' => AuthComponent::user('current_wallet')['unit_id'],
+                ),
+            ))['Unit'],
         );
 
         //set params for view
