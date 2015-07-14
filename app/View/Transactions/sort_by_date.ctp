@@ -12,7 +12,6 @@
         <div class="table-responsive">
             <table class="table">
                 <thead><tr>
-                        <th>Id</th>
                         <th>Icon</th>
                         <th>Category</th>
                         <th>Amount</th>

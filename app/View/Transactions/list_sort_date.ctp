@@ -1,5 +1,4 @@
 <tr>
-    <td><?php echo $transaction['Transaction']['id']; ?></td>
     <td><img class="img-26px" src="<?php echo $transaction['Transaction']['category_id']['icon']; ?>" /></td>
     <td><?php echo $transaction['Transaction']['category_id']['name']; ?></td>
     <td><?php echo $transaction['Transaction']['amount']; ?></td>
