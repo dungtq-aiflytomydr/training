@@ -53,11 +53,12 @@ class User extends AppModel
         'avatar'     => array(
             'fileType' => array(
                 'rule'    => array(
-                    'extension' => array('jpg', 'png', 'gif', 'jpeg'),
+                    'extension',
+                    array('gif', 'jpeg', 'png', 'jpg')
                 ),
-                'message' => 'Please supply a valid image (.gif, .jpeg, .png, .jpg).'
+                'message' => "Please supply a valid image('.gif', '.jpeg', '.png', '.jpg')."
             ),
-            'size'     => array(
+            'fileSize' => array(
                 'rule'    => array('fileSize', '<=', '1MB'),
                 'message' => 'Image must be less than 1MB'
             ),
@@ -107,6 +108,20 @@ class User extends AppModel
                     $this->data[$this->alias]['password']
             );
         }
+        return true;
+    }
+
+    /**
+     * if user not setup avatar => unset property avatar
+     * 
+     * @return boolean
+     */
+    public function beforeValidate($options = array())
+    {
+        if (empty($this->data[$this->alias]['avatar']['size'])) {
+            unset($this->validate['avatar']);
+        }
+
         return true;
     }
 

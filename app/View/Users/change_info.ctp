@@ -19,10 +19,11 @@ $userAva = AuthComponent::user('avatar');
         'required' => false,
     ));
     echo $this->Form->input('avatar', array(
-        'type'    => 'file',
-        'label'   => 'Avatar',
-        'class'   => 'form-control',
-        'between' => "<div class='ava-preview form-group'><img class='u-ava-preview' src='" . $userAva . "'/></div>"
+        'type'     => 'file',
+        'label'    => 'Avatar',
+        'class'    => 'form-control',
+        'between'  => "<div class='ava-preview form-group'><img class='u-ava-preview' src='" . $userAva . "'/></div>",
+        'required' => false,
     ));
     echo $this->Form->input('address', array(
         'label'   => 'Address',

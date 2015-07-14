@@ -106,9 +106,10 @@ class UsersController extends AppController
                             'User.address' => '"' . $this->request->data['User']['address'] . '"'), array(
                             'User.id' => AuthComponent::user('id')
                         ))) {
-
                     //update success => update auth session
+                    $walletInfo = $this->Auth->user('current_wallet');
                     $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
+                    $this->Session->write('Auth.User.current_wallet', $walletInfo);
                     $this->Session->setFlash("Update profile complete.");
                     return $this->redirect(Router::url());
                 }

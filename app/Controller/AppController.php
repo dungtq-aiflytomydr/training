@@ -48,7 +48,7 @@ class AppController extends Controller
                 'controller' => 'users',
                 'action'     => 'login'
             ),
-            'authError'      => 'Did you really think you are allowed to see that?',
+            'authError'      => '',
             'authenticate'   => array(
                 'Form' => array(
                     'passwordHasher' => array(
