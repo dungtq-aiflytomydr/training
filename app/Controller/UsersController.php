@@ -264,7 +264,7 @@ class UsersController extends AppController
      * 
      * @return type
      */
-    public function forgotPw()
+    public function forgotPwd()
     {
         $this->set('title_for_layout', 'Forgot password');
 
@@ -293,7 +293,7 @@ class UsersController extends AppController
 
                 $emailConfig = array(
                     'subject' => 'Forgot password - Training.dev',
-                    'view'    => 'forgot_pw',
+                    'view'    => 'forgot_pwd',
                 );
 
                 if ($this->sendEmail($user['User'], $emailConfig)) {
@@ -352,7 +352,7 @@ class UsersController extends AppController
     {
         parent::beforeFilter();
         // Allow users to register and logout.
-        $this->Auth->allow('register', 'activate', 'forgotPw', 'resetPw');
+        $this->Auth->allow('register', 'activate', 'forgotPwd', 'resetPwd');
     }
 
 }
