@@ -86,18 +86,6 @@ class User extends AppModel
     );
 
     /**
-     * relationship model
-     * 
-     * @var array
-     */
-    public $hasMany = array(
-        'Wallet' => array(
-            'className'  => 'Wallet',
-            'foreignKey' => 'id',
-        )
-    );
-
-    /**
      * Hash password before saving
      */
     public function beforeSave($options = array())
@@ -152,6 +140,42 @@ class User extends AppModel
     }
 
     /**
+     * Get user by any conditions
+     * 
+     * Ex: $model->getUser('all', array('id' => 1, 'age' => 22));
+     * 
+     * @param string $findType select type get data(all | first | count | neighbors | list | threaded)
+     * @param array $conditions array conditions
+     * @return mixed
+     */
+    public function getUser($findType, $conditions)
+    {
+        if (empty($conditions)) {
+            return false;
+        }
+
+        return $this->find($findType, array(
+                    'conditions' => $conditions,
+        ));
+    }
+
+    /**
+     * update user info by id
+     * 
+     * @param int id User id
+     * @param array $data User's data
+     * @return boolean
+     */
+    public function updateUserInfoById($id, $data)
+    {
+        $this->id = $id;
+        if ($this->save($data)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * compare current password with user's password -> use for change password
      * 
      * @return boolean
@@ -170,6 +194,16 @@ class User extends AppModel
 
         // Compare above hash with user's password
         return $pwdHash == $user['User']['password'];
+    }
+
+    /**
+     * check password equal confirm password 
+     * 
+     * @return boolean
+     */
+    public function matchPassword()
+    {
+        return $this->data[$this->alias]['password'] == $this->data[$this->alias]['confirm_pw'];
     }
 
 }

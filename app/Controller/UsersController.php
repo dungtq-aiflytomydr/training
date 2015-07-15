@@ -57,14 +57,8 @@ class UsersController extends AppController
         $this->User->set($this->request->data);
         if ($this->User->validates()) {
 
-            $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
-            $pwdUser        = $passwordHasher->hash($this->request->data['User']['password']);
-
-            if ($this->User->updateAll(array(
-                        'User.password' => '"' . $pwdUser . '"'
-                            ), array(
-                        'User.id' => AuthComponent::user('id'))
-                    )) {
+            $this->User->id = AuthComponent::user('id');
+            if ($this->User->save($this->request->data)) {
 
                 $this->Session->setFlash("Change password complete.");
                 return $this->redirect('/');
@@ -89,16 +83,13 @@ class UsersController extends AppController
         $this->User->set($this->request->data);
         if ($this->User->validates()) {
 
-            $rootFolder = "uploads/"; //folder contains image file
-
             $userAvatar = AuthComponent::user('avatar');
             if (!empty($this->request->data['User']['avatar']['size'])) {
-                $userAvatar = $this->processUploadImage($rootFolder, $this->request->data['User']['avatar']);
+                $userAvatar = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['User']['avatar']);
             }
             $this->request->data['User']['avatar'] = $userAvatar;
 
-            $this->User->id = AuthComponent::user('id');
-            if ($this->User->save($this->request->data)) {
+            if ($this->User->updateUserInfoById(AuthComponent::user('id'), $this->request->data)) {
 
                 //if update data success => update auth session
                 $walletInfo = $this->Auth->user('current_wallet');
@@ -141,12 +132,19 @@ class UsersController extends AppController
             return;
         }
 
+        $this->User->bindModel(array(
+            'hasMany' => array(
+                'Wallet' => array(
+                    'className' => 'Wallet',
+                ),
+            ),
+        ));
+
         if ($this->Auth->login()) {
             $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
             $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
             return $this->redirect($this->Auth->redirectUrl());
         }
-
         $this->Session->setFlash('Email or password incorrect! Please try again.', 'default', array(), 'auth');
     }
 
@@ -204,39 +202,25 @@ class UsersController extends AppController
      */
     public function activate($id, $activeCode)
     {
-        //check if the active_code is valid
-        if (!empty($id) || !empty($activeCode)) {
-            $result = $this->User->find('first', array(
-                'conditions' => array(
-                    'id'          => $id,
-                    'active_code' => $activeCode
-                )
-            ));
+        $userObj = $this->User->getUser('first', array(
+            'id'          => $id,
+            'active_code' => $activeCode,
+        ));
 
-            if (!empty($result)) {
-                if (!$result['User']['is_active']) {
-
-                    $this->User->updateAll(array(
-                        'User.is_active' => true), array(
-                        'User.id' => $id
-                    ));
-
-                    $this->Session->setFlash('Your registration is complete! You can login to system.');
-                } else {
-                    $this->Session->setFlash('Your account was actived! Please check again.');
-                }
-
-                return $this->redirect(array(
-                            'controller' => 'users',
-                            'action'     => 'login',
-                ));
-            }
+        if (empty($userObj)) {
+            throw NotFoundException('Could not find that user.');
         }
 
-        $this->Session->setFlash('Active code corrupted! Please re-register.');
+        if (!$userObj['User']['is_active']) {
+            $this->User->updateUserInfoById($id, array('is_active' => true));
+            $this->Session->setFlash('Your registration is complete! You can login to system.');
+        } else {
+            $this->Session->setFlash('Your account was actived! Please check again.');
+        }
+
         return $this->redirect(array(
                     'controller' => 'users',
-                    'action'     => 'register',
+                    'action'     => 'login',
         ));
     }
 
@@ -271,39 +255,33 @@ class UsersController extends AppController
         if ($this->request->is('get')) {
             return;
         }
-
         $userEmail = $this->request->data['User']['email'];
 
-        $forgot_pw_code = uniqid();
-
         $this->User->set($this->request->data);
-        $this->User->validator()->remove('email', 'unique');
 
+        unset($this->User->validate['email']['unique']);
         if ($this->User->validates()) {
-            if ($this->User->updateAll(array(
-                        'User.forgot_pw_code' => '"' . $forgot_pw_code . '"'), array(
-                        'User.email' => $userEmail,
-                    ))) {
+            $userObj    = $this->User->getUser('first', array(
+                'email' => $userEmail,
+            ));
+            $dataUpdate = array(
+                'forgot_pw_code' => uniqid(),
+            );
 
-                //get user's information by email
-                $user = $this->User->find('first', array(
-                    'conditions' => array(
-                        'email' => $userEmail,
-                )));
-
+            if ($this->User->updateUserInfoById($userObj['User']['id'], $dataUpdate)) {
                 $emailConfig = array(
                     'subject' => 'Forgot password - Training.dev',
                     'view'    => 'forgot_pwd',
                 );
 
-                if ($this->sendEmail($user['User'], $emailConfig)) {
+                $userObj = $this->User->getById($userObj['User']['id']);
+
+                if ($this->sendEmail($userObj['User'], $emailConfig)) {
                     return $this->Session->setFlash('Please check your email for new password!');
                 }
                 return $this->Session->setFlash('Have error! We cheking it!');
             }
         }
-
-        $this->Session->setFlash('Get password failed. Please try again!');
     }
 
     /**
@@ -313,27 +291,25 @@ class UsersController extends AppController
      * @param string $forgot_pw_code Forgot_code to confirm users' email
      * @return type
      */
-    public function resetPwd($id = null, $forgot_pw_code = null)
+    public function resetPwd($id, $forgot_pw_code)
     {
-        if (empty($id) || empty($forgot_pw_code)) {
-            $this->redirect(array(
-                'controller' => 'users',
-                'action'     => 'login'
-            ));
+        $userObj = $this->User->getUser('first', array(
+            'id'             => $id,
+            'forgot_pw_code' => $forgot_pw_code,
+        ));
+        if (empty($userObj)) {
+            throw NotFoundException('Could not find that user.');
         }
 
         if ($this->request->is('post')) {
+
             $this->User->set($this->request->data);
-
-            $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
-            $pwdUser        = $passwordHasher->hash($this->request->data['User']['password']);
-
             if ($this->User->validates()) {
-                $this->User->updateAll(array(
-                    'User.password' => '"' . $pwdUser . '"',
-                        ), array(
-                    'User.id' => $id
-                ));
+                $dataUpdate = array(
+                    'password' => $this->request->data['User']['password'],
+                );
+
+                $this->User->updateUserInfoById($id, $dataUpdate);
 
                 $this->Session->setFlash("Change password was completed.");
                 return $this->redirect(array(
@@ -351,7 +327,6 @@ class UsersController extends AppController
     public function beforeFilter()
     {
         parent::beforeFilter();
-        // Allow users to register and logout.
         $this->Auth->allow('register', 'activate', 'forgotPwd', 'resetPwd');
     }
 

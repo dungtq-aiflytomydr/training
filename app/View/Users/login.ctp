@@ -1,16 +1,40 @@
 <div class="popupLogin">
-    <?php echo $this->Session->flash('auth'); ?>
+    <?php
+    echo $this->Session->flash('auth');
 
-    <form id="frmRegister" action="/users/login" method="post">
-        <div class="form-group">
-            <label for="exampleInputEmail">Email</label>
-            <input type="email" id="u-email" name="data[User][email]" class="form-control" placeholder="Email">
-        </div>
-        <div class="form-group">
-            <label for="exampleInputPassword">Password</label>
-            <input type="password" id="u-pw" name="data[User][password]" class="form-control" placeholder="Password">
-        </div>
-        <button type="submit" id="btn-login" class="btn btn-default">Login</button>
-        <a href="/users/forgotPwd">Forgot password?</a>
-    </form>
+    echo $this->Form->create('User', array(
+        'inputDefaults' => array(
+            'div' => array(
+                'class' => 'form-group',
+            ),
+        ),
+    ));
+
+    echo $this->Form->input('email', array(
+        'type'        => 'text',
+        'label'       => 'Your email',
+        'class'       => 'form-control',
+        'required'    => false,
+        'placeholder' => 'Your email',
+    ));
+
+    echo $this->Form->input('password', array(
+        'label'       => 'Password',
+        'class'       => 'form-control',
+        'required'    => false,
+        'placeholder' => 'Password',
+    ));
+
+    echo $this->Form->end(array(
+        'label' => 'Login',
+        'div'   => array(
+            'class' => 'form-group',
+        ),
+        'class' => 'btn btn-default',
+        'after' => $this->Html->link(' Forgot password?', array(
+            'controller' => 'users',
+            'action'     => 'forgotPwd',
+        )),
+    ));
+    ?>
 </div>
