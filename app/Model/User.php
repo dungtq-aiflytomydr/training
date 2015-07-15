@@ -143,7 +143,7 @@ class User extends AppModel
     /**
      * Get user by Id
      * 
-     * @param itn $id User Id
+     * @param int $id User Id
      * @return array
      */
     public function getById($id)
@@ -170,14 +170,6 @@ class User extends AppModel
 
         // Compare above hash with user's password
         return $pwdHash == $user['User']['password'];
-    }
-
-    /**
-     * compare new two string password
-     */
-    public function matchPassword()
-    {
-        return $this->data[$this->alias]['password'] === $this->data[$this->alias]['confirm_pw'];
     }
 
 }

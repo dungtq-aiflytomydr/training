@@ -12,8 +12,7 @@ var Users = function () {
                         && fileType !== 'image/jpg'
                         && fileType !== 'image/gif'
                         && fileType !== 'image/png') {
-                    $('.u-ava-preview').attr('src', '/img/ava_default.jpeg');
-                    alert('Image format incorrect.');
+
                     return false;
                 }
 

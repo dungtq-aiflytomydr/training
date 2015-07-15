@@ -5,7 +5,7 @@
 echo $this->Html->link(
         'Confirm, i had a new password', array(
     'controller' => 'users',
-    'action'     => 'resetPw',
+    'action'     => 'resetPwd',
     $id,
     $forgot_pw_code,
     'full_base'  => true

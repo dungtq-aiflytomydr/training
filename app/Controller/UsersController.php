@@ -44,86 +44,80 @@ class UsersController extends AppController
     }
 
     /**
-     * display form change password or change info when users redirect
+     * change user's password
      * 
-     * @param string $option Change password or infomation
+     * @return type
      */
-    public function setting($option = null)
+    public function changePwd()
     {
-        if ($option != 'password' && $option != 'info') {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index'));
-        }
+        $this->set('title_for_layout', "Change password");
 
-        if (!$this->request->is('post')) {
-            if ($option == 'password') {
-                $this->set('title_for_layout', "Change password");
-            } elseif ($option == 'info') {
-                $this->set('title_for_layout', "Change profile");
-            }
+        if ($this->request->is('get')) {
             return;
         }
 
-        //if user select change password
-        if ($option == 'password') {
+        $this->User->set($this->request->data);
+        if ($this->User->validates()) {
 
-            $this->User->set($this->request->data);
+            $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
+            $pwdUser        = $passwordHasher->hash($this->request->data['User']['password']);
 
-            if ($this->User->validates()) {
+            if ($this->User->updateAll(array(
+                        'User.password' => '"' . $pwdUser . '"'
+                            ), array(
+                        'User.id' => AuthComponent::user('id'))
+                    )) {
 
-                $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
-                $pwdUser        = $passwordHasher->hash($this->request->data['User']['password']);
-
-                if ($this->User->updateAll(array(
-                            'User.password' => '"' . $pwdUser . '"'
-                                ), array(
-                            'User.id' => AuthComponent::user('id'))
-                        )) {
-                    $this->Session->setFlash("Change password complete.");
-                    return $this->redirect(Router::url());
-                }
-                $this->Session->setFlash("Have error! Please try again.");
-                return;
+                $this->Session->setFlash("Change password complete.");
+                return $this->redirect('/');
             }
+            $this->Session->setFlash("Have error! Please try again.");
+        }
+    }
+
+    /**
+     * edit user's information
+     * 
+     * @return type
+     */
+    public function edit()
+    {
+        $this->set('title_for_layout', "Change profile");
+
+        if ($this->request->is('get')) {
             return;
-        } elseif ($option == 'info') {
+        }
 
-            $this->User->set($this->request->data);
+        $this->User->set($this->request->data);
+        if ($this->User->validates()) {
 
-            if ($this->User->validates()) {
-                //if user select change info
-                $rootFolder = "uploads/"; //folder contains image file
-                //process upload avatar
-                $userAvatar = AuthComponent::user('avatar');
-                if (!empty($this->request->data['User']['avatar']['size'])) {
-                    $userAvatar = $this->processUploadImage($rootFolder, $this->request->data['User']['avatar']);
-                }
+            $rootFolder = "uploads/"; //folder contains image file
 
-                if ($this->User->updateAll(array(
-                            'User.name'    => '"' . $this->request->data['User']['name'] . '"',
-                            'User.avatar'  => '"' . $userAvatar . '"',
-                            'User.address' => '"' . $this->request->data['User']['address'] . '"'), array(
-                            'User.id' => AuthComponent::user('id')
-                        ))) {
-                    //update success => update auth session
-                    $walletInfo = $this->Auth->user('current_wallet');
-                    $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
-                    $this->Session->write('Auth.User.current_wallet', $walletInfo);
-                    $this->Session->setFlash("Update profile complete.");
-                    return $this->redirect(Router::url());
-                }
-                $this->Session->setFlash("Have error. Please try again.");
-                return;
+            $userAvatar = AuthComponent::user('avatar');
+            if (!empty($this->request->data['User']['avatar']['size'])) {
+                $userAvatar = $this->processUploadImage($rootFolder, $this->request->data['User']['avatar']);
             }
-            return;
+            $this->request->data['User']['avatar'] = $userAvatar;
+
+            $this->User->id = AuthComponent::user('id');
+            if ($this->User->save($this->request->data)) {
+
+                //if update data success => update auth session
+                $walletInfo = $this->Auth->user('current_wallet');
+                $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
+                $this->Session->write('Auth.User.current_wallet', $walletInfo);
+
+                $this->Session->setFlash("Update profile complete.");
+                return $this->redirect('/');
+            }
+            $this->Session->setFlash("Have error. Please try again.");
         }
     }
 
     /**
      * process image file upload
      * 
-     * @param type $rootFolder Folder contain file images
+     * @param string $rootFolder Folder contain file images
      * @param type $fileObj File image upload
      * @return string
      */
@@ -133,8 +127,7 @@ class UsersController extends AppController
         $target_file = $target_dir . basename($fileObj["name"]);
 
         if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
-            $this->Session->setFlash("Have error. Please try again.");
-            return;
+            return $this->Session->setFlash("Have error. Please try again.");
         }
         return '/' . $rootFolder . $fileObj['name'];
     }
@@ -156,9 +149,7 @@ class UsersController extends AppController
             return $this->redirect($this->Auth->redirectUrl());
         }
 
-        //if user login failed
         $this->Session->setFlash('Email or password incorrect! Please try again.', 'default', array(), 'auth');
-        return;
     }
 
     /**
@@ -190,17 +181,21 @@ class UsersController extends AppController
             return;
         }
 
-        // Send activation email
+        //config email
         $emailConfig = array(
             'subject' => 'Please active your account.',
             'view'    => 'activate',
         );
-        $this->_sendActivationEmail($createdUser['User'], $emailConfig);
-        $this->Session->setFlash('Register completed! Please check your email for validation link!');
-        $this->redirect(array(
-            'controller' => 'users',
-            'action'     => 'login',
-        ));
+
+        if ($this->sendEmail($createdUser['User'], $emailConfig)) {
+            $this->Session->setFlash('Register completed! Please check your email for validation link!');
+            return $this->redirect(array(
+                        'controller' => 'users',
+                        'action'     => 'login',
+            ));
+        }
+
+        $this->Session->setFlash("Have error! We are checking it.");
     }
 
     /**
@@ -222,7 +217,7 @@ class UsersController extends AppController
 
             if (!empty($result)) {
                 if (!$result['User']['is_active']) {
-                    //if not active => active
+
                     $this->User->updateAll(array(
                         'User.is_active' => true), array(
                         'User.id' => $id
@@ -233,17 +228,17 @@ class UsersController extends AppController
                     $this->Session->setFlash('Your account was actived! Please check again.');
                 }
 
-                $this->redirect(array(
-                    'controller' => 'users',
-                    'action'     => 'login',
+                return $this->redirect(array(
+                            'controller' => 'users',
+                            'action'     => 'login',
                 ));
             }
         }
 
         $this->Session->setFlash('Active code corrupted! Please re-register.');
-        $this->redirect(array(
-            'controller' => 'users',
-            'action'     => 'register',
+        return $this->redirect(array(
+                    'controller' => 'users',
+                    'action'     => 'register',
         ));
     }
 
@@ -254,16 +249,15 @@ class UsersController extends AppController
      * @param array $emailConfig - email information: subject, view (layout for display email content)
      * @return type mixed
      */
-    private function _sendActivationEmail($user, $emailConfig)
+    private function sendEmail($user, $emailConfig)
     {
         $Email = new CakeEmail();
-        $Email->config('default');
-        $Email->emailFormat('html');
-        $Email->from(array('timetolove9x36@gmail.com' => 'Administrator Training.dev'));
-        $Email->to($user['email']);
-        $Email->subject($emailConfig['subject']);
-        $Email->template($emailConfig['view'], 'default');
-        $Email->viewVars($user);
+        $Email->config('default')
+                ->from(array('timetolove9x36@gmail.com' => 'Administrator Training.dev'))
+                ->to($user['email'])
+                ->subject($emailConfig['subject'])
+                ->template($emailConfig['view'], 'default')
+                ->viewVars($user);
         return $Email->send();
     }
 
@@ -282,7 +276,6 @@ class UsersController extends AppController
 
         $userEmail = $this->request->data['User']['email'];
 
-        //random password => create new password for user account
         $forgot_pw_code = uniqid();
 
         $this->User->set($this->request->data);
@@ -294,7 +287,7 @@ class UsersController extends AppController
                         'User.email' => $userEmail,
                     ))) {
 
-                //get user information by email
+                //get user's information by email
                 $user = $this->User->find('first', array(
                     'conditions' => array(
                         'email' => $userEmail,
@@ -305,18 +298,14 @@ class UsersController extends AppController
                     'view'    => 'forgot_pw',
                 );
 
-                if ($this->_sendActivationEmail($user['User'], $emailConfig)) {
-                    $this->Session->setFlash('Please check your email for new password!');
-                    return;
+                if ($this->sendEmail($user['User'], $emailConfig)) {
+                    return $this->Session->setFlash('Please check your email for new password!');
                 }
-
-                $this->Session->setFlash('Have error! We cheking it!');
-                return;
+                return $this->Session->setFlash('Have error! We cheking it!');
             }
         }
 
         $this->Session->setFlash('Get password failed. Please try again!');
-        return;
     }
 
     /**
@@ -326,7 +315,7 @@ class UsersController extends AppController
      * @param string $forgot_pw_code Forgot_code to confirm users' email
      * @return type
      */
-    public function resetPw($id = null, $forgot_pw_code = null)
+    public function resetPwd($id = null, $forgot_pw_code = null)
     {
         if (empty($id) || empty($forgot_pw_code)) {
             $this->redirect(array(
@@ -338,7 +327,6 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $this->User->set($this->request->data);
 
-            //hash password
             $passwordHasher = new SimplePasswordHasher(array('hashType' => 'sha256'));
             $pwdUser        = $passwordHasher->hash($this->request->data['User']['password']);
 
@@ -350,12 +338,12 @@ class UsersController extends AppController
                 ));
 
                 $this->Session->setFlash("Change password was completed.");
-                $this->redirect(array(
-                    'controller' => 'users',
-                    'action'     => 'login'
+                return $this->redirect(array(
+                            'controller' => 'users',
+                            'action'     => 'login'
                 ));
             }
-            return;
+            $this->Session->setFlash("Have error! Please try again.");
         }
     }
 

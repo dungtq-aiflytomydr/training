@@ -80,8 +80,8 @@
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="u-ava" src="<?php echo AuthComponent::user('avatar'); ?>" />
                                         <?php echo 'Hello, ' . AuthComponent::user('name'); ?> <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/users/setting/password'; ?>"><span class="glyphicon glyphicon-repeat"></span> Change password</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/users/setting/info'; ?>"><span class="glyphicon glyphicon-user"></span> Change my profile</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/users/changePwd'; ?>"><span class="glyphicon glyphicon-repeat"></span> Change password</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/users/edit'; ?>"><span class="glyphicon glyphicon-user"></span> Change my profile</a></li>
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/users/logOut'; ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                                     </ul>
                                 </li>
