@@ -18,8 +18,6 @@ class WalletsController extends AppController
         'Form',
         'Html',
         'Session',
-        'Time',
-        'Text'
     );
 
     /**
@@ -49,23 +47,15 @@ class WalletsController extends AppController
         if ($this->request->data['Wallet']['icon']['size'] > 0) {
             $walletIcon = $this->processUploadImage('uploads/', $this->request->data['Wallet']['icon']);
         }
+        $this->request->data['Wallet']['icon'] = $walletIcon;
+
+        $this->request->data['Wallet']['is_setup'] = true;
+        $this->request->data['Wallet']['user_id']  = AuthComponent::user('id');
+
 
         $this->Wallet->set($this->request->data);
         if ($this->Wallet->validates()) {
-
-            //wallet's infomation want to save
-            $walletData = array(
-                'Wallet' => array(
-                    'name'     => $this->request->data['Wallet']['name'],
-                    'balance'  => $this->request->data['Wallet']['balance'],
-                    'is_setup' => true,
-                    'icon'     => $walletIcon,
-                    'unit_id'  => $this->request->data['Wallet']['unit_id'],
-                    'user_id'  => AuthComponent::user('id'),
-                )
-            );
-
-            if ($this->Wallet->save($walletData)) {
+            if ($this->Wallet->save($this->request->data)) {
 
                 $manyWallet = $this->Wallet->find('count', array(
                     'conditions' => array(

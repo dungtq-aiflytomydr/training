@@ -22,8 +22,6 @@ class UsersController extends AppController
         'Html',
         'Form',
         'Session',
-        'Time',
-        'Text'
     );
 
     /**
