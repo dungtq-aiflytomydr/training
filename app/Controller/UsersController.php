@@ -57,8 +57,10 @@ class UsersController extends AppController
         $this->User->set($this->request->data);
         if ($this->User->validates()) {
 
-            $this->User->id = AuthComponent::user('id');
-            if ($this->User->save($this->request->data)) {
+            $dataUpdate = array(
+                'password' => $this->request->data['User']['password'],
+            );
+            if ($this->User->updateUserInfoById(AuthComponent::user('id'), $dataUpdate)) {
 
                 $this->Session->setFlash("Change password complete.");
                 return $this->redirect('/');
