@@ -51,6 +51,17 @@ class Category extends AppModel
     }
 
     /**
+     * Create new category
+     * 
+     * @param array $data Category data
+     * @return mixed
+     */
+    public function createCategory($data)
+    {
+        return $this->save($data);
+    }
+
+    /**
      * get category information by id
      * 
      * @param int $id Category id

@@ -34,7 +34,7 @@ class UsersController extends AppController
     );
 
     /**
-     * when guess visited website -> redirect to this function
+     * when user was logged -> redirect to this function
      */
     public function index()
     {
@@ -50,7 +50,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Change password");
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -60,7 +60,9 @@ class UsersController extends AppController
             $dataUpdate = array(
                 'password' => $this->request->data['User']['password'],
             );
-            if ($this->User->updateUserInfoById(AuthComponent::user('id'), $dataUpdate)) {
+
+            $updateResult = $this->User->updateUserInfoById(AuthComponent::user('id'), $dataUpdate);
+            if ($updateResult) {
 
                 $this->Session->setFlash("Change password complete.");
                 return $this->redirect('/');
@@ -78,7 +80,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Change profile");
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -91,7 +93,8 @@ class UsersController extends AppController
             }
             $this->request->data['User']['avatar'] = $userAvatar;
 
-            if ($this->User->updateUserInfoById(AuthComponent::user('id'), $this->request->data)) {
+            $updateResult = $this->User->updateUserInfoById(AuthComponent::user('id'), $this->request->data);
+            if ($updateResult) {
 
                 //if update data success => update auth session
                 $walletInfo = $this->Auth->user('current_wallet');
@@ -130,7 +133,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Home");
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -167,7 +170,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', 'Register');
 
-        if (!$this->request->is('post')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -176,7 +179,7 @@ class UsersController extends AppController
         $createdUser                           = $this->User->createUser($this->request->data);
 
         if (empty($createdUser)) {
-            return;
+            return $this->Session->setFlash('Have error! Please try again.');
         }
 
         //config email
@@ -200,26 +203,24 @@ class UsersController extends AppController
      * Activate user after registration
      * 
      * @param int $id User id
-     * @param string $activeCode Active code
+     * @param string $token String token
      */
-    public function activate($id, $activeCode)
+    public function activate($id, $token)
     {
-        $userObj = $this->User->getUser('first', array(
-            'id'          => $id,
-            'active_code' => $activeCode,
-        ));
+        $userObj = $this->User->getByToken($id, $token);
 
         if (empty($userObj)) {
             throw NotFoundException('Could not find that user.');
         }
 
         if (!$userObj['User']['is_active']) {
-            $this->User->updateUserInfoById($id, array('is_active' => true));
-            $this->Session->setFlash('Your registration is complete! You can login to system.');
-        } else {
-            $this->Session->setFlash('Your account was actived! Please check again.');
+            $this->User->updateUserInfoById($id, array(
+                'is_active' => true,
+                'token'     => null,
+            ));
         }
 
+        $this->Session->setFlash('Your registration is complete! You can login to system.');
         return $this->redirect(array(
                     'controller' => 'users',
                     'action'     => 'login',
@@ -254,7 +255,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', 'Forgot password');
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
         $userEmail = $this->request->data['User']['email'];
@@ -263,14 +264,13 @@ class UsersController extends AppController
 
         unset($this->User->validate['email']['unique']);
         if ($this->User->validates()) {
-            $userObj    = $this->User->getUser('first', array(
-                'email' => $userEmail,
-            ));
+            $userObj    = $this->User->getByEmail($userEmail);
             $dataUpdate = array(
-                'forgot_pw_code' => uniqid(),
+                'token' => uniqid(),
             );
 
-            if ($this->User->updateUserInfoById($userObj['User']['id'], $dataUpdate)) {
+            $updateResult = $this->User->updateUserInfoById($userObj['User']['id'], $dataUpdate);
+            if ($updateResult) {
                 $emailConfig = array(
                     'subject' => 'Forgot password - Training.dev',
                     'view'    => 'forgot_pwd',
@@ -279,10 +279,10 @@ class UsersController extends AppController
                 $userObj = $this->User->getById($userObj['User']['id']);
 
                 if ($this->sendEmail($userObj['User'], $emailConfig)) {
-                    return $this->Session->setFlash('Please check your email for new password!');
+                    return $this->Session->setFlash('Please check your email for new password.');
                 }
-                return $this->Session->setFlash('Have error! We cheking it!');
             }
+            return $this->Session->setFlash('Have error! Please try again.');
         }
     }
 
@@ -290,15 +290,12 @@ class UsersController extends AppController
      * when user click to link from email forgot password
      * 
      * @param int $id User id
-     * @param string $forgot_pw_code Forgot_code to confirm users' email
+     * @param string $token String token
      * @return type
      */
-    public function resetPwd($id, $forgot_pw_code)
+    public function resetPwd($id, $token)
     {
-        $userObj = $this->User->getUser('first', array(
-            'id'             => $id,
-            'forgot_pw_code' => $forgot_pw_code,
-        ));
+        $userObj = $this->User->getByToken($id, $token);
         if (empty($userObj)) {
             throw NotFoundException('Could not find that user.');
         }
@@ -319,7 +316,6 @@ class UsersController extends AppController
                             'action'     => 'login'
                 ));
             }
-            $this->Session->setFlash("Have error! Please try again.");
         }
     }
 

@@ -121,8 +121,7 @@ class User extends AppModel
      */
     public function createUser($data)
     {
-        $token                       = uniqid();
-        $data['User']['active_code'] = $token;
+        $data['User']['token'] = uniqid();
 
         $this->create();
         return $this->save($data);
@@ -160,6 +159,37 @@ class User extends AppModel
     }
 
     /**
+     * Get user information by User id and token
+     * 
+     * @param int $id User id
+     * @param string $token String token
+     */
+    public function getByToken($id, $token)
+    {
+        return $this->find('first', array(
+                    'conditions' => array(
+                        'id'    => $id,
+                        'token' => $token,
+                    ),
+        ));
+    }
+
+    /**
+     * Get user information by email
+     * 
+     * @param String $email User email
+     * @return mixed
+     */
+    public function getByEmail($email)
+    {
+        return $this->find('first', array(
+                    'conditions' => array(
+                        'email' => $email,
+                    ),
+        ));
+    }
+
+    /**
      * update user info by id
      * 
      * @param int id User id
@@ -169,10 +199,7 @@ class User extends AppModel
     public function updateUserInfoById($id, $data)
     {
         $this->id = $id;
-        if ($this->save($data)) {
-            return true;
-        }
-        return false;
+        return $this->save($data);
     }
 
     /**

@@ -7,6 +7,6 @@ echo $this->Html->link(
     'controller' => 'users',
     'action'     => 'resetPwd',
     $id,
-    $forgot_pw_code,
+    $token,
     'full_base'  => true
 ));

@@ -45,35 +45,32 @@ class WalletsController extends AppController
         //process wallet's icon
         $walletIcon = '/img/wallet.png';
         if ($this->request->data['Wallet']['icon']['size'] > 0) {
-            $walletIcon = $this->processUploadImage('uploads/', $this->request->data['Wallet']['icon']);
+            $walletIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
         }
-        $this->request->data['Wallet']['icon'] = $walletIcon;
-
+        $this->request->data['Wallet']['icon']     = $walletIcon;
         $this->request->data['Wallet']['is_setup'] = true;
         $this->request->data['Wallet']['user_id']  = AuthComponent::user('id');
 
-
         $this->Wallet->set($this->request->data);
         if ($this->Wallet->validates()) {
-            if ($this->Wallet->save($this->request->data)) {
+            if ($this->Wallet->createWallet($this->request->data)) {
 
-                $manyWallet = $this->Wallet->find('count', array(
-                    'conditions' => array(
-                        'user_id' => AuthComponent::user('id'),
-                    ),
+                $manyWallet = $this->Wallet->getWallet('count', array(
+                    'user_id' => AuthComponent::user('id'),
                 ));
 
                 //check if user have not anything wallet => set default wallet
                 if ($manyWallet == 1) {
                     $currentWallet_id = $this->Wallet->getInsertID();
 
-                    $this->User->updateAll(array(
-                        'User.current_wallet' => $currentWallet_id), array(
-                        'User.id' => AuthComponent::user('id')
-                    ));
+                    $dataUpdate = array(
+                        'current_wallet' => $currentWallet_id,
+                    );
+
+                    $this->User->updateUserInfoById(AuthComponent::user('id'), $dataUpdate);
 
                     //update session for current_wallet Auth's property
-                    $currentWallet = $this->Wallet->findById($currentWallet_id);
+                    $currentWallet = $this->Wallet->getWalletById($currentWallet_id);
                     $this->Session->write('Auth.User.current_wallet', $currentWallet['Wallet']);
                 }
 
@@ -91,13 +88,12 @@ class WalletsController extends AppController
     {
         $this->set('title_for_layout', "List wallet");
 
-        //unbindmodel user
-        $this->Wallet->unbindModel(array('belongsTo' => array('User')));
+        $this->Wallet->unbindModel(array(
+            'belongsTo' => array('User'),
+        ));
 
-        $listWallet = $this->Wallet->find('all', array(
-            'conditions' => array(
-                'Wallet.user_id' => AuthComponent::user('id'),
-            )
+        $listWallet = $this->Wallet->getListWallet(array(
+            'user_id' => AuthComponent::user('id'),
         ));
 
         //convert wallet information
@@ -116,21 +112,14 @@ class WalletsController extends AppController
      */
     public function edit($id)
     {
-        if (empty($id)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',));
-        }
-
-        $walletObj = $this->Wallet->findById($id);
+        $walletObj = $this->Wallet->getWalletById($id);
         if (empty($walletObj)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',));
+            throw BadRequestException();
         }
 
-        //unbindmodel user
-        $this->Wallet->unbindModel(array('belongsTo' => array('User')));
+        $this->Wallet->unbindModel(array(
+            'belongsTo' => array('User'),
+        ));
 
         $this->set('title_for_layout', "Edit wallet");
         $this->set('unitObj', $this->Unit->find('all'));
@@ -146,14 +135,14 @@ class WalletsController extends AppController
             //process wallet's icon
             $walletIcon = $walletObj['Wallet']['icon'];
             if ($this->request->data['Wallet']['icon']['size'] > 0) {
-                $walletIcon = $this->processUploadImage('uploads/', $this->request->data['Wallet']['icon']);
+                $walletIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
             }
             $this->request->data['Wallet']['icon'] = $walletIcon;
 
-            $this->Wallet->id = $id;
-            if ($this->Wallet->save($this->request->data)) {
+            $updateResult = $this->Wallet->updateWalletById($id, $this->request->data);
+            if ($updateResult) {
 
-                $walletUpdated = $this->Wallet->findById($id);
+                $walletUpdated = $this->Wallet->getWalletById($id);
                 //update session
                 $this->Session->write('Auth.User.current_wallet', $walletUpdated['Wallet']);
 
@@ -163,7 +152,6 @@ class WalletsController extends AppController
                             'action'     => 'listWallet',
                 ));
             }
-
             $this->Session->setFlash("Have error! Please try again.");
         }
     }
@@ -175,56 +163,43 @@ class WalletsController extends AppController
      */
     public function select($id)
     {
-        if (empty($id)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',));
-        }
-
-        $walletObj = $this->Wallet->findById($id);
+        $walletObj = $this->Wallet->getWalletById($id);
         if (empty($walletObj)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',));
+            throw BadRequestException();
         }
 
-        $this->User->id = AuthComponent::user('id');
-        if ($this->User->saveField('current_wallet', $id)) {
+        $dataUpdate = array(
+            'current_wallet' => $id,
+        );
 
-            $walletObj = $this->Wallet->findById($id);
+        $updateResult = $this->User->updateUserInfoById(AuthComponent::user('id'), $dataUpdate);
+        if ($updateResult) {
+
+            $walletObj = $this->Wallet->getWalletById($id);
             //update session Auth.User.current_wallet
             $this->Session->write('Auth.User.current_wallet', $walletObj['Wallet']);
-
             return $this->redirect(array(
                         'controller' => 'transactions',
                         'action'     => 'listSortByDate',
             ));
         }
-
         $this->autoRender = false;
     }
 
     /**
-     * delte wallet by id
+     * delete wallet by id
      * 
      * @param int $id Wallet id
      */
     public function delete($id)
     {
-        if (empty($id)) {
-            $this->redirect(array(
-                'controller' => 'users',
-                'action'     => 'index',));
-        }
+        $this->autoRender = false;
 
-        $walletObj = $this->Wallet->findById($id);
+        $walletObj = $this->Wallet->getWalletById($id);
         if (empty($walletObj)) {
-            $this->redirect(array(
-                'controller' => 'users',
-                'action'     => 'index',));
+            throw BadRequestException();
         }
 
-        //bindModel Category & Transaction
         $this->Wallet->bindModel(array(
             'hasMany' => array(
                 'Category'    => array(
@@ -243,21 +218,25 @@ class WalletsController extends AppController
             $this->Transaction->deleteTransactionsByCategoryId($category['Category']['id']);
         }
 
-        $this->Wallet->delete($id);
+        $this->Wallet->deleteWalletById($id);
 
         //if wallet want to delete have id equals current wallet id => update current_wallet
         if ($id == AuthComponent::user('current_wallet')['id']) {
 
-            $walletChoose = $this->Wallet->find('first', array(
-                'conditions' => array(
-                    'user_id' => AuthComponent::user('id'),
-                )
+            $walletChoose = $this->Wallet->getWallet('first', array(
+                'user_id' => AuthComponent::user('id'),
             ));
 
-            $this->User->updateAll(array(
-                'User.current_wallet' => $walletChoose['Wallet']['id']), array(
-                'User.id' => AuthComponent::user('id')
-            ));
+            $currentWalletId = null;
+            if (!empty($walletChoose)) {
+                $currentWalletId = $walletChoose['Wallet']['id'];
+            }
+
+            $dataUserUpdate = array(
+                'current_wallet' => $currentWalletId,
+            );
+
+            $this->User->updateUserInfoById(AuthComponent::user('id'), $dataUserUpdate);
             $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']);
         }
 
@@ -265,8 +244,6 @@ class WalletsController extends AppController
                     'controller' => 'wallets',
                     'action'     => 'listWallet',
         ));
-
-        $this->autoRender = false;
     }
 
     /**

@@ -89,6 +89,30 @@ class Wallet extends AppModel
     }
 
     /**
+     * create new wallet
+     * 
+     * @param array $data Wallet data
+     * @return mixed
+     */
+    public function createWallet($data)
+    {
+        return $this->save($data);
+    }
+
+    /**
+     * update wallet's data by id
+     * 
+     * @param int $id Wallet id
+     * @param array $data Wallet data
+     * @return mixed
+     */
+    public function updateWalletById($id, $data)
+    {
+        $this->id = $id;
+        return $this->save($data);
+    }
+
+    /**
      * get Wallet information by id
      * 
      * @param int $id Wallet id
@@ -97,6 +121,46 @@ class Wallet extends AppModel
     public function getWalletById($id)
     {
         return $this->findById($id);
+    }
+
+    /**
+     * get list wallet by any conditions
+     * 
+     * @param array $conditions Array conditions
+     * @return array
+     */
+    public function getListWallet($conditions)
+    {
+        return $this->find('all', array(
+                    'conditions' => $conditions,
+        ));
+    }
+
+    /**
+     * Get wallet information by any conditions
+     * 
+     * Ex: $model->getWallet('all', array('id' => 1, 'name' => 'First'));
+     * 
+     * @param string $findType Select type get data(all | first | count | neighbors | list | threaded)
+     * @param array $conditions Array conditions
+     * @return mixed
+     */
+    public function getWallet($findType, $conditions)
+    {
+        return $this->find($findType, array(
+                    'conditions' => $conditions,
+        ));
+    }
+
+    /**
+     * Delete wallet by wallet id
+     * 
+     * @param int $id Wallet id
+     * @return mixed
+     */
+    public function deleteWalletById($id)
+    {
+        return $this->delete($id);
     }
 
 }
