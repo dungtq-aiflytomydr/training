@@ -66,7 +66,7 @@
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transaction <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/add' ?>">New Transaction</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listTransaction/sort_by_date' ?>">List Transaction</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listSortByDate' ?>">List Transaction</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="#">Trends</a></li>

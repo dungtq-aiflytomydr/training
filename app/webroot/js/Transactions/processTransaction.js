@@ -19,7 +19,7 @@ var Transactions = function () {
     var processSortBy = function () {
         $('#sortBy').change(function () {
             var url = $('#myNavbar').attr('data-url');
-            window.location.href = url + '/transactions/listTransaction/' + $(this).val();
+            window.location.href = url + '/transactions/' + $(this).val();
         });
     };
 

@@ -3,7 +3,23 @@
 class TransactionsController extends AppController
 {
 
+    /**
+     * $uses
+     * 
+     * @var type 
+     */
     public $uses = array('Transaction', 'Category', 'Unit');
+
+    /**
+     * $helpers
+     * 
+     * @var type 
+     */
+    public $helpers = array(
+        'Form',
+        'Html',
+        'Session',
+    );
 
     /**
      * params for get information from transaction like: total income, total expense
@@ -18,9 +34,9 @@ class TransactionsController extends AppController
      */
     public function index()
     {
-        $this->redirect(array(
-            'controller' => 'transactions',
-            'action'     => 'listTransaction',
+        return $this->redirect(array(
+                    'controller' => 'transactions',
+                    'action'     => 'listSortByDate',
         ));
     }
 
@@ -47,45 +63,54 @@ class TransactionsController extends AppController
             if (!empty($this->request->data['Transaction']['create_time'])) {
                 $create_time = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
             }
+            $this->request->data['Transaction']['create_time'] = $create_time;
 
-            //transaction data want to save
-            $transactionObj = array(
-                'Transaction' => array(
-                    'category_id' => $this->request->data['Transaction']['category_id'],
-                    'amount'      => $this->request->data['Transaction']['amount'],
-                    'note'        => $this->request->data['Transaction']['note'],
-                    'create_time' => $create_time,
-                    'wallet_id'   => AuthComponent::user('current_wallet')['id'],
-                )
-            );
+            if ($this->Transaction->save($this->request->data)) {
 
-            //save transaction data
-            if ($this->Transaction->save($transactionObj)) {
                 $this->Session->setFlash('Add new transaction complete.');
-                $this->redirect(array(
-                    'controller' => 'transactions',
-                    'action'     => 'listTransaction',
-                    'sort_by_date',
+                return $this->redirect(array(
+                            'controller' => 'transactions',
+                            'action'     => 'listSortByDate',
                 ));
             }
         }
-        return;
     }
 
     /**
-     * show list transaction of user
+     * show list transaction sort by date
      */
-    public function listTransaction($option = null)
+    public function listSortByDate()
     {
-        //process request from url
-        if (empty($option) || ($option != 'sort_by_date' && $option != 'sort_by_category')) {
-            $this->redirect(array(
-                'controller' => 'users',
-                'action'     => 'index',
-            ));
-        }
+        $listTransaction = $this->getListTransaction();
+        $listTransaction = $this->showListTransactionByDate($listTransaction);
 
-        //get list transaction within current wallet
+        $statistical_data = $this->getInfoForStatistical();
+
+        $this->set('title_for_layout', 'List transaction');
+        $this->set('statistical_data', $statistical_data);
+        $this->set('listTransaction', $listTransaction);
+    }
+
+    /**
+     * show list transaction sort by category
+     */
+    public function listSortByCategory()
+    {
+        $listTransaction = $this->getListTransaction();
+        $listTransaction = $this->showListTransactionByCategory($listTransaction);
+
+        $statistical_data = $this->getInfoForStatistical();
+
+        $this->set('title_for_layout', 'List transaction');
+        $this->set('statistical_data', $statistical_data);
+        $this->set('listTransaction', $listTransaction);
+    }
+
+    /**
+     * get list transaction by current wallet
+     */
+    private function getListTransaction()
+    {
         $listTransaction = $this->Transaction->find('all', array(
             'conditions' => array(
                 'Transaction.wallet_id' => AuthComponent::user('current_wallet')['id'],
@@ -96,7 +121,7 @@ class TransactionsController extends AppController
         //convert any properties of transaction: money (1000 => 1.000), category_id(int) => object
         foreach ($listTransaction as $key => $transaction) {
 
-            //instead 'category_id' property = category information
+            //instead 'category_id' property = category's information
             $listTransaction[$key]['Transaction']['category_id'] = $this->Category->getCategoryById(
                     $transaction['Transaction']['category_id']);
 
@@ -107,13 +132,15 @@ class TransactionsController extends AppController
             $this->processAmount($transaction['Transaction']['amount'], $listTransaction[$key]['Transaction']['category_id']['expense_type']);
         }
 
-        //if select sort by date
-        if ($option == 'sort_by_date') {
-            $listTransaction = $this->showListTransactionByDate($listTransaction);
-        } elseif ($option == 'sort_by_category') {
-            $listTransaction = $this->showListTransactionByCategory($listTransaction);
-        }
+        return $listTransaction;
+    }
 
+    /**
+     * get other transaction's information for show statistical
+     */
+    private function getInfoForStatistical()
+    {
+        //add relationship with model Unit
         $this->Category->bindModel(array(
             'hasOne' => array(
                 'Unit' => array(
@@ -123,8 +150,7 @@ class TransactionsController extends AppController
             ),
         ));
 
-        //process other information of transaction like: total income, total expense,...
-        $otherTransaction = array(
+        return array(
             'income'  => $this->convertMoney($this->_totalIncome),
             'expense' => $this->convertMoney($this->_totalExpense),
             'balance' => $this->convertMoney(AuthComponent::user('current_wallet')['balance']),
@@ -137,11 +163,6 @@ class TransactionsController extends AppController
                 ),
             ))['Unit'],
         );
-
-        //set params for view
-        $this->set('title_for_layout', 'List Transaction');
-        $this->set('otherTransaction', $otherTransaction);
-        $this->set('listTransaction', $listTransaction);
     }
 
     /**
@@ -151,21 +172,22 @@ class TransactionsController extends AppController
      */
     public function edit($id)
     {
-        //process request from url
-        $transactionObj = $this->Transaction->findById($id);
-        if (empty($transactionObj)) {
-
-            //if id not exists in database => redirect to /transactions/listTransaction
-            $this->redirect(array(
-                'controller' => 'transactions',
-                'action'     => 'listTransaction',
-                'sort_by_date',
+        if (empty($id)) {
+            return $this->redirect(array(
+                        'controller' => 'transactions',
+                        'action'     => 'listSortByDate',
             ));
         }
 
-        //get data for view edit
-        $this->set('title_for_layout', 'Edit Transaction');
-        //get list category
+        $transactionObj = $this->Transaction->findById($id);
+        if (empty($transactionObj)) {
+            return $this->redirect(array(
+                        'controller' => 'transactions',
+                        'action'     => 'listSortByDate',
+            ));
+        }
+
+        $this->set('title_for_layout', 'Edit transaction');
         $this->set('listCategory', $this->Category->getListCategoryByWalletId(
                         AuthComponent::user('current_wallet')['id']));
         $this->set('transactionObj', $transactionObj);
@@ -174,34 +196,27 @@ class TransactionsController extends AppController
             return;
         }
 
-        //check validates 
         $this->Transaction->set($this->request->data);
         if ($this->Transaction->validates()) {
-            //process datetime
-            $transactionTime = $transactionObj['Transaction']['create_time'];
-            if (!empty($this->request->data['Transaction']['create_time'])) {
-                $transactionTime = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
-            }
 
-            //update data
-            if ($this->Transaction->updateAll(array(
-                        'Transaction.category_id' => $this->request->data['Transaction']['category_id'],
-                        'Transaction.amount'      => $this->request->data['Transaction']['amount'],
-                        'Transaction.note'        => '"' . $this->request->data['Transaction']['note'] . '"',
-                        'Transaction.create_time' => $transactionTime,
-                            ), array(
-                        'Transaction.id' => $id,
-                    ))) {
+            //process datetime
+            $create_time = $transactionObj['Transaction']['create_time'];
+            if (!empty($this->request->data['Transaction']['create_time'])) {
+                $create_time = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
+            }
+            $this->request->data['Transaction']['create_time'] = $create_time;
+
+            $this->Transaction->id = $id;
+            if ($this->Transaction->save($this->request->data)) {
+
                 $this->Session->setFlash("Update transaction information complete.");
                 $this->redirect(array(
                     'controller' => 'transactions',
-                    'action'     => 'listTransaction',
-                    'sort_by_date'
+                    'action'     => 'listSortByDate',
                 ));
             }
-            return $this->Session->setFlash("Have error! Please try again.");
+            $this->Session->setFlash("Have error! Please try again.");
         }
-        return;
     }
 
     /**
@@ -214,11 +229,10 @@ class TransactionsController extends AppController
         //not render view
         $this->autoRender = false;
 
-        //process request from url
         if (empty($id)) {
             return $this->redirect(array(
                         'controller' => 'transactions',
-                        'action'     => 'listTransaction',
+                        'action'     => 'listSortByDate',
             ));
         }
 
@@ -226,16 +240,15 @@ class TransactionsController extends AppController
         if (empty($transactionObj)) {
             return $this->redirect(array(
                         'controller' => 'transactions',
-                        'action'     => 'listTransaction',
+                        'action'     => 'listSortByDate',
             ));
         }
 
         $this->Transaction->delete($id);
         $this->Session->setFlash("Delete transaction complete.");
-        $this->redirect(array(
-            'controller' => 'transactions',
-            'action'     => 'listTransaction',
-            'sort_by_date',
+        return $this->redirect(array(
+                    'controller' => 'transactions',
+                    'action'     => 'listSortByDate',
         ));
     }
 
@@ -251,7 +264,7 @@ class TransactionsController extends AppController
     }
 
     /**
-     * process amount within expense type
+     * process amount by expense type
      * 
      * @param int $amount Money was used in transaction
      * @param string $expense_type Income or Expense
@@ -329,7 +342,7 @@ class TransactionsController extends AppController
      */
     private function findPropertyTogether($array, $property, $objCompare)
     {
-        $newList   = array();
+        $newList   = array(); //array contains elements have same property
         $newList[] = $objCompare;
 
         foreach ($array as $key => $value) {
