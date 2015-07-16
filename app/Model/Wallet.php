@@ -142,69 +142,6 @@ class Wallet extends AppModel
     }
 
     /**
-     * Bind model hasOne
-     * 
-     * @param string $model Model name
-     */
-    public function bindModelHasOne($model)
-    {
-        $this->bindModel(array(
-            'hasOne' => array(
-                $model => array(
-                    'className'  => $model,
-                    'foreignKey' => 'id',
-                ),
-            ),
-        ));
-    }
-
-    /**
-     * Bind model hasMany
-     * 
-     * @param string $model Model name
-     */
-    public function bindModelHasMany($model)
-    {
-        $this->bindModel(array(
-            'hasMany' => array(
-                $model => array(
-                    'className'  => $model,
-                    'foreignKey' => 'id',
-                ),
-            ),
-        ));
-    }
-
-    /**
-     * Bind model belongsTo
-     * 
-     * @param string $model Model name
-     */
-    public function bindModelBelongsTo($model)
-    {
-        $this->bindModel(array(
-            'belongsTo' => array(
-                $model => array(
-                    'className'  => $model,
-                    'foreignKey' => 'id',
-                )
-            ),
-        ));
-    }
-
-    /**
-     * Unbind model belongsTo
-     * 
-     * @param string $model Model name
-     */
-    public function unbindModelBelongsTo($model)
-    {
-        $this->unbindModel(array(
-            'belongsTo' => array($model)
-        ));
-    }
-
-    /**
      * Get wallet information by any conditions
      * 
      * @param int $userId User id

@@ -46,7 +46,8 @@ class WalletsController extends AppController
         //process wallet's icon
         $walletIcon = null;
         if ($this->request->data['Wallet']['icon']['size'] > 0) {
-            $walletIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
+            $walletIcon = $this->processUploadImage(
+                    AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
         }
 
         $this->request->data['Wallet']['icon']     = $walletIcon;
@@ -71,7 +72,8 @@ class WalletsController extends AppController
 
                     //update session for current_wallet Auth's property
                     $currentWallet = $this->Wallet->getWalletById($currentWalletId);
-                    $this->Session->write('Auth.User.current_wallet', $currentWallet['Wallet']);
+                    $this->Session->write('Auth.User.current_wallet', $currentWallet['Wallet']['id']);
+                    $this->Session->write('Auth.User.current_wallet_info', $currentWallet['Wallet']);
                 }
 
                 $this->Session->setFlash("Create your wallet complete.");
@@ -126,7 +128,8 @@ class WalletsController extends AppController
             //process wallet's icon
             $walletIcon = $walletObj['Wallet']['icon'];
             if ($this->request->data['Wallet']['icon']['size'] > 0) {
-                $walletIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
+                $walletIcon = $this->processUploadImage(
+                        AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
             }
             $this->request->data['Wallet']['icon'] = $walletIcon;
 
@@ -135,7 +138,7 @@ class WalletsController extends AppController
 
                 $walletInfo = $this->Wallet->getWalletById($id);
                 //update session
-                $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
+                $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
 
                 $this->Session->setFlash("Update Wallet's information complete.");
                 return $this->redirect(array(
@@ -168,7 +171,8 @@ class WalletsController extends AppController
 
             $walletInfo = $this->Wallet->getWalletById($id);
             //update session Auth.User.current_wallet
-            $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
+            $this->Session->write('Auth.User.current_wallet', $id);
+            $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
             return $this->redirect(array(
                         'controller' => 'transactions',
                         'action'     => 'listSortByDate',
@@ -202,7 +206,7 @@ class WalletsController extends AppController
         $this->Wallet->deleteWalletById($id);
 
         //if wallet want to delete have id equals current wallet id => update current_wallet
-        if ($id == AuthComponent::user('current_wallet')['id']) {
+        if ($id == AuthComponent::user('current_wallet')) {
 
             $walletChoose = $this->Wallet->getFirstWalletByUserId(AuthComponent::user('id'));
 
@@ -216,7 +220,8 @@ class WalletsController extends AppController
             );
 
             $this->User->updateUserById(AuthComponent::user('id'), $dataUserUpdate);
-            $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']);
+            $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']['id']);
+            $this->Session->write('Auth.User.current_wallet_info', $walletChoose['Wallet']);
         }
 
         return $this->redirect(array(
@@ -238,7 +243,7 @@ class WalletsController extends AppController
         $target_file = $target_dir . basename($fileObj["name"]);
 
         if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
-            return $this->Session->setFlash("Have error. Please try again.");
+            return false;
         }
         return '/' . $rootFolder . $fileObj['name'];
     }
