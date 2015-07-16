@@ -139,26 +139,6 @@ class User extends AppModel
     }
 
     /**
-     * Get user by any conditions
-     * 
-     * Ex: $model->getUser('all', array('id' => 1, 'age' => 22));
-     * 
-     * @param string $findType select type get data(all | first | count | neighbors | list | threaded)
-     * @param array $conditions array conditions
-     * @return mixed
-     */
-    public function getUser($findType, $conditions)
-    {
-        if (empty($conditions)) {
-            return false;
-        }
-
-        return $this->find($findType, array(
-                    'conditions' => $conditions,
-        ));
-    }
-
-    /**
      * Get user information by User id and token
      * 
      * @param int $id User id
@@ -190,13 +170,29 @@ class User extends AppModel
     }
 
     /**
+     * BindModel hasMany
+     * 
+     * @param string $model Model name
+     */
+    public function bindModelHasMany($model)
+    {
+        $this->bindModel(array(
+            'hasMany' => array(
+                $model => array(
+                    'className' => $model,
+                ),
+            ),
+        ));
+    }
+
+    /**
      * update user info by id
      * 
      * @param int id User id
      * @param array $data User's data
      * @return boolean
      */
-    public function updateUserInfoById($id, $data)
+    public function updateUserById($id, $data)
     {
         $this->id = $id;
         return $this->save($data);

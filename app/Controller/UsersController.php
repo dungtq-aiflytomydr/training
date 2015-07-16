@@ -61,7 +61,7 @@ class UsersController extends AppController
                 'password' => $this->request->data['User']['password'],
             );
 
-            $updateResult = $this->User->updateUserInfoById(AuthComponent::user('id'), $dataUpdate);
+            $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $dataUpdate);
             if ($updateResult) {
 
                 $this->Session->setFlash("Change password complete.");
@@ -93,13 +93,15 @@ class UsersController extends AppController
             }
             $this->request->data['User']['avatar'] = $userAvatar;
 
-            $updateResult = $this->User->updateUserInfoById(AuthComponent::user('id'), $this->request->data);
+            $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $this->request->data);
             if ($updateResult) {
 
                 //if update data success => update auth session
                 $walletInfo = $this->Auth->user('current_wallet');
                 $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
-                $this->Session->write('Auth.User.current_wallet', $walletInfo);
+                if (!empty($walletInfo)) {
+                    $this->Session->write('Auth.User.current_wallet', $walletInfo);
+                }
 
                 $this->Session->setFlash("Update profile complete.");
                 return $this->redirect('/');
@@ -137,17 +139,13 @@ class UsersController extends AppController
             return;
         }
 
-        $this->User->bindModel(array(
-            'hasMany' => array(
-                'Wallet' => array(
-                    'className' => 'Wallet',
-                ),
-            ),
-        ));
+        $this->User->bindModelHasMany('Wallet');
 
         if ($this->Auth->login()) {
             $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
-            $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
+            if (!empty($walletInfo)) {
+                $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
+            }
             return $this->redirect($this->Auth->redirectUrl());
         }
         $this->Session->setFlash('Email or password incorrect! Please try again.', 'default', array(), 'auth');
@@ -175,8 +173,7 @@ class UsersController extends AppController
         }
 
         $this->User->validator()->remove('avatar');
-        $this->request->data['User']['avatar'] = '/img/ava_default.jpeg'; //set user's avatar default
-        $createdUser                           = $this->User->createUser($this->request->data);
+        $createdUser = $this->User->createUser($this->request->data);
 
         if (empty($createdUser)) {
             return $this->Session->setFlash('Have error! Please try again.');
@@ -196,7 +193,7 @@ class UsersController extends AppController
             ));
         }
 
-        $this->Session->setFlash("Have error! We are checking it.");
+        $this->Session->setFlash("Have error! Please try again.");
     }
 
     /**
@@ -210,13 +207,12 @@ class UsersController extends AppController
         $userObj = $this->User->getByToken($id, $token);
 
         if (empty($userObj)) {
-            throw NotFoundException('Could not find that user.');
+            throw new BadRequestException('Could not find that user or that user was active.');
         }
 
         if (!$userObj['User']['is_active']) {
-            $this->User->updateUserInfoById($id, array(
+            $this->User->updateUserById($id, array(
                 'is_active' => true,
-                'token'     => null,
             ));
         }
 
@@ -269,7 +265,7 @@ class UsersController extends AppController
                 'token' => uniqid(),
             );
 
-            $updateResult = $this->User->updateUserInfoById($userObj['User']['id'], $dataUpdate);
+            $updateResult = $this->User->updateUserById($userObj['User']['id'], $dataUpdate);
             if ($updateResult) {
                 $emailConfig = array(
                     'subject' => 'Forgot password - Training.dev',
@@ -308,7 +304,7 @@ class UsersController extends AppController
                     'password' => $this->request->data['User']['password'],
                 );
 
-                $this->User->updateUserInfoById($id, $dataUpdate);
+                $this->User->updateUserById($id, $dataUpdate);
 
                 $this->Session->setFlash("Change password was completed.");
                 return $this->redirect(array(

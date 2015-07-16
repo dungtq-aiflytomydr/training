@@ -7,6 +7,6 @@ echo $this->Html->link(
     'controller' => 'users',
     'action'     => 'activate',
     $id,
-    $active_code,
+    $token,
     'full_base'  => true
 ));
