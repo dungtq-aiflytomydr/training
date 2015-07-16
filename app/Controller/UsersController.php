@@ -92,6 +92,7 @@ class UsersController extends AppController
                 $userAvatar = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['User']['avatar']);
             }
             $this->request->data['User']['avatar'] = $userAvatar;
+            unset($this->request->data['User']['password']);
 
             $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $this->request->data);
             if ($updateResult) {
@@ -138,8 +139,6 @@ class UsersController extends AppController
         if (!$this->request->is('post', 'put')) {
             return;
         }
-
-        $this->User->bindModelHasMany('Wallet');
 
         if ($this->Auth->login()) {
             $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));

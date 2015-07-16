@@ -67,7 +67,6 @@ class WalletsController extends AppController
                         'current_wallet' => $currentWalletId,
                     );
 
-                    $this->Wallet->bindModelBelongsTo('User');
                     $this->User->updateUserById(AuthComponent::user('id'), $dataUpdate);
 
                     //update session for current_wallet Auth's property
@@ -164,7 +163,6 @@ class WalletsController extends AppController
             'current_wallet' => $id,
         );
 
-        $this->Wallet->bindModelBelongsTo('User');
         $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $dataUpdate);
         if ($updateResult) {
 
@@ -193,9 +191,6 @@ class WalletsController extends AppController
         if (empty($walletObj)) {
             throw new BadRequestException('Cound not find that wallet.');
         }
-
-        $this->Wallet->bindModelHasMany('Category');
-        $this->Wallet->bindModelHasMany('Transaction');
 
         $listCatDel = $this->Category->deleteCategoriesByWalletId($id);
 
