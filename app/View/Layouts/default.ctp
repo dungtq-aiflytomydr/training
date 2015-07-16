@@ -45,38 +45,41 @@
                                 <li class="dropdown">
                                     <?php if (!empty(AuthComponent::user('current_wallet'))): ?>
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="u-ava" src="<?php
-                                            if (!empty(AuthComponent::user('current_wallet')['icon'])) {
-                                                echo AuthComponent::user('current_wallet')['icon'];
+                                            if (!empty(AuthComponent::user('current_wallet_info')['icon'])) {
+                                                echo AuthComponent::user('current_wallet_info')['icon'];
                                             } else {
                                                 echo '/img/wallet.png';
                                             }
                                             ?>" />
-                                            <?php echo AuthComponent::user('current_wallet')['name']; ?> <span class="caret"></span></a>
+                                            <?php echo AuthComponent::user('current_wallet_info')['name']; ?> <span class="caret"></span></a>
                                         <?php else: ?>
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Wallet <span class="caret"></span></a>
                                     <?php endif; ?>
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/add' ?>">New wallet</a></li>
                                         <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/listWallet' ?>">List wallet</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/edit/' . AuthComponent::user('current_wallet')['id']; ?>">Edit</a></li>
+                                        <li><a href="<?php echo Router::fullBaseUrl() . '/wallets/edit/' . AuthComponent::user('current_wallet'); ?>">Edit</a></li>
                                     </ul>
                                 </li>
-                                <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/categories/add' ?>">New Category</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/categories/listCategories' ?>">List Categories</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transaction <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/add' ?>">New Transaction</a></li>
-                                        <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listSortByDate' ?>">List Transaction</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="#">Trends</a></li>
-                            <?php endif; ?>
+                                <?php if (!empty(AuthComponent::user('current_wallet'))): ?>
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Categories <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo Router::fullBaseUrl() . '/categories/add' ?>">New Category</a></li>
+                                            <li><a href="<?php echo Router::fullBaseUrl() . '/categories/listCategories' ?>">List Categories</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Transaction <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/add' ?>">New Transaction</a></li>
+                                            <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listSortByDate' ?>">List Transaction</a></li>
+                                        </ul>
+                                    </li>
+                                    <?php
+                                endif;
+                            endif;
+                            ?>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <?php if (!AuthComponent::user('id')) : ?>

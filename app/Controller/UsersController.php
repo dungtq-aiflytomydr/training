@@ -89,8 +89,13 @@ class UsersController extends AppController
 
             $userAvatar = AuthComponent::user('avatar');
             if (!empty($this->request->data['User']['avatar']['size'])) {
-                $userAvatar = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['User']['avatar']);
+                $userAvatar = $this->processUploadImage(
+                        AppConstant::FOLDER_UPL, $this->request->data['User']['avatar']);
+                if ($userAvatar) {
+                    return $this->Session->setFlash("Upload image have error! Please check again.");
+                }
             }
+
             $this->request->data['User']['avatar'] = $userAvatar;
             unset($this->request->data['User']['password']);
 
@@ -101,7 +106,7 @@ class UsersController extends AppController
                 $walletInfo = $this->Auth->user('current_wallet');
                 $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
                 if (!empty($walletInfo)) {
-                    $this->Session->write('Auth.User.current_wallet', $walletInfo);
+                    $this->Session->write('Auth.User.current_wallet_info', $walletInfo);
                 }
 
                 $this->Session->setFlash("Update profile complete.");
@@ -116,7 +121,7 @@ class UsersController extends AppController
      * 
      * @param string $rootFolder Folder contain file images
      * @param type $fileObj File image upload
-     * @return string
+     * @return mixed
      */
     private function processUploadImage($rootFolder, $fileObj)
     {
@@ -124,7 +129,7 @@ class UsersController extends AppController
         $target_file = $target_dir . basename($fileObj["name"]);
 
         if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
-            return $this->Session->setFlash("Have error. Please try again.");
+            return false;
         }
         return '/' . $rootFolder . $fileObj['name'];
     }
@@ -143,7 +148,7 @@ class UsersController extends AppController
         if ($this->Auth->login()) {
             $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
             if (!empty($walletInfo)) {
-                $this->Session->write('Auth.User.current_wallet', $walletInfo['Wallet']);
+                $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
             }
             return $this->redirect($this->Auth->redirectUrl());
         }
