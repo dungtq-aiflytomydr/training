@@ -51,10 +51,11 @@ class CategoriesController extends AppController
             //process icon upload
             $catIcon = null;
             if ($this->request->data['Category']['icon']['size'] > 0) {
-                $catIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
+                $catIcon = $this->processUploadImage(
+                        AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
             }
             $this->request->data['Category']['icon']      = $catIcon;
-            $this->request->data['Category']['wallet_id'] = AuthComponent::user('current_wallet')['id'];
+            $this->request->data['Category']['wallet_id'] = AuthComponent::user('current_wallet');
 
             if ($this->Category->createCategory($this->request->data)) {
                 $this->Session->setFlash("Add new category complete.");
@@ -73,7 +74,7 @@ class CategoriesController extends AppController
     public function listCategories()
     {
         $listCategories = $this->Category->getListCategoryByWalletId(
-                AuthComponent::user('current_wallet')['id']
+                AuthComponent::user('current_wallet')
         );
         $this->set('listCategories', $listCategories);
     }
@@ -100,7 +101,8 @@ class CategoriesController extends AppController
         //process icon upload
         $catIcon = $catObj['Category']['icon'];
         if (!empty($this->request->data['Category']['icon']['size'] > 0)) {
-            $catIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
+            $catIcon = $this->processUploadImage(
+                    AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
         }
         $this->request->data['Category']['icon'] = $catIcon;
 
@@ -155,7 +157,7 @@ class CategoriesController extends AppController
         $target_file = $target_dir . basename($fileObj["name"]);
 
         if (!move_uploaded_file($fileObj['tmp_name'], $target_file)) {
-            return $this->Session->setFlash("Have error. Please try again.");
+            return false;
         }
         return '/' . $rootFolder . $fileObj['name'];
     }
