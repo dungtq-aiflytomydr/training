@@ -41,7 +41,7 @@ class CategoriesController extends AppController
     {
         $this->set('title_for_layout', 'Add Category');
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -49,19 +49,21 @@ class CategoriesController extends AppController
         if ($this->Category->validates()) {
 
             //process icon upload
-            $catIcon = '/img/building.png';
+            $catIcon = null;
             if ($this->request->data['Category']['icon']['size'] > 0) {
-                $catIcon = $this->_processUploadImage('uploads/', $this->request->data['Category']['icon']);
+                $catIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
             }
-            $this->request->data['Category']['icon'] = $catIcon;
+            $this->request->data['Category']['icon']      = $catIcon;
+            $this->request->data['Category']['wallet_id'] = AuthComponent::user('current_wallet')['id'];
 
-            if ($this->Category->save($this->request->data)) {
+            if ($this->Category->createCategory($this->request->data)) {
                 $this->Session->setFlash("Add new category complete.");
                 return $this->redirect(array(
                             'controller' => 'categories',
                             'action'     => 'listCategories',
                 ));
             }
+            $this->Session->setFlash("Have error! Please try again.");
         }
     }
 
@@ -70,11 +72,10 @@ class CategoriesController extends AppController
      */
     public function listCategories()
     {
-        $this->set('listCategories', $this->Category->find('all', array(
-                    'conditions' => array(
-                        'Category.wallet_id' => array(0, AuthComponent::user('current_wallet')['id']),
-                    )
-        )));
+        $listCategories = $this->Category->getListCategoryByWalletId(
+                AuthComponent::user('current_wallet')['id']
+        );
+        $this->set('listCategories', $listCategories);
     }
 
     /**
@@ -84,47 +85,37 @@ class CategoriesController extends AppController
      */
     public function edit($id)
     {
-        if (empty($id)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',
-            ));
-        }
-
         $catObj = $this->Category->findById($id);
         if (empty($catObj)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',
-            ));
+            throw new NotFoundException('Could not find that category.');
         }
 
         $this->set('title_for_layout', 'Edit Category');
         $this->set('catObj', $catObj);
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
         //process icon upload
         $catIcon = $catObj['Category']['icon'];
         if (!empty($this->request->data['Category']['icon']['size'] > 0)) {
-            $catIcon = $this->_processUploadImage('uploads/', $this->request->data['Category']['icon']);
+            $catIcon = $this->processUploadImage(AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
         }
         $this->request->data['Category']['icon'] = $catIcon;
 
         $this->Category->set($this->request->data);
         if ($this->Category->validates()) {
 
-            $this->Category->id = $id;
-            if ($this->Category->save($this->request->data)) {
-
+            $isUpdated = $this->Category->updateCategoryById($id, $this->request->data);
+            if ($isUpdated) {
                 $this->Session->setFlash("Update Category information complete.");
                 return $this->redirect(array(
                             'controller' => 'categories',
                             'action'     => 'listCategories',
                 ));
             }
+            $this->Session->setFlash("Have error! Please try again.");
         }
     }
 
@@ -137,19 +128,9 @@ class CategoriesController extends AppController
     {
         $this->autoRender = false;
 
-        if (empty($id)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',
-            ));
-        }
-
         $catObj = $this->Category->findById($id);
         if (empty($catObj)) {
-            return $this->redirect(array(
-                        'controller' => 'users',
-                        'action'     => 'index',
-            ));
+            throw new NotFoundException('Could not find that category.');
         }
 
         $this->Category->delete($id);
@@ -168,7 +149,7 @@ class CategoriesController extends AppController
      * @param type $fileObj File image upload
      * @return string
      */
-    private function _processUploadImage($rootFolder, $fileObj)
+    private function processUploadImage($rootFolder, $fileObj)
     {
         $target_dir  = WWW_ROOT . $rootFolder;
         $target_file = $target_dir . basename($fileObj["name"]);

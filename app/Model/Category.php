@@ -62,6 +62,19 @@ class Category extends AppModel
     }
 
     /**
+     * Update category data by id
+     * 
+     * @param int $id Category id
+     * @param array $data Category's data
+     * @return mixed
+     */
+    public function updateCategoryById($id, $data)
+    {
+        $this->id = $id;
+        return $this->save($data);
+    }
+
+    /**
      * get category information by id
      * 
      * @param int $id Category id
@@ -106,6 +119,16 @@ class Category extends AppModel
         ));
 
         return $listCategory;
+    }
+
+    /**
+     * Delete category by id
+     * 
+     * @param int $id Category id
+     */
+    public function deleteCategoryById($id)
+    {
+        $this->delete($id);
     }
 
 }

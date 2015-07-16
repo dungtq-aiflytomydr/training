@@ -1,4 +1,12 @@
-<?php echo $this->Html->script('Categories/processCategory'); ?>
+<?php
+echo $this->Html->script('Categories/processCategory');
+
+//process category icon
+$icon = '/img/building.png';
+if (!empty($catObj['Category']['icon'])) {
+    $icon = $catObj['Category']['icon'];
+}
+?>
 <div class="popupLogin">
     <?php
     echo $this->Form->create('Category', array(
@@ -19,7 +27,7 @@
         'label'    => 'Icon',
         'type'     => 'file',
         'class'    => 'form-control',
-        'between'  => "<div class='icon-preview form-group'><img class='wl-icon-preview' src='" . $catObj['Category']['icon'] . "'/></div>",
+        'between'  => "<div class='icon-preview form-group'><img class='wl-icon-preview' src='" . $icon . "'/></div>",
         'required' => false,
     ));
     echo $this->Form->input('expense_type', array(
