@@ -5,15 +5,15 @@
         <tbody>
             <tr>
                 <td>Income</td>
-                <td><?php echo $otherTransaction['income'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
+                <td><?php echo $statistical_data['income'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td>Expense</td>
-                <td><?php echo $otherTransaction['expense'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
+                <td><?php echo $statistical_data['expense'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td>Balance</td>
-                <td><?php echo $otherTransaction['balance'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
+                <td><?php echo $statistical_data['balance'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td></td>
@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <td>Total</td>
-                <td><?php echo $otherTransaction['total'] . ' (' . $otherTransaction['unit']['signature'] . ')'; ?></td>
+                <td><?php echo $statistical_data['total'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
             </tr>
         </tbody>
     </table>

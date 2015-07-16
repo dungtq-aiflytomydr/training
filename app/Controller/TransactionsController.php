@@ -51,7 +51,7 @@ class TransactionsController extends AppController
                         AuthComponent::user('current_wallet')['id']));
         $this->set('title_for_layout', 'Add Transaction');
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -64,8 +64,9 @@ class TransactionsController extends AppController
                 $create_time = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
             }
             $this->request->data['Transaction']['create_time'] = $create_time;
+            $this->request->data['Transaction']['wallet_id']   = AuthComponent::user('current_wallet')['id'];
 
-            if ($this->Transaction->save($this->request->data)) {
+            if ($this->Transaction->createTransaction($this->request->data)) {
 
                 $this->Session->setFlash('Add new transaction complete.');
                 return $this->redirect(array(
@@ -111,12 +112,8 @@ class TransactionsController extends AppController
      */
     private function getListTransaction()
     {
-        $listTransaction = $this->Transaction->find('all', array(
-            'conditions' => array(
-                'Transaction.wallet_id' => AuthComponent::user('current_wallet')['id'],
-            ),
-            'order'      => 'Transaction.create_time DESC',
-        ));
+        $listTransaction = $this->Transaction->getListTransactionsByWalletId(
+                AuthComponent::user('current_wallet')['id']);
 
         //convert any properties of transaction: money (1000 => 1.000), category_id(int) => object
         foreach ($listTransaction as $key => $transaction) {
@@ -129,7 +126,8 @@ class TransactionsController extends AppController
                     $transaction['Transaction']['amount']);
 
             //process other infor like: total income, total expense...
-            $this->processAmount($transaction['Transaction']['amount'], $listTransaction[$key]['Transaction']['category_id']['expense_type']);
+            $this->processAmount(
+                    $transaction['Transaction']['amount'], $listTransaction[$key]['Transaction']['category_id']['expense_type']);
         }
 
         return $listTransaction;
@@ -140,16 +138,6 @@ class TransactionsController extends AppController
      */
     private function getInfoForStatistical()
     {
-        //add relationship with model Unit
-        $this->Category->bindModel(array(
-            'hasOne' => array(
-                'Unit' => array(
-                    'className'  => 'Unit',
-                    'foreignKey' => 'id',
-                )
-            ),
-        ));
-
         return array(
             'income'  => $this->convertMoney($this->_totalIncome),
             'expense' => $this->convertMoney($this->_totalExpense),
@@ -172,19 +160,9 @@ class TransactionsController extends AppController
      */
     public function edit($id)
     {
-        if (empty($id)) {
-            return $this->redirect(array(
-                        'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
-            ));
-        }
-
         $transactionObj = $this->Transaction->findById($id);
         if (empty($transactionObj)) {
-            return $this->redirect(array(
-                        'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
-            ));
+            throw new NotFoundException('Could not find that transaction.');
         }
 
         $this->set('title_for_layout', 'Edit transaction');
@@ -192,7 +170,7 @@ class TransactionsController extends AppController
                         AuthComponent::user('current_wallet')['id']));
         $this->set('transactionObj', $transactionObj);
 
-        if ($this->request->is('get')) {
+        if (!$this->request->is('post', 'put')) {
             return;
         }
 
@@ -206,8 +184,8 @@ class TransactionsController extends AppController
             }
             $this->request->data['Transaction']['create_time'] = $create_time;
 
-            $this->Transaction->id = $id;
-            if ($this->Transaction->save($this->request->data)) {
+            $isUpdated = $this->Transaction->updateTransactionById($id, $this->request->data);
+            if ($isUpdated) {
 
                 $this->Session->setFlash("Update transaction information complete.");
                 $this->redirect(array(
@@ -226,25 +204,14 @@ class TransactionsController extends AppController
      */
     public function delete($id)
     {
-        //not render view
         $this->autoRender = false;
-
-        if (empty($id)) {
-            return $this->redirect(array(
-                        'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
-            ));
-        }
 
         $transactionObj = $this->Transaction->findById($id);
         if (empty($transactionObj)) {
-            return $this->redirect(array(
-                        'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
-            ));
+            throw new NotFoundException('Could not find that transaction.');
         }
 
-        $this->Transaction->delete($id);
+        $this->Transaction->deleteById($id);
         $this->Session->setFlash("Delete transaction complete.");
         return $this->redirect(array(
                     'controller' => 'transactions',
@@ -345,7 +312,7 @@ class TransactionsController extends AppController
         $newList   = array(); //array contains elements have same property
         $newList[] = $objCompare;
 
-        foreach ($array as $key => $value) {
+        foreach ($array as $value) {
             if ($objCompare['Transaction'][$property] == $value['Transaction'][$property]) {
                 $newList[] = $value;
             }

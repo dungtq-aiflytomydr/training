@@ -23,16 +23,54 @@ class Transaction extends AppModel
     );
 
     /**
-     * a transaction has one category
+     * create new transaction
      * 
-     * @var array 
+     * @param array $data Transaction data
+     * @return mixed
      */
-    public $hasOne = array(
-        'Category' => array(
-            'className'  => 'Category',
-            'foreignKey' => 'id',
-        )
-    );
+    public function createTransaction($data)
+    {
+        return $this->save($data);
+    }
+
+    /**
+     * Update Transaction data
+     * 
+     * @param int $id Transaction id
+     * @param array $data Transaction data
+     * @return mixed
+     */
+    public function updateTransactionById($id, $data)
+    {
+        $this->id = $id;
+        return $this->save($data);
+    }
+
+    /**
+     * Get list transaction by wallet id
+     * 
+     * @param int $walletId Wallet id
+     * @return array
+     */
+    public function getListTransactionsByWalletId($walletId)
+    {
+        return $this->find('all', array(
+                    'conditions' => array(
+                        'Transaction.wallet_id' => $walletId,
+                    ),
+                    'order'      => 'create_time DESC',
+        ));
+    }
+
+    /**
+     * Delete transaction by id
+     * 
+     * @param int $id Transaction id
+     */
+    public function deleteById($id)
+    {
+        $this->delete($id);
+    }
 
     /**
      * delete multiple transactions have category_id equals category id identify

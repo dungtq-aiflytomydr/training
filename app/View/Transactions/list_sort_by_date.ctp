@@ -40,6 +40,7 @@ if (!empty($listTransaction)):
         <?php endforeach; ?>
     </div>
     <?php
+    require 'show_statistical.ctp';
 else:
     echo '<h3>You have not anything transaction.</h3>';
     echo $this->Html->link('Add new transaction', array(
