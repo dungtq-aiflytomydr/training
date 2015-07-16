@@ -45,10 +45,12 @@ class TransactionsController extends AppController
      */
     public function add()
     {
+        $this->redirectIfCurrentWalletNotExists();
+
         date_default_timezone_set("Asia/Ho_Chi_Minh");
 
         $this->set('listCategory', $this->Category->getListCategoryByWalletId(
-                        AuthComponent::user('current_wallet')['id']));
+                        AuthComponent::user('current_wallet')));
         $this->set('title_for_layout', 'Add Transaction');
 
         if (!$this->request->is('post', 'put')) {
@@ -64,7 +66,7 @@ class TransactionsController extends AppController
                 $create_time = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
             }
             $this->request->data['Transaction']['create_time'] = $create_time;
-            $this->request->data['Transaction']['wallet_id']   = AuthComponent::user('current_wallet')['id'];
+            $this->request->data['Transaction']['wallet_id']   = AuthComponent::user('current_wallet');
 
             if ($this->Transaction->createTransaction($this->request->data)) {
 
@@ -82,6 +84,8 @@ class TransactionsController extends AppController
      */
     public function listSortByDate()
     {
+        $this->redirectIfCurrentWalletNotExists();
+
         $listTransaction = $this->getListTransaction();
         $listTransaction = $this->showListTransactionByDate($listTransaction);
 
@@ -97,6 +101,8 @@ class TransactionsController extends AppController
      */
     public function listSortByCategory()
     {
+        $this->redirectIfCurrentWalletNotExists();
+
         $listTransaction = $this->getListTransaction();
         $listTransaction = $this->showListTransactionByCategory($listTransaction);
 
@@ -113,7 +119,7 @@ class TransactionsController extends AppController
     private function getListTransaction()
     {
         $listTransaction = $this->Transaction->getListTransactionsByWalletId(
-                AuthComponent::user('current_wallet')['id']);
+                AuthComponent::user('current_wallet'));
 
         //convert any properties of transaction: money (1000 => 1.000), category_id(int) => object
         foreach ($listTransaction as $key => $transaction) {
@@ -141,13 +147,13 @@ class TransactionsController extends AppController
         return array(
             'income'  => $this->convertMoney($this->_totalIncome),
             'expense' => $this->convertMoney($this->_totalExpense),
-            'balance' => $this->convertMoney(AuthComponent::user('current_wallet')['balance']),
+            'balance' => $this->convertMoney(AuthComponent::user('current_wallet_info')['balance']),
             'total'   => $this->convertMoney(
-                    AuthComponent::user('current_wallet')['balance'] + $this->_totalIncome - $this->_totalExpense
+                    AuthComponent::user('current_wallet_info')['balance'] + $this->_totalIncome - $this->_totalExpense
             ),
             'unit'    => $this->Unit->find('first', array(
                 'conditions' => array(
-                    'Unit.id' => AuthComponent::user('current_wallet')['unit_id'],
+                    'Unit.id' => AuthComponent::user('current_wallet_info')['unit_id'],
                 ),
             ))['Unit'],
         );
@@ -167,7 +173,7 @@ class TransactionsController extends AppController
 
         $this->set('title_for_layout', 'Edit transaction');
         $this->set('listCategory', $this->Category->getListCategoryByWalletId(
-                        AuthComponent::user('current_wallet')['id']));
+                        AuthComponent::user('current_wallet')));
         $this->set('transactionObj', $transactionObj);
 
         if (!$this->request->is('post', 'put')) {
@@ -318,6 +324,21 @@ class TransactionsController extends AppController
             }
         }
         return $newList;
+    }
+
+    /**
+     * Check current wallet exists or not
+     * 
+     * If not exists -> not add & show list category
+     */
+    private function redirectIfCurrentWalletNotExists()
+    {
+        if (empty(AuthComponent::user('current_wallet'))) {
+            return $this->redirect(array(
+                        'controller' => 'wallets',
+                        'action'     => 'listWallet',
+            ));
+        }
     }
 
 }

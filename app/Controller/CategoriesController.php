@@ -39,6 +39,7 @@ class CategoriesController extends AppController
      */
     public function add()
     {
+        $this->redirectIfCurrentWalletNotExists();
         $this->set('title_for_layout', 'Add Category');
 
         if (!$this->request->is('post', 'put')) {
@@ -73,6 +74,7 @@ class CategoriesController extends AppController
      */
     public function listCategories()
     {
+        $this->redirectIfCurrentWalletNotExists();
         $listCategories = $this->Category->getListCategoryByWalletId(
                 AuthComponent::user('current_wallet')
         );
@@ -160,6 +162,21 @@ class CategoriesController extends AppController
             return false;
         }
         return '/' . $rootFolder . $fileObj['name'];
+    }
+
+    /**
+     * Check current wallet exists or not
+     * 
+     * If not exists -> not add & show list category
+     */
+    private function redirectIfCurrentWalletNotExists()
+    {
+        if (empty(AuthComponent::user('current_wallet'))) {
+            return $this->redirect(array(
+                        'controller' => 'wallets',
+                        'action'     => 'listWallet',
+            ));
+        }
     }
 
 }
