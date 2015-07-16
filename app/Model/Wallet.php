@@ -63,18 +63,6 @@ class Wallet extends AppModel
     );
 
     /**
-     * relationship belongsTo User
-     * 
-     * @var array 
-     */
-    public $belongsTo = array(
-        'User' => array(
-            'className'  => 'User',
-            'foreignKey' => 'id',
-        ),
-    );
-
-    /**
      * if user not setup icon => unset property icon
      * 
      * @return boolean
@@ -124,31 +112,110 @@ class Wallet extends AppModel
     }
 
     /**
-     * get list wallet by any conditions
+     * Get list wallet by User id
      * 
-     * @param array $conditions Array conditions
+     * @param int $userId User id
      * @return array
      */
-    public function getListWallet($conditions)
+    public function getListWalletByUserId($userId)
     {
         return $this->find('all', array(
-                    'conditions' => $conditions,
+                    'conditions' => array(
+                        'user_id' => $userId
+                    ),
+        ));
+    }
+
+    /**
+     * Get number records wallet by user id
+     * 
+     * @param int $userId User id
+     * @return number
+     */
+    public function getNumWalletsByUserId($userId)
+    {
+        return $this->find('count', array(
+                    'conditions' => array(
+                        'user_id' => $userId,
+                    ),
+        ));
+    }
+
+    /**
+     * Bind model hasOne
+     * 
+     * @param string $model Model name
+     */
+    public function bindModelHasOne($model)
+    {
+        $this->bindModel(array(
+            'hasOne' => array(
+                $model => array(
+                    'className'  => $model,
+                    'foreignKey' => 'id',
+                ),
+            ),
+        ));
+    }
+
+    /**
+     * Bind model hasMany
+     * 
+     * @param string $model Model name
+     */
+    public function bindModelHasMany($model)
+    {
+        $this->bindModel(array(
+            'hasMany' => array(
+                $model => array(
+                    'className'  => $model,
+                    'foreignKey' => 'id',
+                ),
+            ),
+        ));
+    }
+
+    /**
+     * Bind model belongsTo
+     * 
+     * @param string $model Model name
+     */
+    public function bindModelBelongsTo($model)
+    {
+        $this->bindModel(array(
+            'belongsTo' => array(
+                $model => array(
+                    'className'  => $model,
+                    'foreignKey' => 'id',
+                )
+            ),
+        ));
+    }
+
+    /**
+     * Unbind model belongsTo
+     * 
+     * @param string $model Model name
+     */
+    public function unbindModelBelongsTo($model)
+    {
+        $this->unbindModel(array(
+            'belongsTo' => array($model)
         ));
     }
 
     /**
      * Get wallet information by any conditions
      * 
-     * Ex: $model->getWallet('all', array('id' => 1, 'name' => 'First'));
-     * 
-     * @param string $findType Select type get data(all | first | count | neighbors | list | threaded)
-     * @param array $conditions Array conditions
-     * @return mixed
+     * @param int $userId User id
+     * @return array
      */
-    public function getWallet($findType, $conditions)
+    public function getFirstWalletByUserId($userId)
     {
-        return $this->find($findType, array(
-                    'conditions' => $conditions,
+        return $this->find('first', array(
+                    'conditions' => array(
+                        'user_id' => $userId,
+                    ),
         ));
     }
 

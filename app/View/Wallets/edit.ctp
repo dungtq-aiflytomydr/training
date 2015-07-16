@@ -7,6 +7,12 @@
         $optionUnit[$value['Unit']['id']] = $value['Unit']['name'] . ' (' . $value['Unit']['signature'] . ')';
     endforeach;
 
+    //process wallet's icon
+    $icon = '/img/wallet.png';
+    if (!empty($wallet['Wallet']['icon'])) {
+        $icon = $wallet['Wallet']['icon'];
+    }
+
     echo $this->Form->create('Wallet', array(
         'inputDefaults' => array(
             'div' => array(
@@ -25,7 +31,7 @@
         'label'    => 'Icon',
         'type'     => 'file',
         'class'    => 'form-control',
-        'between'  => "<div class='icon-preview form-group'><img class='wl-icon-preview' src='" . $wallet['Wallet']['icon'] . "'/></div>",
+        'between'  => "<div class='icon-preview form-group'><img class='wl-icon-preview' src='" . $icon . "'/></div>",
         'required' => false,
     ));
     echo $this->Form->input('unit_id', array(

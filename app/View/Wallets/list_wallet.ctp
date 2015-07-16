@@ -17,7 +17,13 @@
                 <?php foreach ($listWallet as $key => $wallet): ?>
                     <tr>
                         <td><?php echo ($key + 1); ?></td>
-                        <td><img class="img-26px" src="<?php echo $wallet['Wallet']['icon']; ?>"/></td>
+                        <td><img class="img-26px" src="<?php
+                                 if (!empty($wallet['Wallet']['icon'])) {
+                                     echo $wallet['Wallet']['icon'];
+                                 } else {
+                                     echo '/img/wallet.png';
+                                 }
+                                 ?>"/></td>
                         <td><?php echo $wallet['Wallet']['name']; ?></td>
                         <td><?php echo $wallet['Wallet']['balance']; ?></td>
                         <td><?php echo $wallet['Unit']['name'] . ' (' . $wallet['Unit']['signature'] . ')'; ?></td>

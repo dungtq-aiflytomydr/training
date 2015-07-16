@@ -44,7 +44,13 @@
                             <?php else : ?>
                                 <li class="dropdown">
                                     <?php if (!empty(AuthComponent::user('current_wallet'))): ?>
-                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="u-ava" src="<?php echo AuthComponent::user('current_wallet')['icon']; ?>" />
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="u-ava" src="<?php
+                                            if (!empty(AuthComponent::user('current_wallet')['icon'])) {
+                                                echo AuthComponent::user('current_wallet')['icon'];
+                                            } else {
+                                                echo '/img/wallet.png';
+                                            }
+                                            ?>" />
                                             <?php echo AuthComponent::user('current_wallet')['name']; ?> <span class="caret"></span></a>
                                         <?php else: ?>
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Wallet <span class="caret"></span></a>
