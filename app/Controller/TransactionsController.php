@@ -28,7 +28,21 @@ class TransactionsController extends AppController
      * @var $_totalExpense int 
      */
     private $_totalIncome  = 0, $_totalExpense = 0;
-    private $_maxIncome    = 0, $_maxExpense   = 0;
+
+    /**
+     * params to save max amount of transaction
+     * 
+     * @var $_maxIncome int Save max amount if transaction have expense_type equal in 
+     * @var $_maxExpense int Save max amount if transaction have expense_type equal out 
+     */
+    private $_maxIncome  = 0, $_maxExpense = 0;
+
+    /**
+     * params to save transaction element have max amount
+     *
+     * @var $_eleMaxIncome Save transaction element have max amount with expense_type equal in
+     * @var $_eleMaxExpense Save transaction element have max amount with expense_type equal out
+     */
     private $_eleMaxIncome, $_eleMaxExpense;
 
     /**
