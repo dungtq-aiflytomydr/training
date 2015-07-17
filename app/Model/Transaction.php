@@ -63,6 +63,23 @@ class Transaction extends AppModel
     }
 
     /**
+     * Get list transaction within current wallet and array data contain time
+     * 
+     * @param array $data Array have time want to find ex: (array('start_time' => 123213, 'end_time' => 200000))
+     * @return array
+     */
+    public function getListTransactionsByDate($data)
+    {
+        return $this->find('all', array(
+                    'conditions' => array(
+                        'Transaction.wallet_id'      => AuthComponent::user('current_wallet'),
+                        'Transaction.create_time >=' => $data['start_time'],
+                        'Transaction.create_time <=' => $data['end_time'],
+                    ),
+        ));
+    }
+
+    /**
      * Delete transaction by id
      * 
      * @param int $id Transaction id

@@ -117,3 +117,12 @@ img.wl-icon-preview{
     margin-bottom: 3%;
     text-align: right;
 }
+
+.rp-area{
+    margin: 5% 0 5% 0;
+    overflow: hidden;
+}
+
+.rp-row, .rp-box-date{
+    overflow: hidden;
+}

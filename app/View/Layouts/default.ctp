@@ -74,6 +74,7 @@
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/add' ?>">New Transaction</a></li>
                                             <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/listSortByDate' ?>">List Transaction</a></li>
+                                            <li><a href="<?php echo Router::fullBaseUrl() . '/transactions/report' ?>">Report</a></li>
                                         </ul>
                                     </li>
                                     <?php

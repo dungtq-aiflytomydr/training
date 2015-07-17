@@ -297,7 +297,7 @@ class UsersController extends AppController
     {
         $userObj = $this->User->getByToken($id, $token);
         if (empty($userObj)) {
-            throw NotFoundException('Could not find that user.');
+            throw new NotFoundException('Could not find that user.');
         }
 
         if ($this->request->is('post')) {
