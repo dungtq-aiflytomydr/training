@@ -5,11 +5,11 @@
         <tbody>
             <tr>
                 <td>Income</td>
-                <td><?php echo $statistical_data['income'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
+                <td><?php echo $statistical_data['incomeConvert'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td>Expense</td>
-                <td><?php echo $statistical_data['expense'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
+                <td><?php echo $statistical_data['expenseConvert'] . ' (' . $statistical_data['unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td>Balance</td>

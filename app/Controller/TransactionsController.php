@@ -15,7 +15,7 @@ class TransactionsController extends AppController
      * 
      * @var type 
      */
-    public $helpers = array(
+    public $helpers         = array(
         'Form',
         'Html',
         'Session',
@@ -102,10 +102,10 @@ class TransactionsController extends AppController
     {
         $this->__redirectIfCurrentWalletNotExists();
 
-        $listTransaction = $this->getListTransaction();
-        $listTransaction = $this->processShowByDate($listTransaction);
+        $listTransaction = $this->__getListTransaction();
+        $listTransaction = $this->__processShowByDate($listTransaction);
 
-        $statistical_data = $this->getInfoForStatistical();
+        $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
         $this->set('statistical_data', $statistical_data);
@@ -119,60 +119,14 @@ class TransactionsController extends AppController
     {
         $this->__redirectIfCurrentWalletNotExists();
 
-        $listTransaction = $this->getListTransaction();
-        $listTransaction = $this->processShowByCategory($listTransaction);
+        $listTransaction = $this->__getListTransaction();
+        $listTransaction = $this->__processShowByCategory($listTransaction);
 
-        $statistical_data = $this->getInfoForStatistical();
+        $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
-    }
-
-    /**
-     * get list transaction by current wallet
-     */
-    private function getListTransaction()
-    {
-        $listTransaction = $this->Transaction->getListTransactionsByWalletId(
-                AuthComponent::user('current_wallet'));
-
-        //convert any properties of transaction: money (1000 => 1.000), category_id(int) => object
-        foreach ($listTransaction as $key => $transaction) {
-
-            //instead 'category_id' property = category's information
-            $listTransaction[$key]['Transaction']['category_id'] = $this->Category->getCategoryById(
-                    $transaction['Transaction']['category_id']);
-
-            $listTransaction[$key]['Transaction']['amount'] = $this->convertMoney(
-                    $transaction['Transaction']['amount']);
-
-            //process other infor like: total income, total expense...
-            $this->processAmount(
-                    $transaction['Transaction']['amount'], $listTransaction[$key]['Transaction']['category_id']['expense_type']);
-        }
-
-        return $listTransaction;
-    }
-
-    /**
-     * get other transaction's information for show statistical
-     */
-    private function getInfoForStatistical()
-    {
-        return array(
-            'income'  => $this->convertMoney($this->__totalIncome),
-            'expense' => $this->convertMoney($this->__totalExpense),
-            'balance' => $this->convertMoney(AuthComponent::user('current_wallet_info')['balance']),
-            'total'   => $this->convertMoney(
-                    AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense
-            ),
-            'unit'    => $this->Unit->find('first', array(
-                'conditions' => array(
-                    'Unit.id' => AuthComponent::user('current_wallet_info')['unit_id'],
-                ),
-            ))['Unit'],
-        );
     }
 
     /**
@@ -200,11 +154,10 @@ class TransactionsController extends AppController
         if ($this->Transaction->validates()) {
 
             //process datetime
-            $create_time = $transactionObj['Transaction']['create_time'];
             if (!empty($this->request->data['Transaction']['create_time'])) {
-                $create_time = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
+                $create_time                                       = strtotime($this->request->data['Transaction']['create_time']);
+                $this->request->data['Transaction']['create_time'] = $create_time;
             }
-            $this->request->data['Transaction']['create_time'] = $create_time;
 
             $isUpdated = $this->Transaction->updateTransactionById($id, $this->request->data);
             if ($isUpdated) {
@@ -242,86 +195,6 @@ class TransactionsController extends AppController
     }
 
     /**
-     * convert money (ex: 1000 => 1.000)
-     * 
-     * @param int $money
-     * @return string
-     */
-    private function convertMoney($money)
-    {
-        return number_format($money, null, null, '.');
-    }
-
-    /**
-     * process amount by expense type
-     * 
-     * @param int $amount Money was used in transaction
-     * @param string $expense_type Income or Expense
-     */
-    private function processAmount($amount, $expense_type)
-    {
-        if ($expense_type == 'in') {
-            $this->__totalIncome += $amount;
-        } else {
-            $this->__totalExpense += $amount;
-        }
-    }
-
-    /**
-     * show list transaction by date range
-     * 
-     * @param array $array list transaction get from database
-     * @return array
-     */
-    private function processShowByDate($array)
-    {
-        $newList = array(); //new list after sort by date
-
-        foreach ($array as $key => $value) {
-
-            unset($array[$key]);
-
-            //if $value have create_time not exists in list key of $newList => add
-            if (!array_key_exists($value['Transaction']['create_time'], $newList)) {
-
-                //find all transactions have create_time equals $value
-                $newList[$value['Transaction']['create_time']] = array(
-                    'listTransaction' => $this->__findPropertyTogether($array, 'create_time', $value),
-                    'create_time'     => $value['Transaction']['create_time'],
-                );
-            }
-        }
-        return $newList;
-    }
-
-    /**
-     * show list transaction by category
-     * 
-     * @param array $array List transaction get from database
-     * @return array
-     */
-    private function processShowByCategory($array)
-    {
-        $newList = array(); //new list after sort by category
-
-        foreach ($array as $key => $value) {
-
-            unset($array[$key]);
-
-            //if $value have create_time not exists in list key of $newList => add
-            if (!array_key_exists($value['Transaction']['category_id']['id'], $newList)) {
-
-                //find all transactions have create_time equals $value
-                $newList[$value['Transaction']['category_id']['id']] = array(
-                    'listTransaction' => $this->__findPropertyTogether($array, 'category_id', $value),
-                    'category'        => $this->Category->getCategoryById($value['Transaction']['category_id']),
-                );
-            }
-        }
-        return $newList;
-    }
-
-    /**
      * Report transactions
      * @param string $dateTime date time want to show report
      */
@@ -332,13 +205,13 @@ class TransactionsController extends AppController
         //process date time
         if (!empty($dateTime)) {
             $month = substr($dateTime, 0, 2);
-            $year  = substr($dateTime, 2, 4);
+            $year  = substr($dateTime, 2, strlen($dateTime));
         } else {
-            $dateTime = date('d-m-Y', time());
+            $dateTime = date('m-Y', time());
             $dateTime = explode('-', $dateTime);
 
-            $month = $dateTime[1];
-            $year  = $dateTime[2];
+            $month = $dateTime[0];
+            $year  = $dateTime[1];
         }
 
         $startTime = strtotime($year . '-' . $month . '-' . '01');
@@ -357,34 +230,70 @@ class TransactionsController extends AppController
         $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
 
         foreach ($listTransaction as $key => $transaction) {
-            //instead 'category_id' property = category's information
-            $listTransaction[$key]['Transaction']['category_id'] = $this->Category->getCategoryById(
+            //get category's information of each transaction
+            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getCategoryById(
                     $transaction['Transaction']['category_id']);
 
-            //process other infor like: total income, total expense...
-            $this->processAmount(
-                    $transaction['Transaction']['amount'], $listTransaction[$key]['Transaction']['category_id']['expense_type']);
-
+            //find transaction have max amount within each expense_type
             $this->__maxTransactionByExpenseType($listTransaction[$key]);
         }
 
         $listTransaction = $this->__processShowReport($listTransaction);
 
-        $statisticalData = array(
-            'expense'    => $this->__totalExpense,
-            'income'     => $this->__totalIncome,
-            'maxIncome'  => $this->__eleMaxIncome['Transaction'],
-            'maxExpense' => $this->__eleMaxExpense['Transaction'],
-            'total'      => AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense,
-            'unit'       => $this->Unit->find('first', array(
+        $statisticalData = $this->__getInfoForStatistical();
+
+        $this->set('statistical_data', $statisticalData);
+        $this->set('listTransaction', $listTransaction);
+    }
+
+    /**
+     * get list transaction by current wallet
+     */
+    private function __getListTransaction()
+    {
+        $listTransaction = $this->Transaction->getListTransactionsByWalletId(
+                AuthComponent::user('current_wallet'));
+
+        foreach ($listTransaction as $key => $transaction) {
+
+            //instead 'category_id' property = category's information
+            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getCategoryById(
+                    $transaction['Transaction']['category_id']);
+
+            //process other infor like: total income, total expense...
+            $this->__processAmount($listTransaction[$key]);
+
+            $listTransaction[$key]['Transaction']['amount'] = $this->__convertMoney(
+                    $transaction['Transaction']['amount']);
+        }
+
+        return $listTransaction;
+    }
+
+    /**
+     * get other transaction's information for show statistical
+     * 
+     * @return array
+     */
+    private function __getInfoForStatistical()
+    {
+        return array(
+            'income'         => $this->__totalIncome,
+            'incomeConvert'  => $this->__convertMoney($this->__totalIncome),
+            'expense'        => $this->__totalExpense,
+            'expenseConvert' => $this->__convertMoney($this->__totalExpense),
+            'maxIncome'      => $this->__eleMaxIncome['Transaction'],
+            'maxExpense'     => $this->__eleMaxExpense['Transaction'],
+            'balance'        => $this->__convertMoney(AuthComponent::user('current_wallet_info')['balance']),
+            'total'          => $this->__convertMoney(
+                    AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense
+            ),
+            'unit'           => $this->Unit->find('first', array(
                 'conditions' => array(
                     'Unit.id' => AuthComponent::user('current_wallet_info')['unit_id'],
                 ),
             ))['Unit'],
         );
-
-        $this->set('statistical_data', $statisticalData);
-        $this->set('listTransaction', $listTransaction);
     }
 
     /**
@@ -402,12 +311,91 @@ class TransactionsController extends AppController
             unset($array[$key]);
 
             //if $value have create_time not exists in list key of $newList => add
-            if (!array_key_exists($value['Transaction']['category_id']['id'], $newList)) {
+            if (!array_key_exists($value['Transaction']['category_info']['id'], $newList)) {
 
-                //find all transactions have create_time equals $value
-                $newList[$value['Transaction']['category_id']['id']] = array(
+                //find all transactions have category_id equals category_id of $value
+                $newList[$value['Transaction']['category_info']['id']] = array(
                     'totalMoney' => $this->__sumMoneyOfCategory($array, $value),
-                    'category'   => $this->Category->getCategoryById($value['Transaction']['category_id']['id']),
+                    'category'   => $value['Transaction']['category_info'],
+                );
+            }
+        }
+        return $newList;
+    }
+
+    /**
+     * convert money (ex: 1000 => 1.000)
+     * 
+     * @param int $money
+     * @return string
+     */
+    private function __convertMoney($money)
+    {
+        return number_format($money, null, null, '.');
+    }
+
+    /**
+     * process amount by expense type
+     * 
+     * @param object $transaction Transaction data
+     */
+    private function __processAmount($transaction)
+    {
+        if ($transaction['Transaction']['category_info']['expense_type'] == 'in') {
+            $this->__totalIncome += $transaction['Transaction']['amount'];
+        } else {
+            $this->__totalExpense += $transaction['Transaction']['amount'];
+        }
+    }
+
+    /**
+     * show list transaction by date range
+     * 
+     * @param array $array list transaction get from database
+     * @return array
+     */
+    private function __processShowByDate($array)
+    {
+        $newList = array(); //new list after sort by date
+
+        foreach ($array as $key => $value) {
+
+            unset($array[$key]);
+
+            //if $value have create_time not exists in list key of $newList => add
+            if (!array_key_exists($value['Transaction']['create_time'], $newList)) {
+
+                //find all transactions have create_time equals create_time of $value
+                $newList[$value['Transaction']['create_time']] = array(
+                    'listTransaction' => $this->__findPropertyTogether($array, 'create_time', $value),
+                    'create_time'     => $value['Transaction']['create_time'],
+                );
+            }
+        }
+        return $newList;
+    }
+
+    /**
+     * show list transaction by category
+     * 
+     * @param array $array List transaction get from database
+     * @return array
+     */
+    private function __processShowByCategory($array)
+    {
+        $newList = array(); //new list after sort by category
+
+        foreach ($array as $key => $value) {
+
+            unset($array[$key]);
+
+            //if $value have create_time not exists in list key of $newList => add
+            if (!array_key_exists($value['Transaction']['category_info']['id'], $newList)) {
+
+                //find all transactions have category_id equals category_id of $value
+                $newList[$value['Transaction']['category_info']['id']] = array(
+                    'listTransaction' => $this->__findPropertyTogether($array, 'category_info', $value),
+                    'category'        => $value['Transaction']['category_info'],
                 );
             }
         }
@@ -439,19 +427,21 @@ class TransactionsController extends AppController
      */
     private function __maxTransactionByExpenseType($transaction)
     {
-        if ($transaction['Transaction']['category_id']['expense_type'] == 'in') {
+        if ($transaction['Transaction']['category_info']['expense_type'] == 'in') {
+            //sum amount of transaction have expense_type = income
+            $this->__totalIncome += $transaction['Transaction']['amount'];
 
             if ($transaction['Transaction']['amount'] > $this->__maxIncome) {
                 $this->__maxIncome    = $transaction['Transaction']['amount'];
                 $this->__eleMaxIncome = $transaction;
             }
         } else {
+            //sum amount of transaction have expense_type = expense
+            $this->__totalExpense += $transaction['Transaction']['amount'];
 
-            if ($transaction['Transaction']['category_id']['expense_type'] == 'out') {
-                if ($transaction['Transaction']['amount'] > $this->__maxExpense) {
-                    $this->__maxExpense    = $transaction['Transaction']['amount'];
-                    $this->__eleMaxExpense = $transaction;
-                }
+            if ($transaction['Transaction']['amount'] > $this->__maxExpense) {
+                $this->__maxExpense    = $transaction['Transaction']['amount'];
+                $this->__eleMaxExpense = $transaction;
             }
         }
     }

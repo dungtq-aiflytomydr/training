@@ -1,6 +1,6 @@
-<h3>Expense (Total: <?php echo convert_money($statistical_data['expense']) . ' ' . $unit; ?>)</h3>
+<h3>Expense (Total: <?php echo $statistical_data['expenseConvert'] . ' ' . $unit; ?>)</h3>
 <h4>Maximum: <?php
-    echo $statistical_data['maxExpense']['category_id']['name'] .
+    echo $statistical_data['maxExpense']['category_info']['name'] .
     ' (' . convert_money($statistical_data['maxExpense']['amount']) . ' ' . $unit . ')'
     ?>
 </h4>

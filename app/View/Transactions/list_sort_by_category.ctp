@@ -9,7 +9,13 @@ if (!empty($listTransaction)):
         <?php
         foreach ($listTransaction as $key => $listChild) :
             ?>
-            <h3 class="clr-red"><img class="img-26px" src="<?php echo $listChild['category']['icon']; ?>"/> <?php echo $listChild['category']['name']; ?></h3>
+            <h3 class="<?php
+            if ($listChild['category']['expense_type'] == 'in') {
+                echo 'clr-red';
+            } else {
+                echo 'clr-green';
+            }
+            ?>"><img class="img-26px" src="<?php echo $listChild['category']['icon']; ?>"/> <?php echo $listChild['category']['name']; ?></h3>
             <div class="table-responsive">
                 <table class="table">
                     <thead>

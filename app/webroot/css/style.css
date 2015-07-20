@@ -47,6 +47,10 @@ footer{
     color: red;
 }
 
+.clr-green{
+    color: green;
+}
+
 textarea#UserAddress{
     resize: vertical;
 }

@@ -2,7 +2,7 @@
     <td><?php echo date('d-m-Y', $transaction['Transaction']['create_time']); ?></td>
     <td><?php echo $transaction['Transaction']['amount']; ?></td>
     <td><?php
-        if ($transaction['Transaction']['category_id']['expense_type'] == 'in') :
+        if ($transaction['Transaction']['category_info']['expense_type'] == 'in') :
             echo 'Income';
         else :
             echo 'Expense';
