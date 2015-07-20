@@ -50,11 +50,13 @@ class CategoriesController extends AppController
         if ($this->Category->validates()) {
 
             //process icon upload
+            $catIcon = null;
             if ($this->request->data['Category']['icon']['size'] > 0) {
-                $this->request->data['Category']['icon'] = $this->__processUploadImage(
+                $catIcon = $this->__processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
             }
 
+            $this->request->data['Category']['icon']      = $catIcon;
             $this->request->data['Category']['wallet_id'] = AuthComponent::user('current_wallet');
 
             if ($this->Category->createCategory($this->request->data)) {
@@ -101,10 +103,12 @@ class CategoriesController extends AppController
         }
 
         //process icon upload
+        $catIcon = $catObj['Category']['icon'];
         if (!empty($this->request->data['Category']['icon']['size'] > 0)) {
-            $this->request->data['Category']['icon'] = $this->__processUploadImage(
+            $catIcon = $this->__processUploadImage(
                     AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
         }
+        $this->request->data['Category']['icon'] = $catIcon;
 
         $this->Category->set($this->request->data);
         if ($this->Category->validates()) {

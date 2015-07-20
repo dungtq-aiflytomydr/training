@@ -61,7 +61,7 @@ class AppController extends Controller
                     ),
                     'scope'          => array('is_active' => true)
                 )
-            )
+            ),
         )
     );
 

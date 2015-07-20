@@ -44,12 +44,13 @@ class WalletsController extends AppController
         }
 
         //process wallet's icon
+        $walletIcon = null;
         if ($this->request->data['Wallet']['icon']['size'] > 0) {
-            $walletIcon                            = $this->__processUploadImage(
+            $walletIcon = $this->__processUploadImage(
                     AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
-            $this->request->data['Wallet']['icon'] = $walletIcon;
         }
 
+        $this->request->data['Wallet']['icon']     = $walletIcon;
         $this->request->data['Wallet']['is_setup'] = true;
         $this->request->data['Wallet']['user_id']  = AuthComponent::user('id');
 
@@ -125,11 +126,12 @@ class WalletsController extends AppController
         if ($this->Wallet->validates()) {
 
             //process wallet's icon
+            $walletIcon = $walletObj['Wallet']['icon'];
             if ($this->request->data['Wallet']['icon']['size'] > 0) {
-                $walletIcon                            = $this->__processUploadImage(
+                $walletIcon = $this->__processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
-                $this->request->data['Wallet']['icon'] = $walletIcon;
             }
+            $this->request->data['Wallet']['icon'] = $walletIcon;
 
             $updateResult = $this->Wallet->updateWalletById($id, $this->request->data);
             if ($updateResult) {
@@ -212,6 +214,12 @@ class WalletsController extends AppController
             $currentWalletId = null;
             if (!empty($walletChoose)) {
                 $currentWalletId = $walletChoose['Wallet']['id'];
+
+                $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']['id']);
+                $this->Session->write('Auth.User.current_wallet_info', $walletChoose['Wallet']);
+            } else {
+                $this->Session->write('Auth.User.current_wallet', null);
+                $this->Session->write('Auth.User.current_wallet_info', null);
             }
 
             $dataUserUpdate = array(
@@ -219,8 +227,6 @@ class WalletsController extends AppController
             );
 
             $this->User->updateUserById(AuthComponent::user('id'), $dataUserUpdate);
-            $this->Session->write('Auth.User.current_wallet', $walletChoose['Wallet']['id']);
-            $this->Session->write('Auth.User.current_wallet_info', $walletChoose['Wallet']);
         }
 
         return $this->redirect(array(

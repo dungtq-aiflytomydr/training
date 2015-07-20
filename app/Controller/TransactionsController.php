@@ -15,7 +15,7 @@ class TransactionsController extends AppController
      * 
      * @var type 
      */
-    public $helpers         = array(
+    public $helpers = array(
         'Form',
         'Html',
         'Session',
@@ -372,6 +372,7 @@ class TransactionsController extends AppController
                 );
             }
         }
+
         return $newList;
     }
 

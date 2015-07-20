@@ -92,9 +92,6 @@ class UsersController extends AppController
             if (!empty($this->request->data['User']['avatar']['size'])) {
                 $userAvatar = $this->processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['User']['avatar']);
-                if ($userAvatar) {
-                    return $this->Session->setFlash("Upload image have error! Please check again.");
-                }
             }
 
             $this->request->data['User']['avatar'] = $userAvatar;
