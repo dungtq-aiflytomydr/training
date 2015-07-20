@@ -44,13 +44,12 @@ class WalletsController extends AppController
         }
 
         //process wallet's icon
-        $walletIcon = null;
         if ($this->request->data['Wallet']['icon']['size'] > 0) {
-            $walletIcon = $this->processUploadImage(
+            $walletIcon                            = $this->__processUploadImage(
                     AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
+            $this->request->data['Wallet']['icon'] = $walletIcon;
         }
 
-        $this->request->data['Wallet']['icon']     = $walletIcon;
         $this->request->data['Wallet']['is_setup'] = true;
         $this->request->data['Wallet']['user_id']  = AuthComponent::user('id');
 
@@ -58,9 +57,9 @@ class WalletsController extends AppController
         if ($this->Wallet->validates()) {
             if ($this->Wallet->createWallet($this->request->data)) {
 
+                //check if user have not anything wallet => set default wallet
                 $manyWallet = $this->Wallet->getNumWalletsByUserId(AuthComponent::user('id'));
 
-                //check if user have not anything wallet => set default wallet
                 if ($manyWallet == 1) {
                     $currentWalletId = $this->Wallet->getInsertID();
 
@@ -95,8 +94,8 @@ class WalletsController extends AppController
 
         //convert wallet information
         foreach ($listWallet as $key => $value) {
-            $listWallet[$key]['Wallet']['balance'] = $this->convertMoney($value['Wallet']['balance']);
-            $listWallet[$key]['Unit']              = $this->getUnitById($value['Wallet']['unit_id']);
+            $listWallet[$key]['Wallet']['balance'] = $this->__convertMoney($value['Wallet']['balance']);
+            $listWallet[$key]['Unit']              = $this->__getUnitById($value['Wallet']['unit_id']);
         }
 
         $this->set('listWallet', $listWallet);
@@ -126,18 +125,17 @@ class WalletsController extends AppController
         if ($this->Wallet->validates()) {
 
             //process wallet's icon
-            $walletIcon = $walletObj['Wallet']['icon'];
             if ($this->request->data['Wallet']['icon']['size'] > 0) {
-                $walletIcon = $this->processUploadImage(
+                $walletIcon                            = $this->__processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
+                $this->request->data['Wallet']['icon'] = $walletIcon;
             }
-            $this->request->data['Wallet']['icon'] = $walletIcon;
 
             $updateResult = $this->Wallet->updateWalletById($id, $this->request->data);
             if ($updateResult) {
 
+                //update session for current_wallet_info
                 $walletInfo = $this->Wallet->getWalletById($id);
-                //update session
                 $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
 
                 $this->Session->setFlash("Update Wallet's information complete.");
@@ -169,10 +167,11 @@ class WalletsController extends AppController
         $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $dataUpdate);
         if ($updateResult) {
 
-            $walletInfo = $this->Wallet->getWalletById($id);
             //update session Auth.User.current_wallet
+            $walletInfo = $this->Wallet->getWalletById($id);
             $this->Session->write('Auth.User.current_wallet', $id);
             $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
+
             return $this->redirect(array(
                         'controller' => 'transactions',
                         'action'     => 'listSortByDate',
@@ -205,7 +204,7 @@ class WalletsController extends AppController
 
         $this->Wallet->deleteWalletById($id);
 
-        //if wallet want to delete have id equals current wallet id => update current_wallet
+        //if wallet want to delete have id equals current_wallet id => set default wallet for other wallet
         if ($id == AuthComponent::user('current_wallet')) {
 
             $walletChoose = $this->Wallet->getFirstWalletByUserId(AuthComponent::user('id'));
@@ -237,7 +236,7 @@ class WalletsController extends AppController
      * @param type $fileObj File image upload
      * @return string
      */
-    private function processUploadImage($rootFolder, $fileObj)
+    private function __processUploadImage($rootFolder, $fileObj)
     {
         $target_dir  = WWW_ROOT . $rootFolder;
         $target_file = $target_dir . basename($fileObj["name"]);
@@ -253,7 +252,7 @@ class WalletsController extends AppController
      * 
      * @param int $unit_id Unit id
      */
-    private function getUnitById($unit_id)
+    private function __getUnitById($unit_id)
     {
         return $this->Unit->findById($unit_id)['Unit'];
     }
@@ -264,7 +263,7 @@ class WalletsController extends AppController
      * @param int $money
      * @return string
      */
-    private function convertMoney($money)
+    private function __convertMoney($money)
     {
         return number_format($money, 0, '', '.');
     }
