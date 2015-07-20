@@ -20,7 +20,7 @@ if (!empty($listTransaction)) {
     <?php
     require 'report_expense.ctp';
 } else {
-    echo '<h3>Không có dữ liệu :)</h3>';
+    echo '<h3>Not found data :)</h3>';
 }
 ?>
 <script type="text/javascript">

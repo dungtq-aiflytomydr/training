@@ -30,9 +30,9 @@ if (!empty($listTransaction)):
                     </thead>
                     <tbody>
                         <?php
-                        foreach ($listChild['listTransaction'] as $key => $transaction) {
+                        foreach ($listChild['listTransaction'] as $key => $transaction) :
                             require 'list_sort_date.ctp';
-                        }
+                        endforeach;
                         ?>
                     </tbody>
                 </table>

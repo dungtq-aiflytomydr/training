@@ -4,9 +4,9 @@ echo $this->Html->script('Transactions/processTransaction');
 //format category for input select option category
 $catSelect = array();
 
-foreach ($listCategory as $key => $category) {
+foreach ($listCategory as $key => $category) :
     $catSelect[$category['Category']['id']] = $category['Category']['name'];
-}
+endforeach;
 ?>
 <div class="popupLogin">
     <?php
@@ -46,6 +46,7 @@ foreach ($listCategory as $key => $category) {
         'type'     => 'text',
         'label'    => 'Time',
         'class'    => 'form-control',
+        'default'  => date('d-m-Y', time()),
         'required' => false,
     ));
 

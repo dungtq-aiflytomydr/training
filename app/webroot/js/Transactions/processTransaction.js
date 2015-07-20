@@ -3,19 +3,8 @@ var Transactions = function () {
     var processCreateTime = function () {
         //process show datepicker for create_time
         $("#TransactionCreateTime").kendoDatePicker({
-            format: "dd/MM/yyyy"
+            format: "dd-MM-yyyy"
         });
-
-        var currentUrl = window.location.pathname;     // Returns full URL
-
-        //process datetime for edit form
-        if (currentUrl.indexOf("edit") >= 0) {
-            var day = $(".k-input").val().split("-");
-            day = new Date(day[2], day[1] - 1, day[0]);
-
-            $('.k-input').data("kendoDatePicker").value(day);
-        }
-
     };
 
     var processSortBy = function () {
@@ -46,7 +35,7 @@ var Transactions = function () {
         }
 
         var day = new Date(year, month - 1);
-        $('.k-input').data("kendoDatePicker").value(day);
+        $('#rp-date').data("kendoDatePicker").value(day);
 
         $('#rp-date').change(function () {
             var date = $(this).val().split('-');

@@ -4,9 +4,9 @@ echo $this->Html->script('Transactions/processTransaction');
 //format category for input select option category
 $catSelect = array();
 
-foreach ($listCategory as $key => $category) {
+foreach ($listCategory as $key => $category) :
     $catSelect[$category['Category']['id']] = $category['Category']['name'];
-}
+endforeach;
 ?>
 <div class="popupLogin">
     <?php
@@ -47,7 +47,7 @@ foreach ($listCategory as $key => $category) {
     echo $this->Form->input('create_time', array(
         'type'     => 'text',
         'label'    => 'Time',
-        'class'    => 'form-control editTime',
+        'class'    => 'form-control',
         'default'  => date('d-m-Y', $transactionObj['Transaction']['create_time']),
         'required' => false,
     ));

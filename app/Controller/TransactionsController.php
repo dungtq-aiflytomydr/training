@@ -24,26 +24,26 @@ class TransactionsController extends AppController
     /**
      * params for get information from transaction like: total income, total expense
      * 
-     * @var $_totalIncome int 
-     * @var $_totalExpense int 
+     * @var $__totalIncome int 
+     * @var $__totalExpense int 
      */
-    private $_totalIncome  = 0, $_totalExpense = 0;
+    private $__totalIncome  = 0, $__totalExpense = 0;
 
     /**
      * params to save max amount of transaction
      * 
-     * @var $_maxIncome int Save max amount if transaction have expense_type equal in 
-     * @var $_maxExpense int Save max amount if transaction have expense_type equal out 
+     * @var $__maxIncome int Save max amount if transaction have expense_type equal in 
+     * @var $__maxExpense int Save max amount if transaction have expense_type equal out 
      */
-    private $_maxIncome  = 0, $_maxExpense = 0;
+    private $__maxIncome  = 0, $__maxExpense = 0;
 
     /**
      * params to save transaction element have max amount
      *
-     * @var $_eleMaxIncome Save transaction element have max amount with expense_type equal in
-     * @var $_eleMaxExpense Save transaction element have max amount with expense_type equal out
+     * @var$___maxExpense Save transaction element have max amount with expense_type equal in
+     * @var $__eleMaxExpense Save transaction element have max amount with expense_type equal out
      */
-    private $_eleMaxIncome, $_eleMaxExpense;
+    private $__eleMaxIncome, $__eleMaxExpense;
 
     /**
      * default function => redirect to listCategories
@@ -61,7 +61,7 @@ class TransactionsController extends AppController
      */
     public function add()
     {
-        $this->redirectIfCurrentWalletNotExists();
+        $this->__redirectIfCurrentWalletNotExists();
 
         date_default_timezone_set("Asia/Ho_Chi_Minh");
 
@@ -79,7 +79,7 @@ class TransactionsController extends AppController
             //process create_time
             $create_time = time();
             if (!empty($this->request->data['Transaction']['create_time'])) {
-                $create_time = strtotime(str_replace('/', '-', $this->request->data['Transaction']['create_time']));
+                $create_time = strtotime($this->request->data['Transaction']['create_time']);
             }
             $this->request->data['Transaction']['create_time'] = $create_time;
             $this->request->data['Transaction']['wallet_id']   = AuthComponent::user('current_wallet');
@@ -100,7 +100,7 @@ class TransactionsController extends AppController
      */
     public function listSortByDate()
     {
-        $this->redirectIfCurrentWalletNotExists();
+        $this->__redirectIfCurrentWalletNotExists();
 
         $listTransaction = $this->getListTransaction();
         $listTransaction = $this->processShowByDate($listTransaction);
@@ -117,7 +117,7 @@ class TransactionsController extends AppController
      */
     public function listSortByCategory()
     {
-        $this->redirectIfCurrentWalletNotExists();
+        $this->__redirectIfCurrentWalletNotExists();
 
         $listTransaction = $this->getListTransaction();
         $listTransaction = $this->processShowByCategory($listTransaction);
@@ -161,11 +161,11 @@ class TransactionsController extends AppController
     private function getInfoForStatistical()
     {
         return array(
-            'income'  => $this->convertMoney($this->_totalIncome),
-            'expense' => $this->convertMoney($this->_totalExpense),
+            'income'  => $this->convertMoney($this->__totalIncome),
+            'expense' => $this->convertMoney($this->__totalExpense),
             'balance' => $this->convertMoney(AuthComponent::user('current_wallet_info')['balance']),
             'total'   => $this->convertMoney(
-                    AuthComponent::user('current_wallet_info')['balance'] + $this->_totalIncome - $this->_totalExpense
+                    AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense
             ),
             'unit'    => $this->Unit->find('first', array(
                 'conditions' => array(
@@ -261,9 +261,9 @@ class TransactionsController extends AppController
     private function processAmount($amount, $expense_type)
     {
         if ($expense_type == 'in') {
-            $this->_totalIncome += $amount;
+            $this->__totalIncome += $amount;
         } else {
-            $this->_totalExpense += $amount;
+            $this->__totalExpense += $amount;
         }
     }
 
@@ -286,7 +286,7 @@ class TransactionsController extends AppController
 
                 //find all transactions have create_time equals $value
                 $newList[$value['Transaction']['create_time']] = array(
-                    'listTransaction' => $this->findPropertyTogether($array, 'create_time', $value),
+                    'listTransaction' => $this->__findPropertyTogether($array, 'create_time', $value),
                     'create_time'     => $value['Transaction']['create_time'],
                 );
             }
@@ -313,7 +313,7 @@ class TransactionsController extends AppController
 
                 //find all transactions have create_time equals $value
                 $newList[$value['Transaction']['category_id']['id']] = array(
-                    'listTransaction' => $this->findPropertyTogether($array, 'category_id', $value),
+                    'listTransaction' => $this->__findPropertyTogether($array, 'category_id', $value),
                     'category'        => $this->Category->getCategoryById($value['Transaction']['category_id']),
                 );
             }
@@ -365,17 +365,17 @@ class TransactionsController extends AppController
             $this->processAmount(
                     $transaction['Transaction']['amount'], $listTransaction[$key]['Transaction']['category_id']['expense_type']);
 
-            $this->maxTransactionByExpenseType($listTransaction[$key]);
+            $this->__maxTransactionByExpenseType($listTransaction[$key]);
         }
 
-        $listTransaction = $this->processShowReport($listTransaction);
+        $listTransaction = $this->__processShowReport($listTransaction);
 
         $statisticalData = array(
-            'expense'    => $this->_totalExpense,
-            'income'     => $this->_totalIncome,
-            'maxIncome'  => $this->_eleMaxIncome['Transaction'],
-            'maxExpense' => $this->_eleMaxExpense['Transaction'],
-            'total'      => AuthComponent::user('current_wallet_info')['balance'] + $this->_totalIncome - $this->_totalExpense,
+            'expense'    => $this->__totalExpense,
+            'income'     => $this->__totalIncome,
+            'maxIncome'  => $this->__eleMaxIncome['Transaction'],
+            'maxExpense' => $this->__eleMaxExpense['Transaction'],
+            'total'      => AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense,
             'unit'       => $this->Unit->find('first', array(
                 'conditions' => array(
                     'Unit.id' => AuthComponent::user('current_wallet_info')['unit_id'],
@@ -393,7 +393,7 @@ class TransactionsController extends AppController
      * @param array $array
      * @return array
      */
-    private function processShowReport($array)
+    private function __processShowReport($array)
     {
         $newList = array(); //new list after sort by category
 
@@ -406,7 +406,7 @@ class TransactionsController extends AppController
 
                 //find all transactions have create_time equals $value
                 $newList[$value['Transaction']['category_id']['id']] = array(
-                    'totalMoney' => $this->sumMoneyOfCategory($array, $value),
+                    'totalMoney' => $this->__sumMoneyOfCategory($array, $value),
                     'category'   => $this->Category->getCategoryById($value['Transaction']['category_id']['id']),
                 );
             }
@@ -421,11 +421,11 @@ class TransactionsController extends AppController
      * @param object $objCompare Transaction object want to add sum
      * @return int
      */
-    private function sumMoneyOfCategory($array, $objCompare)
+    private function __sumMoneyOfCategory($array, $objCompare)
     {
         $sumMoney = $objCompare['Transaction']['amount'];
         foreach ($array as $value) {
-            if ($objCompare['Transaction']['category_id'] == $value['Transaction']['category_id']) {
+            if ($objCompare['Transaction']['category_id'] === $value['Transaction']['category_id']) {
                 $sumMoney += $value['Transaction']['amount'];
             }
         }
@@ -437,20 +437,20 @@ class TransactionsController extends AppController
      * 
      * @param object $transaction Transaction object
      */
-    private function maxTransactionByExpenseType($transaction)
+    private function __maxTransactionByExpenseType($transaction)
     {
         if ($transaction['Transaction']['category_id']['expense_type'] == 'in') {
 
-            if ($transaction['Transaction']['amount'] > $this->_maxIncome) {
-                $this->_maxIncome    = $transaction['Transaction']['amount'];
-                $this->_eleMaxIncome = $transaction;
+            if ($transaction['Transaction']['amount'] > $this->__maxIncome) {
+                $this->__maxIncome    = $transaction['Transaction']['amount'];
+                $this->__eleMaxIncome = $transaction;
             }
         } else {
 
             if ($transaction['Transaction']['category_id']['expense_type'] == 'out') {
-                if ($transaction['Transaction']['amount'] > $this->_maxExpense) {
-                    $this->_maxExpense    = $transaction['Transaction']['amount'];
-                    $this->_eleMaxExpense = $transaction;
+                if ($transaction['Transaction']['amount'] > $this->__maxExpense) {
+                    $this->__maxExpense    = $transaction['Transaction']['amount'];
+                    $this->__eleMaxExpense = $transaction;
                 }
             }
         }
@@ -464,7 +464,7 @@ class TransactionsController extends AppController
      * @param object $objCompare Object want to compare
      * @return array
      */
-    private function findPropertyTogether($array, $property, $objCompare)
+    private function __findPropertyTogether($array, $property, $objCompare)
     {
         $newList   = array(); //array contains elements have same property
         $newList[] = $objCompare;
@@ -482,7 +482,7 @@ class TransactionsController extends AppController
      * 
      * If not exists -> not add & show list category
      */
-    private function redirectIfCurrentWalletNotExists()
+    private function __redirectIfCurrentWalletNotExists()
     {
         if (empty(AuthComponent::user('current_wallet'))) {
             return $this->redirect(array(
