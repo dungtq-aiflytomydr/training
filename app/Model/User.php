@@ -175,7 +175,7 @@ class User extends AppModel
      * @param string $model Model name
      * @param array $options Setting more attribute, example: 'order' => 'Model.created DESC'
      */
-    private function bindModelHasMany($model, $options = null)
+    private function __bindModelHasMany($model, $options = null)
     {
         $this->bindModel(array(
             'hasMany' => array(
@@ -192,7 +192,7 @@ class User extends AppModel
      */
     public function bindWallet()
     {
-        $this->bindModelHasMany('Wallet');
+        $this->__bindModelHasMany('Wallet');
     }
 
     /**

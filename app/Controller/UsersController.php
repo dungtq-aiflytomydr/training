@@ -87,6 +87,7 @@ class UsersController extends AppController
         $this->User->set($this->request->data);
         if ($this->User->validates()) {
 
+            //process avatar
             $userAvatar = AuthComponent::user('avatar');
             if (!empty($this->request->data['User']['avatar']['size'])) {
                 $userAvatar = $this->processUploadImage(
@@ -103,8 +104,9 @@ class UsersController extends AppController
             if ($updateResult) {
 
                 //if update data success => update auth session
-                $walletInfo = $this->Auth->user('current_wallet');
                 $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
+
+                $walletInfo = $this->Auth->user('current_wallet');
                 if (!empty($walletInfo)) {
                     $this->Session->write('Auth.User.current_wallet_info', $walletInfo);
                 }
@@ -189,7 +191,7 @@ class UsersController extends AppController
             'view'    => 'activate',
         );
 
-        if ($this->sendEmail($createdUser['User'], $emailConfig)) {
+        if ($this->__sendEmail($createdUser['User'], $emailConfig)) {
             $this->Session->setFlash('Register completed! Please check your email for validation link!');
             return $this->redirect(array(
                         'controller' => 'users',
@@ -211,7 +213,7 @@ class UsersController extends AppController
         $userObj = $this->User->getByToken($id, $token);
 
         if (empty($userObj)) {
-            throw new BadRequestException('Could not find that user or that user was active.');
+            throw new BadRequestException('Could not find that user or that user was actived.');
         }
 
         if (!$userObj['User']['is_active']) {
@@ -225,25 +227,6 @@ class UsersController extends AppController
                     'controller' => 'users',
                     'action'     => 'login',
         ));
-    }
-
-    /**
-     * config and process send email
-     * 
-     * @param array $user - user infomation
-     * @param array $emailConfig - email information: subject, view (layout for display email content)
-     * @return type mixed
-     */
-    private function sendEmail($user, $emailConfig)
-    {
-        $Email = new CakeEmail();
-        $Email->config('default')
-                ->from(array('timetolove9x36@gmail.com' => 'Administrator Training.dev'))
-                ->to($user['email'])
-                ->subject($emailConfig['subject'])
-                ->template($emailConfig['view'], 'default')
-                ->viewVars($user);
-        return $Email->send();
     }
 
     /**
@@ -278,7 +261,7 @@ class UsersController extends AppController
 
                 $userObj = $this->User->getById($userObj['User']['id']);
 
-                if ($this->sendEmail($userObj['User'], $emailConfig)) {
+                if ($this->__sendEmail($userObj['User'], $emailConfig)) {
                     return $this->Session->setFlash('Please check your email for new password.');
                 }
             }
@@ -326,6 +309,24 @@ class UsersController extends AppController
     {
         parent::beforeFilter();
         $this->Auth->allow('register', 'activate', 'forgotPwd', 'resetPwd');
+    }
+
+    /**
+     * config and process send email
+     * 
+     * @param array $user - user infomation
+     * @param array $emailConfig - email information: subject, view (layout for display email content)
+     * @return type mixed
+     */
+    private function __sendEmail($user, $emailConfig)
+    {
+        $Email = new CakeEmail();
+        $Email->config('default')
+                ->to($user['email'])
+                ->subject($emailConfig['subject'])
+                ->template($emailConfig['view'], 'default')
+                ->viewVars($user);
+        return $Email->send();
     }
 
 }
