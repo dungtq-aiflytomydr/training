@@ -88,7 +88,7 @@ class Category extends AppModel
     /**
      * get list category by wallet id
      * 
-     * @param int $name Wallet id
+     * @param int $walletId Wallet id
      * @return array|null
      */
     public function getListCategoryByWalletId($walletId)

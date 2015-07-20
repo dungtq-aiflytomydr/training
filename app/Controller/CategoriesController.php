@@ -39,7 +39,7 @@ class CategoriesController extends AppController
      */
     public function add()
     {
-        $this->redirectIfCurrentWalletNotExists();
+        $this->__redirectIfCurrentWalletNotExists();
         $this->set('title_for_layout', 'Add Category');
 
         if (!$this->request->is('post', 'put')) {
@@ -50,16 +50,16 @@ class CategoriesController extends AppController
         if ($this->Category->validates()) {
 
             //process icon upload
-            $catIcon = null;
             if ($this->request->data['Category']['icon']['size'] > 0) {
-                $catIcon = $this->processUploadImage(
+                $this->request->data['Category']['icon'] = $this->__processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
             }
-            $this->request->data['Category']['icon']      = $catIcon;
+
             $this->request->data['Category']['wallet_id'] = AuthComponent::user('current_wallet');
 
             if ($this->Category->createCategory($this->request->data)) {
                 $this->Session->setFlash("Add new category complete.");
+
                 return $this->redirect(array(
                             'controller' => 'categories',
                             'action'     => 'listCategories',
@@ -74,10 +74,10 @@ class CategoriesController extends AppController
      */
     public function listCategories()
     {
-        $this->redirectIfCurrentWalletNotExists();
+        $this->__redirectIfCurrentWalletNotExists();
+
         $listCategories = $this->Category->getListCategoryByWalletId(
-                AuthComponent::user('current_wallet')
-        );
+                AuthComponent::user('current_wallet'));
         $this->set('listCategories', $listCategories);
     }
 
@@ -101,12 +101,10 @@ class CategoriesController extends AppController
         }
 
         //process icon upload
-        $catIcon = $catObj['Category']['icon'];
         if (!empty($this->request->data['Category']['icon']['size'] > 0)) {
-            $catIcon = $this->processUploadImage(
+            $this->request->data['Category']['icon'] = $this->__processUploadImage(
                     AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
         }
-        $this->request->data['Category']['icon'] = $catIcon;
 
         $this->Category->set($this->request->data);
         if ($this->Category->validates()) {
@@ -153,7 +151,7 @@ class CategoriesController extends AppController
      * @param type $fileObj File image upload
      * @return string
      */
-    private function processUploadImage($rootFolder, $fileObj)
+    private function __processUploadImage($rootFolder, $fileObj)
     {
         $target_dir  = WWW_ROOT . $rootFolder;
         $target_file = $target_dir . basename($fileObj["name"]);
@@ -169,7 +167,7 @@ class CategoriesController extends AppController
      * 
      * If not exists -> not add & show list category
      */
-    private function redirectIfCurrentWalletNotExists()
+    private function __redirectIfCurrentWalletNotExists()
     {
         if (empty(AuthComponent::user('current_wallet'))) {
             return $this->redirect(array(
