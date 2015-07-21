@@ -1,5 +1,3 @@
-<?php echo $this->Html->script('Transactions/processTransaction'); ?>
-
 <?php
 require 'select_option_sort.ctp';
 
@@ -24,9 +22,3 @@ if (!empty($listTransaction)) {
         'action'     => 'add',
     ));
 }
-?>
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        Transactions.init();
-    });
-</script>

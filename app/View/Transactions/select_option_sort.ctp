@@ -1,3 +1,4 @@
+<?php echo $this->Html->script('Transactions/processTransaction'); ?>
 <h3 class="align-center">List transaction</h3>
 <div class="option-sort-area">
     <?php if (strpos(Router::url(), 'report') === false): ?>
@@ -38,3 +39,8 @@
         <input id="rp-date"/>
     </div>
 </div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        Transactions.init();
+    });
+</script>

@@ -1,6 +1,4 @@
 <?php
-echo $this->Html->script('Transactions/processTransaction');
-
 if (!empty($listTransaction)):
 
     require 'select_option_sort.ctp';
@@ -49,8 +47,3 @@ else:
     ));
 endif;
 ?>
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        Transactions.init();
-    });
-</script>
