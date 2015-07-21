@@ -11,9 +11,9 @@ if (!empty($listTransaction)):
             ?>
             <h3 class="<?php
             if ($listChild['category']['expense_type'] == 'in') {
-                echo 'clr-red';
-            } else {
                 echo 'clr-green';
+            } else {
+                echo 'clr-red';
             }
             ?>"><img class="img-26px" src="<?php echo $listChild['category']['icon']; ?>"/> <?php echo $listChild['category']['name']; ?></h3>
             <div class="table-responsive">
@@ -41,7 +41,7 @@ if (!empty($listTransaction)):
     <?php
     require 'show_statistical.ctp';
 else:
-    echo '<h3>You have not anything transaction.</h3>';
+    echo '<h3>Not found data :)</h3>';
     echo $this->Html->link('Add new transaction', array(
         'controller' => 'transactions',
         'action'     => 'add',

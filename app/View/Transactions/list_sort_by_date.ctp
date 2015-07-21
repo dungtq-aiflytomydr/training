@@ -42,7 +42,7 @@ if (!empty($listTransaction)):
     <?php
     require 'show_statistical.ctp';
 else:
-    echo '<h3>You have not anything transaction.</h3>';
+    echo '<h3>Not found data :)</h3>';
     echo $this->Html->link('Add new transaction', array(
         'controller' => 'transactions',
         'action'     => 'add',

@@ -127,6 +127,15 @@ img.wl-icon-preview{
     overflow: hidden;
 }
 
-.rp-row, .rp-box-date{
+.rp-row, .rp-box-date, .option-sort-area{
     overflow: hidden;
+}
+
+.option-sort-area{
+    margin-top: 2%;
+}
+
+.rp-box-date{
+    float: right;
+    margin-right: 3%;
 }

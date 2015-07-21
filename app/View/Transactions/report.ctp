@@ -1,10 +1,8 @@
 <?php echo $this->Html->script('Transactions/processTransaction'); ?>
-<div class="rp-box-date">
-    <input style="float:right;" id="rp-date"/>
-    <h4 style="float: right;">Report by month: </h4>
-</div>
 
 <?php
+require 'select_option_sort.ctp';
+
 if (!empty($listTransaction)) {
 
     function convert_money($money)
@@ -21,6 +19,10 @@ if (!empty($listTransaction)) {
     require 'report_expense.ctp';
 } else {
     echo '<h3>Not found data :)</h3>';
+    echo $this->Html->link('Add new transaction', array(
+        'controller' => 'transactions',
+        'action'     => 'add',
+    ));
 }
 ?>
 <script type="text/javascript">

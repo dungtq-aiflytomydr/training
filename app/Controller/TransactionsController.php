@@ -98,16 +98,20 @@ class TransactionsController extends AppController
     /**
      * show list transaction sort by date
      */
-    public function listSortByDate()
+    public function listSortByDate($dateTime = null)
     {
         $this->__redirectIfCurrentWalletNotExists();
 
-        $listTransaction = $this->__getListTransaction();
+        $findTime = $this->__processFindDateTime($dateTime);
+
+        $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
+        $listTransaction = $this->__convertElementInListTransaction($listTransaction);
         $listTransaction = $this->__processShowByDate($listTransaction);
 
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
+        $this->set('date_time', $dateTime);
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
     }
@@ -115,16 +119,20 @@ class TransactionsController extends AppController
     /**
      * show list transaction sort by category
      */
-    public function listSortByCategory()
+    public function listSortByCategory($dateTime = null)
     {
         $this->__redirectIfCurrentWalletNotExists();
 
-        $listTransaction = $this->__getListTransaction();
+        $findTime = $this->__processFindDateTime($dateTime);
+
+        $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
+        $listTransaction = $this->__convertElementInListTransaction($listTransaction);
         $listTransaction = $this->__processShowByCategory($listTransaction);
 
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
+        $this->set('date_time', $dateTime);
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
     }
@@ -200,9 +208,38 @@ class TransactionsController extends AppController
      */
     public function report($dateTime = null)
     {
+        $findTime = $this->__processFindDateTime($dateTime);
+
+        $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
+
+        foreach ($listTransaction as $key => $transaction) {
+            //get category's information of each transaction
+            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getCategoryById(
+                    $transaction['Transaction']['category_id']);
+
+            //find transaction have max amount within each expense_type
+            $this->__maxTransactionByExpenseType($listTransaction[$key]);
+        }
+
+        $listTransaction = $this->__processShowReport($listTransaction);
+
+        $statisticalData = $this->__getInfoForStatistical();
+
+        $this->set('date_time', $dateTime);
+        $this->set('statistical_data', $statisticalData);
+        $this->set('listTransaction', $listTransaction);
+    }
+
+    /**
+     * Process find date time
+     * 
+     * @param string $dateTime Date time can convert
+     * @return array
+     */
+    private function __processFindDateTime($dateTime)
+    {
         date_default_timezone_set("Asia/Ho_Chi_Minh");
 
-        //process date time
         if (!empty($dateTime)) {
             $month = substr($dateTime, 0, 2);
             $year  = substr($dateTime, 2, strlen($dateTime));
@@ -222,38 +259,20 @@ class TransactionsController extends AppController
         }
 
         //array datetime want to show report
-        $findTime = array(
+        return array(
             'start_time' => $startTime,
             'end_time'   => $endTime,
         );
-
-        $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
-
-        foreach ($listTransaction as $key => $transaction) {
-            //get category's information of each transaction
-            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getCategoryById(
-                    $transaction['Transaction']['category_id']);
-
-            //find transaction have max amount within each expense_type
-            $this->__maxTransactionByExpenseType($listTransaction[$key]);
-        }
-
-        $listTransaction = $this->__processShowReport($listTransaction);
-
-        $statisticalData = $this->__getInfoForStatistical();
-
-        $this->set('statistical_data', $statisticalData);
-        $this->set('listTransaction', $listTransaction);
     }
 
     /**
      * get list transaction by current wallet
+     * 
+     * @param array $listTransaction List transaction
+     * @return array
      */
-    private function __getListTransaction()
+    private function __convertElementInListTransaction($listTransaction)
     {
-        $listTransaction = $this->Transaction->getListTransactionsByWalletId(
-                AuthComponent::user('current_wallet'));
-
         foreach ($listTransaction as $key => $transaction) {
 
             //instead 'category_id' property = category's information

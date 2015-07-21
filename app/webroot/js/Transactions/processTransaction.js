@@ -1,31 +1,18 @@
 var Transactions = function () {
 
-    var processCreateTime = function () {
-        //process show datepicker for create_time
-        $("#TransactionCreateTime").kendoDatePicker({
-            format: "dd-MM-yyyy"
-        });
-    };
+    var currentUrl = window.location.pathname; // Returns full URL: domain/controller/method/param
 
-    var processSortBy = function () {
-        $('#sortBy').change(function () {
-            var url = $('#myNavbar').attr('data-url');
-            window.location.href = url + '/transactions/' + $(this).val();
-        });
-    };
-
-    var reportByDate = function () {
-
-        var month, year;
-
+    function setupTime() {
         $('#rp-date').kendoDatePicker({
             start: "year",
             depth: "year",
             format: 'MM-yyyy'
         });
 
-        var currentUrl = window.location.pathname;     // Returns full URL
+        var month, year;
+
         var urlArr = currentUrl.split('/');
+
         if (typeof urlArr[3] === 'undefined') {
             year = new Date().getFullYear();
             month = new Date().getMonth() + 1;
@@ -36,11 +23,41 @@ var Transactions = function () {
 
         var day = new Date(year, month - 1);
         $('#rp-date').data("kendoDatePicker").value(day);
+    }
+
+    var processCreateTime = function () {
+        //process show datepicker for create_time
+        $("#TransactionCreateTime").kendoDatePicker({
+            format: "dd-MM-yyyy"
+        });
+    };
+
+    var processSortBy = function () {
+
+        if (currentUrl.indexOf('listSortByCategory') >= 0
+                || currentUrl.indexOf('listSortByDate') >= 0) {
+            setupTime();
+        }
+
+        $('#sortBy').change(function () {
+            if ($(this).val() === 'listSortByCategory') {
+                window.location.href = currentUrl.replace("listSortByDate", "listSortByCategory");
+            } else {
+                window.location.href = currentUrl.replace("listSortByCategory", "listSortByDate");
+            }
+        });
+    };
+
+    var report = function () {
+        var urlArr = currentUrl.split('/');
+
+        if (currentUrl.indexOf('report') >= 0) {
+            setupTime();
+        }
 
         $('#rp-date').change(function () {
             var date = $(this).val().split('-');
-            var url = $('#myNavbar').attr('data-url');
-            url = '/transactions/report/' + date[0] + date[1];
+            url = urlArr[0] + '/' + urlArr[1] + '/' + urlArr[2] + '/' + date[0] + date[1];
 
             window.location.href = url;
         });
@@ -50,7 +67,7 @@ var Transactions = function () {
         init: function () {
             processCreateTime();
             processSortBy();
-            reportByDate();
+            report();
         }
     };
 }();
