@@ -93,6 +93,7 @@ class TransactionsController extends AppController
                 ));
             }
         }
+        $this->set('validationsError', $this->Transaction->validationErrors);
     }
 
     /**

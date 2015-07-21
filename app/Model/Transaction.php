@@ -76,6 +76,7 @@ class Transaction extends AppModel
                         'Transaction.create_time >=' => $data['start_time'],
                         'Transaction.create_time <=' => $data['end_time'],
                     ),
+                    'order'      => 'create_time DESC',
         ));
     }
 

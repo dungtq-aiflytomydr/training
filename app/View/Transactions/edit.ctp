@@ -2,10 +2,14 @@
 echo $this->Html->script('Transactions/processTransaction');
 
 //format category for input select option category
-$catSelect = array();
+$catIncome  = $catExpense = array();
 
 foreach ($listCategory as $key => $category) :
-    $catSelect[$category['Category']['id']] = $category['Category']['name'];
+    if ($category['Category']['expense_type'] == 'in'):
+        $catIncome[$category['Category']['id']] = $category['Category']['name'];
+    else:
+        $catExpense[$category['Category']['id']] = $category['Category']['name'];
+    endif;
 endforeach;
 ?>
 <div class="popupLogin">
@@ -17,15 +21,49 @@ endforeach;
             ),
         ),
     ));
-
-    echo $this->Form->input('category_id', array(
-        'label'    => 'Choose category',
-        'class'    => 'form-control',
-        'options'  => array($catSelect),
-        'default'  => $transactionObj['Transaction']['category_id'],
-        'required' => false,
-    ));
-
+    ?>
+    <div class="form-group error">
+        <label for="TransactionCategoryId">Choose category</label>
+        <select name="data[Transaction][category_id]" class="form-control" id="TransactionCategoryId">
+            <optgroup label="Income">
+                <?php
+                foreach ($catIncome as $key => $cat) {
+                    $isSelected = '';
+                    if (!empty($this->request->data['Transaction']['category_id'])) {
+                        if ($key == $this->request->data['Transaction']['category_id']) {
+                            $isSelected = 'selected';
+                        }
+                    } else {
+                        if ($key == $transactionObj['Transaction']['category_id']) {
+                            $isSelected = 'selected';
+                        }
+                    }
+                    echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
+                }
+                ?>
+            </optgroup>
+            <optgroup label="Expense">
+                <?php
+                foreach ($catExpense as $key => $cat) {
+                    if (!empty($this->request->data['Transaction']['category_id'])) {
+                        if ($key == $this->request->data['Transaction']['category_id']) {
+                            $isSelected = 'selected';
+                        }
+                    } else {
+                        if ($key == $transactionObj['Transaction']['category_id']) {
+                            $isSelected = 'selected';
+                        }
+                    }
+                    echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
+                }
+                ?>
+            </optgroup>
+        </select>
+        <?php if (!empty($validationsError['category_id'])): ?>
+            <div class="error-message">Please select category.</div>
+        <?php endif; ?>
+    </div>
+    <?php
     echo $this->Form->input('amount', array(
         'type'     => 'text',
         'label'    => 'Money',
