@@ -96,7 +96,7 @@ class TransactionsController extends AppController
     }
 
     /**
-     * show list transaction sort by date
+     * show list transaction sort by date (view in month)
      */
     public function listSortByDate($dateTime = null)
     {
@@ -117,7 +117,7 @@ class TransactionsController extends AppController
     }
 
     /**
-     * show list transaction sort by category
+     * show list transaction sort by category (view in month)
      */
     public function listSortByCategory($dateTime = null)
     {
@@ -253,7 +253,13 @@ class TransactionsController extends AppController
 
         $startTime = strtotime($year . '-' . $month . '-' . '01');
         $endTime   = strtotime($year . '-' . $month . '-' . '31');
-        if ($month == '02' || $month == '04' ||
+
+        if ($month == '02') {
+            $endTime = strtotime($year . '-' . $month . '-' . '28');
+            if ($year % 4 == 0) {
+                $endTime = strtotime($year . '-' . $month . '-' . '29');
+            }
+        } elseif ($month == '04' ||
                 $month == '06' || $month == '09' || $month == '11') {
             $endTime = strtotime($year . '-' . $month . '-' . '30');
         }
