@@ -83,7 +83,7 @@ class UsersController extends AppController
         if (!$this->request->is('post', 'put')) {
             return;
         }
-
+        
         $this->User->set($this->request->data);
         if ($this->User->validates()) {
 
@@ -102,12 +102,12 @@ class UsersController extends AppController
 
                 //if update data success => update auth session
                 $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
-
-                $walletInfo = $this->Auth->user('current_wallet');
+                
+                $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
                 if (!empty($walletInfo)) {
-                    $this->Session->write('Auth.User.current_wallet_info', $walletInfo);
+                    $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
                 }
-
+                
                 $this->Session->setFlash("Update profile complete.");
                 return $this->redirect('/');
             }
@@ -179,7 +179,8 @@ class UsersController extends AppController
         $createdUser = $this->User->createUser($this->request->data);
 
         if (empty($createdUser)) {
-            return $this->Session->setFlash('Have error! Please try again.');
+            $this->Session->setFlash('Have error! Please try again.');
+            return;
         }
 
         //config email
@@ -259,10 +260,11 @@ class UsersController extends AppController
                 $userObj = $this->User->getById($userObj['User']['id']);
 
                 if ($this->__sendEmail($userObj['User'], $emailConfig)) {
-                    return $this->Session->setFlash('Please check your email for new password.');
+                    $this->Session->setFlash('Please check your email for new password.');
+                    return;
                 }
             }
-            return $this->Session->setFlash('Have error! Please try again.');
+            $this->Session->setFlash('Have error! Please try again.');
         }
     }
 

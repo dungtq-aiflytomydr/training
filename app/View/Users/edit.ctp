@@ -1,11 +1,11 @@
 <?php
-echo $this->Html->script('Users/processUser');
+echo $this->Html->script('users/processUser');
 $userAva = '/img/ava_default.jpeg';
 if (!empty(AuthComponent::user('avatar'))) {
     $userAva = AuthComponent::user('avatar');
 }
 ?>
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Form->create('User', array(
         'type'          => 'file',

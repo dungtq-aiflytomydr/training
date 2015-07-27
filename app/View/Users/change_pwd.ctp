@@ -1,4 +1,4 @@
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Form->create('User', array(
         'inputDefaults' => array(

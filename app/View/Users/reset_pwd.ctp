@@ -1,5 +1,5 @@
 <h3 class="align-center">Please, create new password to login in system.</h3>
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Form->create('User', array(
         'inputDefaults' => array(

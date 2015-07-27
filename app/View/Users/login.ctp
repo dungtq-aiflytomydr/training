@@ -1,4 +1,4 @@
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Session->flash('auth');
 
