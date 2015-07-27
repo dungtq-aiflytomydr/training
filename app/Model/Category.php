@@ -58,6 +58,7 @@ class Category extends AppModel
      */
     public function createCategory($data)
     {
+        $this->create();
         return $this->save($data);
     }
 

@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('Categories/processCategory');
+echo $this->Html->script('categories/processCategory');
 
 //process category icon
 $icon = '/img/building.png';
@@ -7,7 +7,7 @@ if (!empty($catObj['Category']['icon'])) {
     $icon = $catObj['Category']['icon'];
 }
 ?>
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Form->create('Category', array(
         'inputDefaults' => array(

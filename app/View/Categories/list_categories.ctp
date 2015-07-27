@@ -12,7 +12,9 @@
                 <?php
                 foreach ($listCategories as $category):
                     if ($category['Category']['expense_type'] == 'in'):
-                        require 'list_list_category.ctp';
+                        echo $this->element('categories/list_list_category', array(
+                            'category' => $category,
+                        ));
                     endif;
                 endforeach;
                 ?>
@@ -32,7 +34,9 @@
                 <?php
                 foreach ($listCategories as $category):
                     if ($category['Category']['expense_type'] == 'out'):
-                        require 'list_list_category.ctp';
+                        echo $this->element('categories/list_list_category', array(
+                            'category' => $category,
+                        ));
                     endif;
                 endforeach;
                 ?>

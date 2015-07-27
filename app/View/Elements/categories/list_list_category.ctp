@@ -14,11 +14,9 @@
             $category['Category']['id'],
         ));
         ?></td>
-    <td><?php
-        echo $this->Html->link('Delete', array(
-            'controller' => 'categories',
-            'action'     => 'delete',
-            $category['Category']['id'],
-        ));
+    <td>
+        <?php
+        echo $this->Form->postLink(__('Delete'), array('action' => 'delete',
+            $category['Category']['id']), null, __('Are you sure you want to delete ' . "'" . $category['Category']['name'] . "'"));
         ?></td>
 </tr>

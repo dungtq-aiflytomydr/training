@@ -22,17 +22,6 @@ class CategoriesController extends AppController
     );
 
     /**
-     * default function => redirect to listCategories
-     */
-    public function index()
-    {
-        return $this->redirect(array(
-                    'controller' => 'categories',
-                    'action'     => 'listCategories',
-        ));
-    }
-
-    /**
      * create category info 
      * 
      * @return mixed
@@ -133,6 +122,10 @@ class CategoriesController extends AppController
     public function delete($id)
     {
         $this->autoRender = false;
+
+        if (!$this->request->is('post')) {
+            throw new NotFoundException('Request not found.');
+        }
 
         $catObj = $this->Category->findById($id);
         if (empty($catObj)) {

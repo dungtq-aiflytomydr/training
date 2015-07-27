@@ -1,5 +1,5 @@
-<?php echo $this->Html->script('Categories/processCategory'); ?>
-<div class="popupLogin">
+<?php echo $this->Html->script('categories/processCategory'); ?>
+<div class="popupForm">
     <?php
     echo $this->Form->create('Category', array(
         'inputDefaults' => array(
