@@ -1,5 +1,5 @@
-<?php echo $this->Html->script('Wallets/processWallet'); ?>
-<div class="popupLogin">
+<?php echo $this->Html->script('wallets/processWallet'); ?>
+<div class="popupForm">
     <?php
     //get list unit
     $optionUnit = array();

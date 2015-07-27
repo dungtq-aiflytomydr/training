@@ -14,39 +14,14 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($listWallet as $key => $wallet): ?>
-                    <tr>
-                        <td><?php echo ($key + 1); ?></td>
-                        <td><img class="img-26px" src="<?php
-                                 if (!empty($wallet['Wallet']['icon'])) {
-                                     echo $wallet['Wallet']['icon'];
-                                 } else {
-                                     echo '/img/wallet.png';
-                                 }
-                                 ?>"/></td>
-                        <td><?php echo $wallet['Wallet']['name']; ?></td>
-                        <td><?php echo $wallet['Wallet']['balance']; ?></td>
-                        <td><?php echo $wallet['Unit']['name'] . ' (' . $wallet['Unit']['signature'] . ')'; ?></td>
-                        <td><?php
-                            echo $this->Html->link('Select', array(
-                                'controller' => 'wallets',
-                                'action'     => 'select',
-                                $wallet['Wallet']['id']));
-                            ?></td>
-                        <td><?php
-                            echo $this->Html->link('Edit', array(
-                                'controller' => 'wallets',
-                                'action'     => 'edit',
-                                $wallet['Wallet']['id']));
-                            ?></td>
-                        <td><?php
-                            echo $this->Html->link('Delete', array(
-                                'controller' => 'wallets',
-                                'action'     => 'delete',
-                                $wallet['Wallet']['id']));
-                            ?></td>
-                    </tr>
-                <?php endforeach; ?>
+                <?php
+                foreach ($listWallet as $key => $wallet):
+                    echo $this->element('wallets/list_list_wallet', array(
+                        'key'    => $key,
+                        'wallet' => $wallet,
+                    ));
+                endforeach;
+                ?>
             </tbody>
         </table>
     </div>

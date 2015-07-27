@@ -21,23 +21,12 @@ class WalletsController extends AppController
     );
 
     /**
-     * default function => redirect to /wallets/listWallet
-     */
-    public function index()
-    {
-        return $this->redirect(array(
-                    'controller' => 'wallets',
-                    'action'     => 'listWallet',
-        ));
-    }
-
-    /**
      * add wallet information
      */
     public function add()
     {
         $this->set('title_for_layout', "New wallet");
-        $this->set('unitObj', $this->Unit->find('all'));
+        $this->set('unitObj', $this->Unit->getListUnit());
 
         if (!$this->request->is('post', 'put')) {
             return;
@@ -96,7 +85,7 @@ class WalletsController extends AppController
         //convert wallet information
         foreach ($listWallet as $key => $value) {
             $listWallet[$key]['Wallet']['balance'] = $this->__convertMoney($value['Wallet']['balance']);
-            $listWallet[$key]['Unit']              = $this->__getUnitById($value['Wallet']['unit_id']);
+            $listWallet[$key]['Unit']              = $this->Unit->getUnitById($value['Wallet']['unit_id'])['Unit'];
         }
 
         $this->set('listWallet', $listWallet);
@@ -115,7 +104,7 @@ class WalletsController extends AppController
         }
 
         $this->set('title_for_layout', "Edit wallet");
-        $this->set('unitObj', $this->Unit->find('all'));
+        $this->set('unitObj', $this->Unit->getListUnit());
         $this->set('wallet', $walletObj);
 
         if (!$this->request->is('post', 'put')) {
@@ -191,6 +180,10 @@ class WalletsController extends AppController
     public function delete($id)
     {
         $this->autoRender = false;
+        
+        if (!$this->request->is('post')) {
+            throw new NotFoundException('Could not found request.');
+        }
 
         $walletObj = $this->Wallet->getWalletById($id);
         if (empty($walletObj)) {
@@ -251,16 +244,6 @@ class WalletsController extends AppController
             return false;
         }
         return '/' . $rootFolder . $fileObj['name'];
-    }
-
-    /**
-     * get unit information by id
-     * 
-     * @param int $unit_id Unit id
-     */
-    private function __getUnitById($unit_id)
-    {
-        return $this->Unit->findById($unit_id)['Unit'];
     }
 
     /**

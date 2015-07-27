@@ -49,19 +49,7 @@ class Wallet extends AppModel
             ),
         ),
     );
-
-    /**
-     * relationship hasOne Unit
-     * 
-     * @var array 
-     */
-    public $hasOne = array(
-        'Unit' => array(
-            'className'  => 'Unit',
-            'foreignKey' => 'id',
-        ),
-    );
-
+    
     /**
      * if user not setup icon => unset property icon
      * 
@@ -84,6 +72,7 @@ class Wallet extends AppModel
      */
     public function createWallet($data)
     {
+        $this->create();
         return $this->save($data);
     }
 
