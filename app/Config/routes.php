@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Routes configuration
  *
@@ -24,22 +25,33 @@
  * its action called 'display', and we pass a param to select the view file
  * to use (in this case, /app/View/Pages/home.ctp)...
  */
-	Router::connect('/', array('controller' => 'users', 'action' => 'index', 'home'));
+Router::connect('/', array('controller' => 'users', 'action' => 'index', 'home'));
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
-        Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
 
-        Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
-        Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
+Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
+Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
+
+Router::connect('/transactions', array('controller' => 'transactions', 'action' => 'listSortByDate'));
+Router::connect('/transactions/index', array('controller' => 'transactions', 'action' => 'listSortByDate'));
+
+Router::connect('/wallets', array('controller' => 'wallets', 'action' => 'listWallet'));
+Router::connect('/wallets/index', array('controller' => 'wallets', 'action' => 'listWallet'));
+
+Router::connect('/categories', array('controller' => 'categories', 'action' => 'listCategories'));
+Router::connect('/categories/index', array('controller' => 'categories', 'action' => 'listCategories'));
+
+
 /**
  * Load all plugin routes. See the CakePlugin documentation on
  * how to customize the loading of plugin routes.
  */
-	CakePlugin::routes();
+CakePlugin::routes();
 
 /**
  * Load the CakePHP default routes. Only remove this if you do not want to use
  * the built-in default routes.
  */
-	require CAKE . 'Config' . DS . 'routes.php';
+require CAKE . 'Config' . DS . 'routes.php';
