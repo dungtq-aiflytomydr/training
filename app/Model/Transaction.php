@@ -30,6 +30,7 @@ class Transaction extends AppModel
      */
     public function createTransaction($data)
     {
+        $this->create();
         return $this->save($data);
     }
 

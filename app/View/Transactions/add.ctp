@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('Transactions/processTransaction');
+echo $this->Html->script('transactions/processTransaction');
 
 //format category for input select option category
 $catIncome  = $catExpense = array();
@@ -13,7 +13,7 @@ foreach ($listCategory as $key => $category) :
 //    $catSelect[$category['Category']['id']] = $category['Category']['name'];
 endforeach;
 ?>
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Form->create('Transaction', array(
         'inputDefaults' => array(
@@ -37,13 +37,13 @@ endforeach;
             <option value="">Choose Category</option>
             <optgroup label="Income">
                 <?php
-                foreach ($catIncome as $key => $cat) {
+                foreach ($catIncome as $key => $cat) :
                     $isSelected = '';
-                    if ($key == $this->request->data['Transaction']['category_id']) {
+                    if ($key == $this->request->data['Transaction']['category_id']) :
                         $isSelected = 'selected';
-                    }
+                    endif;
                     echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
-                }
+                endforeach;
                 ?>
             </optgroup>
             <optgroup label="Expense">

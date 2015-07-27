@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('Transactions/processTransaction');
+echo $this->Html->script('transactions/processTransaction');
 
 //format category for input select option category
 $catIncome  = $catExpense = array();
@@ -12,7 +12,7 @@ foreach ($listCategory as $key => $category) :
     endif;
 endforeach;
 ?>
-<div class="popupLogin">
+<div class="popupForm">
     <?php
     echo $this->Form->create('Transaction', array(
         'inputDefaults' => array(

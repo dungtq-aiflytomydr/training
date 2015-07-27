@@ -1,6 +1,7 @@
 var Transactions = function () {
 
     var currentUrl = window.location.pathname; // Returns full URL: domain/controller/method/param
+    var url = $('#myNavbar').attr('data-url');
 
     function setupTime() {
         $('#rp-date').kendoDatePicker({
@@ -9,20 +10,13 @@ var Transactions = function () {
             format: 'MM-yyyy'
         });
 
-        var month, year;
+        var arrUrl = currentUrl.split('/');
+        $('#rp-date').change(function () {
+            var date = $(this).val().split('-');
+            url = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + date[0] + date[1];
 
-        var urlArr = currentUrl.split('/');
-
-        if (typeof urlArr[3] === 'undefined') {
-            year = new Date().getFullYear();
-            month = new Date().getMonth() + 1;
-        } else {
-            month = urlArr[3].substring(0, 2);
-            year = urlArr[3].substring(2, 6);
-        }
-
-        var day = new Date(year, month - 1);
-        $('#rp-date').data("kendoDatePicker").value(day);
+            window.location.href = url;
+        });
     }
 
     var processCreateTime = function () {
@@ -49,18 +43,9 @@ var Transactions = function () {
     };
 
     var report = function () {
-        var urlArr = currentUrl.split('/');
-
         if (currentUrl.indexOf('report') >= 0) {
             setupTime();
         }
-
-        $('#rp-date').change(function () {
-            var date = $(this).val().split('-');
-            url = urlArr[0] + '/' + urlArr[1] + '/' + urlArr[2] + '/' + date[0] + date[1];
-
-            window.location.href = url;
-        });
     };
 
     return{

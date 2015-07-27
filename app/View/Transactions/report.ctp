@@ -1,5 +1,5 @@
 <?php
-require 'select_option_sort.ctp';
+echo $this->element('transactions/select_option_sort');
 
 if (!empty($listTransaction)) {
 
@@ -10,11 +10,15 @@ if (!empty($listTransaction)) {
 
     $unit = $statistical_data['unit']['signature'];
 
-    require 'report_income.ctp';
+    echo $this->element('transactions/report_income', array(
+        'unit' => $unit,
+    ));
     ?>
     <hr/>
     <?php
-    require 'report_expense.ctp';
+    echo $this->element('transactions/report_expense', array(
+        'unit' => $unit,
+    ));
 } else {
     echo '<h3>Not found data :)</h3>';
     echo $this->Html->link('Add new transaction', array(

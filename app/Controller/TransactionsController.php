@@ -46,24 +46,11 @@ class TransactionsController extends AppController
     private $__eleMaxIncome, $__eleMaxExpense;
 
     /**
-     * default function => redirect to listCategories
-     */
-    public function index()
-    {
-        return $this->redirect(array(
-                    'controller' => 'transactions',
-                    'action'     => 'listSortByDate',
-        ));
-    }
-
-    /**
      * add new transaction
      */
     public function add()
     {
         $this->__redirectIfCurrentWalletNotExists();
-
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
 
         $this->set('listCategory', $this->Category->getListCategoryByWalletId(
                         AuthComponent::user('current_wallet')));
@@ -112,7 +99,7 @@ class TransactionsController extends AppController
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
-        $this->set('date_time', $dateTime);
+        $this->set('date_time', $findTime['time']);
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
     }
@@ -133,7 +120,7 @@ class TransactionsController extends AppController
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
-        $this->set('date_time', $dateTime);
+        $this->set('date_time', $findTime['time']);
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
     }
@@ -190,6 +177,10 @@ class TransactionsController extends AppController
     {
         $this->autoRender = false;
 
+        if (!$this->request->is('post')) {
+            throw new NotFoundException('Could not found request.');
+        }
+
         $transactionObj = $this->Transaction->findById($id);
         if (empty($transactionObj)) {
             throw new NotFoundException('Could not find that transaction.');
@@ -225,8 +216,8 @@ class TransactionsController extends AppController
         $listTransaction = $this->__processShowReport($listTransaction);
 
         $statisticalData = $this->__getInfoForStatistical();
-
-        $this->set('date_time', $dateTime);
+        
+        $this->set('date_time', $findTime['time']);
         $this->set('statistical_data', $statisticalData);
         $this->set('listTransaction', $listTransaction);
     }
@@ -239,8 +230,6 @@ class TransactionsController extends AppController
      */
     private function __processFindDateTime($dateTime)
     {
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
-
         if (!empty($dateTime)) {
             $month = substr($dateTime, 0, 2);
             $year  = substr($dateTime, 2, strlen($dateTime));
@@ -269,6 +258,7 @@ class TransactionsController extends AppController
         return array(
             'start_time' => $startTime,
             'end_time'   => $endTime,
+            'time'       => date('m-Y', $startTime),
         );
     }
 
@@ -314,11 +304,7 @@ class TransactionsController extends AppController
             'total'          => $this->__convertMoney(
                     AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense
             ),
-            'unit'           => $this->Unit->find('first', array(
-                'conditions' => array(
-                    'Unit.id' => AuthComponent::user('current_wallet_info')['unit_id'],
-                ),
-            ))['Unit'],
+            'unit'           => $this->Unit->getUnitById(AuthComponent::user('current_wallet_info')['unit_id'])['Unit'],
         );
     }
 

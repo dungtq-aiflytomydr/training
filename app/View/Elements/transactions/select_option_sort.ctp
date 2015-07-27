@@ -1,4 +1,4 @@
-<?php echo $this->Html->script('Transactions/processTransaction'); ?>
+<?php echo $this->Html->script('transactions/processTransaction'); ?>
 <h3 class="align-center">List transaction</h3>
 <div class="option-sort-area">
     <?php if (strpos(Router::url(), 'report') === false): ?>
@@ -7,7 +7,7 @@
             echo $this->Html->link('View report', array(
                 'controller' => 'transactions',
                 'action'     => 'report',
-                $date_time,
+                str_replace('-', '', $date_time),
             ));
             ?>
         </div>
@@ -29,14 +29,14 @@
         echo $this->Html->link('Back', array(
             'controller' => 'transactions',
             'action'     => 'listSortByDate',
-            $date_time,
+            str_replace('-', '', $date_time),
         ));
     endif;
     ?>
 
     <div class="rp-box-date">
         <span>View by month: </span>
-        <input id="rp-date"/>
+        <input id="rp-date" value="<?php echo $date_time; ?>"/>
     </div>
 </div>
 <script type="text/javascript">

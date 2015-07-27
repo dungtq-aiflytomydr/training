@@ -5,9 +5,10 @@
         <title>
             <?php echo $this->fetch('title'); ?>
         </title>
+        <link rel="shortcut icon" type="image/x-icon" href="<?php echo $this->webroot; ?>img/wallet.png"/>
 
         <?php
-        echo $this->Html->meta('icon');
+//        echo $this->Html->meta('icon');
 
         echo $this->Html->css('style');
 

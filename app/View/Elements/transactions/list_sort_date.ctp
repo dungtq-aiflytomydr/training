@@ -24,10 +24,7 @@
         ));
         ?></td>
     <td><?php
-        echo $this->Html->link('Delete', array(
-            'controller' => 'transactions',
-            'action'     => 'delete',
-            $transaction['Transaction']['id'],
-        ));
+        echo $this->Form->postLink(__('Delete'), array('action' => 'delete',
+            $transaction['Transaction']['id']), null, __('Are you sure you want to delete this item?'));
         ?></td>
 </tr>

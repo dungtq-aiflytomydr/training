@@ -1,7 +1,7 @@
 <?php
-if (!empty($listTransaction)):
+echo $this->element('transactions/select_option_sort');
 
-    require 'select_option_sort.ctp';
+if (!empty($listTransaction)):
     ?>
     <div>
         <?php
@@ -28,7 +28,9 @@ if (!empty($listTransaction)):
                     <tbody>
                         <?php
                         foreach ($listChild['listTransaction'] as $key => $transaction) :
-                            require 'list_sort_category.ctp';
+                            echo $this->element('transactions/list_sort_category', array(
+                                'transaction' => $transaction,
+                            ));
                         endforeach;
                         ?>
                     </tbody>
@@ -37,7 +39,7 @@ if (!empty($listTransaction)):
         <?php endforeach; ?>
     </div>
     <?php
-    require 'show_statistical.ctp';
+    echo $this->element('transactions/show_statistical');
 else:
     echo '<h3>Not found data :)</h3>';
     echo $this->Html->link('Add new transaction', array(
