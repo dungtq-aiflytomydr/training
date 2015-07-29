@@ -278,9 +278,6 @@ class TransactionsController extends AppController
 
             //process other infor like: total income, total expense...
             $this->__processAmount($listTransaction[$key]);
-
-            $listTransaction[$key]['Transaction']['amount'] = $this->__convertMoney(
-                    $transaction['Transaction']['amount']);
         }
 
         return $listTransaction;
@@ -294,17 +291,13 @@ class TransactionsController extends AppController
     private function __getInfoForStatistical()
     {
         return array(
-            'income'         => $this->__totalIncome,
-            'incomeConvert'  => $this->__convertMoney($this->__totalIncome),
-            'expense'        => $this->__totalExpense,
-            'expenseConvert' => $this->__convertMoney($this->__totalExpense),
-            'maxIncome'      => $this->__eleMaxIncome['Transaction'],
-            'maxExpense'     => $this->__eleMaxExpense['Transaction'],
-            'balance'        => $this->__convertMoney(AuthComponent::user('current_wallet_info')['balance']),
-            'total'          => $this->__convertMoney(
-                    AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense
-            ),
-            'unit'           => $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id'])['Unit'],
+            'income'     => $this->__totalIncome,
+            'expense'    => $this->__totalExpense,
+            'maxIncome'  => $this->__eleMaxIncome['Transaction'],
+            'maxExpense' => $this->__eleMaxExpense['Transaction'],
+            'balance'    => AuthComponent::user('current_wallet_info')['balance'],
+            'total'      => AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense,
+            'unit'       => $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id'])['Unit'],
         );
     }
 
@@ -333,17 +326,6 @@ class TransactionsController extends AppController
             }
         }
         return $newList;
-    }
-
-    /**
-     * convert money (ex: 1000 => 1.000)
-     * 
-     * @param int $money
-     * @return string
-     */
-    private function __convertMoney($money)
-    {
-        return number_format($money, null, null, '.');
     }
 
     /**

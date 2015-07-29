@@ -8,7 +8,7 @@
              }
              ?>"/></td>
     <td><?php echo $wallet['Wallet']['name']; ?></td>
-    <td><?php echo $wallet['Wallet']['balance']; ?></td>
+    <td><?php echo __convertMoney($wallet['Wallet']['balance']); ?></td>
     <td><?php echo $wallet['Unit']['name'] . ' (' . $wallet['Unit']['signature'] . ')'; ?></td>
     <td><?php
         echo $this->Html->link('Select', array(

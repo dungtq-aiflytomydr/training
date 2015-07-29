@@ -1,6 +1,17 @@
 <?php
 echo $this->element('transactions/select_option_sort');
 
+/**
+ * convert money (ex: 1000 => 1.000)
+ * 
+ * @param int $money
+ * @return string
+ */
+function __convertMoney($money)
+{
+    return number_format($money, null, null, '.');
+}
+
 if (!empty($listTransaction)):
     ?>
     <div>
@@ -8,12 +19,18 @@ if (!empty($listTransaction)):
         foreach ($listTransaction as $key => $listChild) :
             ?>
             <h3 class="<?php
-            if ($listChild['category']['expense_type'] == 'in') {
+            if ($listChild['category']['expense_type'] == 'in') :
                 echo 'clr-green';
-            } else {
+            else :
                 echo 'clr-red';
-            }
-            ?>"><img class="img-26px" src="<?php echo $listChild['category']['icon']; ?>"/> <?php echo $listChild['category']['name']; ?></h3>
+            endif;
+
+            //process icon
+            $icon = '/img/building.png';
+            if (!empty($listChild['category']['icon'])) :
+                $icon = $listChild['category']['icon'];
+            endif;
+            ?>"><img class="img-26px" src="<?php echo $icon; ?>"/> <?php echo $listChild['category']['name']; ?></h3>
             <div class="table-responsive">
                 <table class="table">
                     <thead>

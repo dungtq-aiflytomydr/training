@@ -4,11 +4,11 @@
     <?php if (strpos(Router::url(), 'report') === false): ?>
         <div style="float: left">
             <?php
-            echo $this->Html->link('View report', array(
+            echo '<h4>' . $this->Html->link('View report', array(
                 'controller' => 'transactions',
                 'action'     => 'report',
                 str_replace('-', '', $date_time),
-            ));
+            )) . '</h4>';
             ?>
         </div>
         <div class="sort-by-box" style="float: right;">
@@ -26,11 +26,11 @@
         </div>
         <?php
     else:
-        echo $this->Html->link('Back', array(
+        echo '<h4>' . $this->Html->link('Back', array(
             'controller' => 'transactions',
             'action'     => 'listSortByDate',
             str_replace('-', '', $date_time),
-        ));
+        )) . '</h4>';
     endif;
     ?>
 
@@ -38,6 +38,14 @@
         <span>View by month: </span>
         <input id="rp-date" value="<?php echo $date_time; ?>"/>
     </div>
+</div>
+<div>
+    <h3><?php
+        echo $this->Html->link('Add new transaction', array(
+            'controller' => 'transactions',
+            'action'     => 'add',
+        ));
+        ?></h3>
 </div>
 <script type="text/javascript">
     jQuery(document).ready(function () {

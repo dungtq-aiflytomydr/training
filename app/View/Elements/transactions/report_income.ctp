@@ -1,8 +1,8 @@
 <?php if (!empty($statistical_data['maxIncome'])): ?>
-    <h3>Income (Total: <?php echo $statistical_data['incomeConvert'] . ' ' . $unit; ?>)</h3>
+    <h3>Income (Total: <?php echo __convertMoney($statistical_data['income']) . ' ' . $unit; ?>)</h3>
     <h4>Maximum: <?php
         echo $statistical_data['maxIncome']['category_info']['name'] .
-        ' (' . convert_money($statistical_data['maxIncome']['amount']) . ' ' . $unit . ')'
+        ' (' . __convertMoney($statistical_data['maxIncome']['amount']) . ' ' . $unit . ')'
         ?>
     </h4>
     <small style="display: block;">Transaction at: <?php echo date('d-m-Y', $statistical_data['maxIncome']['create_time']); ?></small>
@@ -14,7 +14,7 @@
                 ?>
                 <div class="rp-row row">
                     <div class="rp-name col-md-3 col-xs-12">
-                        <?php echo $transaction['category']['name'] . ' (' . convert_money($transaction['totalMoney']) . ' ' . $unit . ')'; ?>
+                        <?php echo $transaction['category']['name'] . ' (' . __convertMoney($transaction['totalMoney']) . ' ' . $unit . ')'; ?>
                     </div>
                     <div class="rp-progress-bar col-md-8 col-xs-9">
                         <div class="progress">

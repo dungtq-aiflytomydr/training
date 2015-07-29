@@ -1,5 +1,12 @@
+<?php
+//process icon
+$icon = '/img/building.png';
+if (!empty($transaction['Transaction']['category_info']['icon'])) :
+    $icon = $transaction['Transaction']['category_info']['icon'];
+endif;
+?>
 <tr>
-    <td><img class="img-26px" src="<?php echo $transaction['Transaction']['category_info']['icon']; ?>" /></td>
+    <td><img class="img-26px" src="<?php echo $icon; ?>" /></td>
     <td class="<?php
     if ($transaction['Transaction']['category_info']['expense_type'] == 'in'):
         echo 'clr-green';
@@ -7,7 +14,7 @@
         echo 'clr-red';
     endif;
     ?>"><?php echo $transaction['Transaction']['category_info']['name']; ?></td>
-    <td><?php echo $transaction['Transaction']['amount']; ?></td>
+    <td><?php echo __convertMoney($transaction['Transaction']['amount']); ?></td>
     <td><?php
         if ($transaction['Transaction']['category_info']['expense_type'] == 'in') :
             echo 'Income';

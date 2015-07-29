@@ -1,12 +1,18 @@
 <?php
 echo $this->element('transactions/select_option_sort');
 
-if (!empty($listTransaction)) {
+/**
+ * convert money (ex: 1000 => 1.000)
+ * 
+ * @param int $money
+ * @return string
+ */
+function __convertMoney($money)
+{
+    return number_format($money, null, null, '.');
+}
 
-    function convert_money($money)
-    {
-        return number_format($money, 0, null, '.');
-    }
+if (!empty($listTransaction)) {
 
     $unit = $statistical_data['unit']['signature'];
 

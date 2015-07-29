@@ -1,10 +1,10 @@
 <?php
 if (!empty($statistical_data['maxExpense'])):
     ?>
-    <h3>Expense (Total: <?php echo $statistical_data['expenseConvert'] . ' ' . $unit; ?>)</h3>
+    <h3>Expense (Total: <?php echo __convertMoney($statistical_data['expense']) . ' ' . $unit; ?>)</h3>
     <h4>Maximum: <?php
         echo $statistical_data['maxExpense']['category_info']['name'] .
-        ' (' . convert_money($statistical_data['maxExpense']['amount']) . ' ' . $unit . ')'
+        ' (' . __convertMoney($statistical_data['maxExpense']['amount']) . ' ' . $unit . ')'
         ?>
     </h4>
     <small style="display: block;">Transaction at: <?php echo date('d-m-Y', $statistical_data['maxExpense']['create_time']); ?></small>
@@ -16,7 +16,7 @@ if (!empty($statistical_data['maxExpense'])):
                 ?>
                 <div class="rp-row row">
                     <div class="rp-name col-md-3 col-xs-12">
-                        <?php echo $transaction['category']['name'] . ' (' . convert_money($transaction['totalMoney']) . ' ' . $unit . ')'; ?>
+                        <?php echo $transaction['category']['name'] . ' (' . __convertMoney($transaction['totalMoney']) . ' ' . $unit . ')'; ?>
                     </div>
                     <div class="rp-progress-bar col-md-8 col-xs-9">
                         <div class="progress">

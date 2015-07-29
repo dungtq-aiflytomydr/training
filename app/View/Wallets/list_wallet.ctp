@@ -1,4 +1,18 @@
-<?php if (!empty($listWallet)): ?>
+<?php
+
+/**
+ * convert money - ex: 123000 -> 123.000
+ * 
+ * @param int $money
+ * @return string
+ */
+function __convertMoney($money)
+{
+    return number_format($money, 0, '', '.');
+}
+
+if (!empty($listWallet)):
+    ?>
     <h2>List wallet</h2>
     <hr/>
     <div class="table-responsive">

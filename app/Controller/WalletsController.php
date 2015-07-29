@@ -84,7 +84,6 @@ class WalletsController extends AppController
 
         //convert wallet information
         foreach ($listWallet as $key => $value) {
-            $listWallet[$key]['Wallet']['balance'] = $this->__convertMoney($value['Wallet']['balance']);
             $listWallet[$key]['Unit']              = $this->Unit->getById($value['Wallet']['unit_id'])['Unit'];
         }
 
@@ -244,17 +243,6 @@ class WalletsController extends AppController
             return false;
         }
         return '/' . $rootFolder . $fileObj['name'];
-    }
-
-    /**
-     * convert money - ex: 123000 -> 123.000
-     * 
-     * @param int $money
-     * @return string
-     */
-    private function __convertMoney($money)
-    {
-        return number_format($money, 0, '', '.');
     }
 
 }
