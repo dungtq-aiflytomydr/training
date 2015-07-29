@@ -35,18 +35,19 @@ class AppController extends Controller
 
     public $components = array(
         'Session',
+        'DebugKit.Toolbar',
         'Auth' => array(
             'loginAction'    => array(
                 'controller' => 'users',
-                'action'     => 'login'
+                'action'     => 'login',
             ),
             'loginRedirect'  => array(
                 'controller' => 'wallets',
-                'action'     => 'index'
+                'action'     => 'index',
             ),
             'logoutRedirect' => array(
                 'controller' => 'users',
-                'action'     => 'login'
+                'action'     => 'login',
             ),
             'authError'      => '',
             'authenticate'   => array(

@@ -115,8 +115,9 @@
                     <?php echo $this->fetch('content'); ?>
                 </div>
             </div>
-            <footer>
-                <?php echo 'Copyright by Aiflytomydr'; ?>
-            </footer>
         </div>
+        <footer>
+            <?php echo 'Copyright by Aiflytomydr'; ?>
+        </footer>
+    </body>
 </html>
