@@ -36,7 +36,7 @@
 
     <div class="rp-box-date">
         <span>View by month: </span>
-        <input id="rp-date" value="<?php echo $date_time; ?>"/>
+        <input style="display: inline-block" id="rp-date" value="<?php echo $date_time; ?>"/>
     </div>
 </div>
 <div>

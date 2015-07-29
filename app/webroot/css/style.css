@@ -37,10 +37,11 @@
 footer{
     position: fixed;
     bottom: 0;
+    padding: 15px;
     width: 100%;
     height: 30px;
     line-height: 30px;
-    background-color: #fff;
+    background-color: #eaeaea;
 }
 
 .error-message, .clr-red{

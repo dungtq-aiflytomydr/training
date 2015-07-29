@@ -9,14 +9,20 @@ var Transactions = function () {
             depth: "year",
             format: 'MM-yyyy'
         });
-
+        
         var arrUrl = currentUrl.split('/');
+
         $('#rp-date').change(function () {
             var date = $(this).val().split('-');
-            url = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + date[0] + date[1];
+            var redirectUrl = url + '/transactions/listSortByDate/' + date[0] + date[1];
 
-            window.location.href = url;
+            if (arrUrl[2] !== undefined) {
+                redirectUrl = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + date[0] + date[1];
+            }
+
+            window.location.href = redirectUrl;
         });
+
     }
 
     var processCreateTime = function () {
@@ -28,17 +34,18 @@ var Transactions = function () {
 
     var processSortBy = function () {
 
-        if (currentUrl.indexOf('listSortByCategory') >= 0
-                || currentUrl.indexOf('listSortByDate') >= 0) {
-            setupTime();
-        }
+        setupTime();
 
         $('#sortBy').change(function () {
+            var redirectUrl = '';
+
             if ($(this).val() === 'listSortByCategory') {
-                window.location.href = currentUrl.replace("listSortByDate", "listSortByCategory");
+                redirectUrl = currentUrl.replace("listSortByDate", "listSortByCategory");
             } else {
-                window.location.href = currentUrl.replace("listSortByCategory", "listSortByDate");
+                redirectUrl = currentUrl.replace("listSortByCategory", "listSortByDate");
             }
+
+            window.location.href = redirectUrl;
         });
     };
 

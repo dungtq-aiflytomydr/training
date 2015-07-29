@@ -8,7 +8,7 @@ class TransactionsController extends AppController
      * 
      * @var type 
      */
-    public $uses = array('Transaction', 'Category', 'Unit');
+    public $uses = array('Transaction', 'Category', 'Unit', 'Wallet');
 
     /**
      * $helpers
@@ -50,7 +50,7 @@ class TransactionsController extends AppController
      */
     public function add()
     {
-        $this->__redirectIfCurrentWalletNotExists();
+        $this->__redirectIfEmptyWallet();
 
         $this->set('listCategory', $this->Category->getCategoriesOfWallet(
                         AuthComponent::user('current_wallet')));
@@ -77,6 +77,7 @@ class TransactionsController extends AppController
                 return $this->redirect(array(
                             'controller' => 'transactions',
                             'action'     => 'listSortByDate',
+                            $this->__processParamDateTime($create_time),
                 ));
             }
         }
@@ -88,7 +89,7 @@ class TransactionsController extends AppController
      */
     public function listSortByDate($dateTime = null)
     {
-        $this->__redirectIfCurrentWalletNotExists();
+        $this->__redirectIfEmptyWallet();
 
         $findTime = $this->__processFindDateTime($dateTime);
 
@@ -109,7 +110,7 @@ class TransactionsController extends AppController
      */
     public function listSortByCategory($dateTime = null)
     {
-        $this->__redirectIfCurrentWalletNotExists();
+        $this->__redirectIfEmptyWallet();
 
         $findTime = $this->__processFindDateTime($dateTime);
 
@@ -167,6 +168,7 @@ class TransactionsController extends AppController
                 $this->redirect(array(
                     'controller' => 'transactions',
                     'action'     => 'listSortByDate',
+                    $this->__processParamDateTime($create_time),
                 ));
             }
             $this->Session->setFlash("Have error! Please try again.");
@@ -192,10 +194,12 @@ class TransactionsController extends AppController
         }
 
         $this->Transaction->deleteById($id);
+
         $this->Session->setFlash("Delete transaction complete.");
         return $this->redirect(array(
                     'controller' => 'transactions',
                     'action'     => 'listSortByDate',
+                    $this->__processParamDateTime($transactionObj['Transaction']['create_time']),
         ));
     }
 
@@ -468,13 +472,26 @@ class TransactionsController extends AppController
     }
 
     /**
+     * set param datetime for redirect when add and edit transactions success
+     * 
+     * @param int $datetime
+     * @return string
+     */
+    private function __processParamDateTime($datetime)
+    {
+        $month = date('m', $datetime);
+        $year  = date('Y', $datetime);
+        return $month . $year;
+    }
+
+    /**
      * Check current wallet exists or not
      * 
      * If not exists -> not add & show list category
      */
-    private function __redirectIfCurrentWalletNotExists()
+    private function __redirectIfEmptyWallet()
     {
-        if (empty(AuthComponent::user('current_wallet'))) {
+        if (empty($this->Wallet->countUserWallets(AuthComponent::user('id')))) {
             return $this->redirect(array(
                         'controller' => 'wallets',
                         'action'     => 'listWallet',
