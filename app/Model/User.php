@@ -202,7 +202,7 @@ class User extends AppModel
      * @param array $data User's data
      * @return boolean
      */
-    public function updateUserById($id, $data)
+    public function updateById($id, $data)
     {
         $this->id = $id;
         return $this->save($data);

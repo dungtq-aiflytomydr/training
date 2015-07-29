@@ -41,7 +41,7 @@ class Transaction extends AppModel
      * @param array $data Transaction data
      * @return mixed
      */
-    public function updateTransactionById($id, $data)
+    public function updateById($id, $data)
     {
         $this->id = $id;
         return $this->save($data);
@@ -53,7 +53,7 @@ class Transaction extends AppModel
      * @param int $walletId Wallet id
      * @return array
      */
-    public function getListTransactionsByWalletId($walletId)
+    public function getTransactionsOfWallet($walletId)
     {
         return $this->find('all', array(
                     'conditions' => array(

@@ -69,7 +69,7 @@ class Category extends AppModel
      * @param array $data Category's data
      * @return mixed
      */
-    public function updateCategoryById($id, $data)
+    public function updateById($id, $data)
     {
         $this->id = $id;
         return $this->save($data);
@@ -81,7 +81,7 @@ class Category extends AppModel
      * @param int $id Category id
      * @return mixed
      */
-    public function getCategoryById($id)
+    public function getById($id)
     {
         return $this->findById($id)['Category'];
     }
@@ -92,7 +92,7 @@ class Category extends AppModel
      * @param int $walletId Wallet id
      * @return array|null
      */
-    public function getListCategoryByWalletId($walletId)
+    public function getCategoriesOfWallet($walletId)
     {
         return $this->find('all', array(
                     'conditions' => array(
@@ -106,7 +106,7 @@ class Category extends AppModel
      * 
      * @param int $walletId Wallet id
      */
-    public function deleteCategoriesByWalletId($walletId)
+    public function deleteCategoriesOfWallet($walletId)
     {
         //get listCategory will be delete => delete transactions
         $listCategory = $this->find('all', array(
@@ -127,7 +127,7 @@ class Category extends AppModel
      * 
      * @param int $id Category id
      */
-    public function deleteCategoryById($id)
+    public function deleteById($id)
     {
         $this->delete($id);
     }

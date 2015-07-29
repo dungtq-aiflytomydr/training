@@ -52,7 +52,7 @@ class TransactionsController extends AppController
     {
         $this->__redirectIfCurrentWalletNotExists();
 
-        $this->set('listCategory', $this->Category->getListCategoryByWalletId(
+        $this->set('listCategory', $this->Category->getCategoriesOfWallet(
                         AuthComponent::user('current_wallet')));
         $this->set('title_for_layout', 'Add Transaction');
 
@@ -138,7 +138,7 @@ class TransactionsController extends AppController
         }
 
         $this->set('title_for_layout', 'Edit transaction');
-        $this->set('listCategory', $this->Category->getListCategoryByWalletId(
+        $this->set('listCategory', $this->Category->getCategoriesOfWallet(
                         AuthComponent::user('current_wallet')));
         $this->set('transactionObj', $transactionObj);
 
@@ -155,7 +155,7 @@ class TransactionsController extends AppController
                 $this->request->data['Transaction']['create_time'] = $create_time;
             }
 
-            $isUpdated = $this->Transaction->updateTransactionById($id, $this->request->data);
+            $isUpdated = $this->Transaction->updateById($id, $this->request->data);
             if ($isUpdated) {
 
                 $this->Session->setFlash("Update transaction information complete.");
@@ -178,7 +178,7 @@ class TransactionsController extends AppController
         $this->autoRender = false;
 
         if (!$this->request->is('post')) {
-            throw new NotFoundException('Could not found request.');
+            throw new BadRequestException('Could not found request.');
         }
 
         $transactionObj = $this->Transaction->findById($id);
@@ -206,7 +206,7 @@ class TransactionsController extends AppController
 
         foreach ($listTransaction as $key => $transaction) {
             //get category's information of each transaction
-            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getCategoryById(
+            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getById(
                     $transaction['Transaction']['category_id']);
 
             //find transaction have max amount within each expense_type
@@ -216,7 +216,7 @@ class TransactionsController extends AppController
         $listTransaction = $this->__processShowReport($listTransaction);
 
         $statisticalData = $this->__getInfoForStatistical();
-        
+
         $this->set('date_time', $findTime['time']);
         $this->set('statistical_data', $statisticalData);
         $this->set('listTransaction', $listTransaction);
@@ -273,7 +273,7 @@ class TransactionsController extends AppController
         foreach ($listTransaction as $key => $transaction) {
 
             //instead 'category_id' property = category's information
-            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getCategoryById(
+            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getById(
                     $transaction['Transaction']['category_id']);
 
             //process other infor like: total income, total expense...
@@ -304,7 +304,7 @@ class TransactionsController extends AppController
             'total'          => $this->__convertMoney(
                     AuthComponent::user('current_wallet_info')['balance'] + $this->__totalIncome - $this->__totalExpense
             ),
-            'unit'           => $this->Unit->getUnitById(AuthComponent::user('current_wallet_info')['unit_id'])['Unit'],
+            'unit'           => $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id'])['Unit'],
         );
     }
 

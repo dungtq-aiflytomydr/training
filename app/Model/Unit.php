@@ -20,7 +20,7 @@ class Unit extends AppModel
      * @param int $id Unit id
      * @return array|null
      */
-    public function getUnitById($id)
+    public function getById($id)
     {
         return $this->findById($id);
     }
@@ -30,7 +30,7 @@ class Unit extends AppModel
      * 
      * @return array | null
      */
-    public function getListUnit()
+    public function getAllUnit()
     {
         return $this->find('all');
     }

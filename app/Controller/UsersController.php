@@ -61,7 +61,7 @@ class UsersController extends AppController
                 'password' => $this->request->data['User']['password'],
             );
 
-            $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $dataUpdate);
+            $updateResult = $this->User->updateById(AuthComponent::user('id'), $dataUpdate);
             if ($updateResult) {
 
                 $this->Session->setFlash("Change password complete.");
@@ -97,13 +97,13 @@ class UsersController extends AppController
             $this->request->data['User']['avatar'] = $userAvatar;
             unset($this->request->data['User']['password']);
 
-            $updateResult = $this->User->updateUserById(AuthComponent::user('id'), $this->request->data);
+            $updateResult = $this->User->updateById(AuthComponent::user('id'), $this->request->data);
             if ($updateResult) {
 
                 //if update data success => update auth session
                 $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
                 
-                $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
+                $walletInfo = $this->Wallet->getById($this->Auth->user('current_wallet'));
                 if (!empty($walletInfo)) {
                     $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
                 }
@@ -145,7 +145,7 @@ class UsersController extends AppController
         }
 
         if ($this->Auth->login()) {
-            $walletInfo = $this->Wallet->getWalletById($this->Auth->user('current_wallet'));
+            $walletInfo = $this->Wallet->getById($this->Auth->user('current_wallet'));
             if (!empty($walletInfo)) {
                 $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
             }
@@ -215,7 +215,7 @@ class UsersController extends AppController
         }
 
         if (!$userObj['User']['is_active']) {
-            $this->User->updateUserById($id, array(
+            $this->User->updateById($id, array(
                 'is_active' => true,
             ));
         }
@@ -250,7 +250,7 @@ class UsersController extends AppController
                 'token' => uniqid(),
             );
 
-            $updateResult = $this->User->updateUserById($userObj['User']['id'], $dataUpdate);
+            $updateResult = $this->User->updateById($userObj['User']['id'], $dataUpdate);
             if ($updateResult) {
                 $emailConfig = array(
                     'subject' => 'Forgot password - Training.dev',
@@ -290,7 +290,7 @@ class UsersController extends AppController
                     'password' => $this->request->data['User']['password'],
                 );
 
-                $this->User->updateUserById($id, $dataUpdate);
+                $this->User->updateById($id, $dataUpdate);
 
                 $this->Session->setFlash("Change password was completed.");
                 return $this->redirect(array(

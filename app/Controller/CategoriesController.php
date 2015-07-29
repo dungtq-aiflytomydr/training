@@ -67,7 +67,7 @@ class CategoriesController extends AppController
     {
         $this->__redirectIfCurrentWalletNotExists();
 
-        $listCategories = $this->Category->getListCategoryByWalletId(
+        $listCategories = $this->Category->getCategoriesOfWallet(
                 AuthComponent::user('current_wallet'));
         $this->set('listCategories', $listCategories);
     }
@@ -102,7 +102,7 @@ class CategoriesController extends AppController
         $this->Category->set($this->request->data);
         if ($this->Category->validates()) {
 
-            $isUpdated = $this->Category->updateCategoryById($id, $this->request->data);
+            $isUpdated = $this->Category->updateById($id, $this->request->data);
             if ($isUpdated) {
                 $this->Session->setFlash("Update Category information complete.");
                 return $this->redirect(array(
@@ -124,7 +124,7 @@ class CategoriesController extends AppController
         $this->autoRender = false;
 
         if (!$this->request->is('post')) {
-            throw new NotFoundException('Request not found.');
+            throw new BadRequestException('Request not found.');
         }
 
         $catObj = $this->Category->findById($id);
@@ -132,7 +132,7 @@ class CategoriesController extends AppController
             throw new NotFoundException('Could not find that category.');
         }
 
-        $this->Category->delete($id);
+        $this->Category->deleteById($id);
         $this->Transaction->deleteTransactionsByCategoryId($id);
 
         return $this->redirect(array(

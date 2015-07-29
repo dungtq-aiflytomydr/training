@@ -83,7 +83,7 @@ class Wallet extends AppModel
      * @param array $data Wallet data
      * @return mixed
      */
-    public function updateWalletById($id, $data)
+    public function updateById($id, $data)
     {
         $this->id = $id;
         return $this->save($data);
@@ -95,7 +95,7 @@ class Wallet extends AppModel
      * @param int $id Wallet id
      * @return mixed
      */
-    public function getWalletById($id)
+    public function getById($id)
     {
         return $this->findById($id);
     }
@@ -106,7 +106,7 @@ class Wallet extends AppModel
      * @param int $userId User id
      * @return array
      */
-    public function getListWalletByUserId($userId)
+    public function getWalletsOfUser($userId)
     {
         return $this->find('all', array(
                     'conditions' => array(
@@ -121,7 +121,7 @@ class Wallet extends AppModel
      * @param int $userId User id
      * @return number
      */
-    public function getNumWalletsByUserId($userId)
+    public function countUserWallets($userId)
     {
         return $this->find('count', array(
                     'conditions' => array(
@@ -136,7 +136,7 @@ class Wallet extends AppModel
      * @param int $userId User id
      * @return array
      */
-    public function getFirstWalletByUserId($userId)
+    public function getFirstWalletOfUser($userId)
     {
         return $this->find('first', array(
                     'conditions' => array(
@@ -151,7 +151,7 @@ class Wallet extends AppModel
      * @param int $id Wallet id
      * @return mixed
      */
-    public function deleteWalletById($id)
+    public function deleteById($id)
     {
         return $this->delete($id);
     }
