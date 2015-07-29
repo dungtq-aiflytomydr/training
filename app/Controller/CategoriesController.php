@@ -28,7 +28,7 @@ class CategoriesController extends AppController
      */
     public function add()
     {
-        $this->__redirectIfCurrentWalletNotExists();
+        $this->__redirectIfEmptyWallet();
         $this->set('title_for_layout', 'Add Category');
         $this->set('listWallet', $this->Wallet->getWalletsOfUser(AuthComponent::user('id')));
 
@@ -65,7 +65,7 @@ class CategoriesController extends AppController
      */
     public function listCategories()
     {
-        $this->__redirectIfCurrentWalletNotExists();
+        $this->__redirectIfEmptyWallet();
 
         $listCategories = $this->Category->getCategoriesOfWallet(
                 AuthComponent::user('current_wallet'));
@@ -169,9 +169,9 @@ class CategoriesController extends AppController
      * 
      * If not exists -> not add & show list category
      */
-    private function __redirectIfCurrentWalletNotExists()
+    private function __redirectIfEmptyWallet()
     {
-        if (empty(AuthComponent::user('current_wallet'))) {
+        if (empty($this->Wallet->countUserWallets(AuthComponent::user('id')))) {
             return $this->redirect(array(
                         'controller' => 'wallets',
                         'action'     => 'listWallet',
