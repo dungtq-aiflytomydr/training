@@ -50,7 +50,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Change password");
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
@@ -80,10 +80,10 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Change profile");
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
-        
+
         $this->User->set($this->request->data);
         if ($this->User->validates()) {
 
@@ -102,12 +102,12 @@ class UsersController extends AppController
 
                 //if update data success => update auth session
                 $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
-                
+
                 $walletInfo = $this->Wallet->getById($this->Auth->user('current_wallet'));
                 if (!empty($walletInfo)) {
                     $this->Session->write('Auth.User.current_wallet_info', $walletInfo['Wallet']);
                 }
-                
+
                 $this->Session->setFlash("Update profile complete.");
                 return $this->redirect('/');
             }
@@ -140,7 +140,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Home");
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
@@ -171,7 +171,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', 'Register');
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
@@ -236,7 +236,7 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', 'Forgot password');
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
         $userEmail = $this->request->data['User']['email'];

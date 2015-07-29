@@ -8,7 +8,7 @@ class CategoriesController extends AppController
      * 
      * @var array 
      */
-    public $uses = array('Category', 'Transaction');
+    public $uses = array('Category', 'Transaction', 'Wallet');
 
     /**
      * Helpers
@@ -30,8 +30,9 @@ class CategoriesController extends AppController
     {
         $this->__redirectIfCurrentWalletNotExists();
         $this->set('title_for_layout', 'Add Category');
+        $this->set('listWallet', $this->Wallet->getWalletsOfUser(AuthComponent::user('id')));
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
@@ -45,8 +46,7 @@ class CategoriesController extends AppController
                         AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
             }
 
-            $this->request->data['Category']['icon']      = $catIcon;
-            $this->request->data['Category']['wallet_id'] = AuthComponent::user('current_wallet');
+            $this->request->data['Category']['icon'] = $catIcon;
 
             if ($this->Category->createCategory($this->request->data)) {
                 $this->Session->setFlash("Add new category complete.");
@@ -86,8 +86,13 @@ class CategoriesController extends AppController
 
         $this->set('title_for_layout', 'Edit Category');
         $this->set('catObj', $catObj);
+        $this->set('listWallet', $this->Wallet->getWalletsOfUser(AuthComponent::user('id')));
 
-        if (!$this->request->is('post', 'put')) {
+        if (empty($this->request->data)) {
+            $this->request->data = $catObj;
+        }
+
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 

@@ -1,4 +1,13 @@
-<?php echo $this->Html->script('categories/processCategory'); ?>
+<?php
+echo $this->Html->script('categories/processCategory');
+
+//process option select wallet
+$optionWallet = array();
+
+foreach ($listWallet as $wallet) :
+    $optionWallet[$wallet['Wallet']['id']] = $wallet['Wallet']['name'];
+endforeach;
+?>
 <div class="popupForm">
     <?php
     echo $this->Form->create('Category', array(
@@ -32,6 +41,12 @@
         'empty'    => 'Choose type',
         'class'    => 'form-control',
         'required' => false,
+    ));
+    echo $this->Form->input('wallet_id', array(
+        'label'   => 'Choose Wallet',
+        'options' => $optionWallet,
+        'default' => AuthComponent::user('current_Wallet'),
+        'class'   => 'form-control',
     ));
     echo $this->Form->end(array(
         'label' => 'Create Category',

@@ -6,6 +6,13 @@ $icon = '/img/building.png';
 if (!empty($catObj['Category']['icon'])) {
     $icon = $catObj['Category']['icon'];
 }
+
+//process option select wallet
+$optionWallet = array();
+
+foreach ($listWallet as $wallet) :
+    $optionWallet[$wallet['Wallet']['id']] = $wallet['Wallet']['name'];
+endforeach;
 ?>
 <div class="popupForm">
     <?php
@@ -21,7 +28,6 @@ if (!empty($catObj['Category']['icon'])) {
         'label'    => "Category's name",
         'class'    => 'form-control',
         'required' => false,
-        'default'  => $catObj['Category']['name'],
     ));
     echo $this->Form->input('icon', array(
         'label'    => 'Icon',
@@ -36,8 +42,12 @@ if (!empty($catObj['Category']['icon'])) {
             'out' => 'Expense',),
         'empty'    => 'Choose type',
         'class'    => 'form-control',
-        'default'  => $catObj['Category']['expense_type'],
         'required' => false,
+    ));
+    echo $this->Form->input('wallet_id', array(
+        'label'   => 'Choose Wallet',
+        'options' => $optionWallet,
+        'class'   => 'form-control',
     ));
     echo $this->Form->end(array(
         'label' => 'Update wallet',

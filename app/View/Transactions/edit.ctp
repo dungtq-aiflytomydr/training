@@ -27,35 +27,24 @@ endforeach;
         <select name="data[Transaction][category_id]" class="form-control" id="TransactionCategoryId">
             <optgroup label="Income">
                 <?php
-                foreach ($catIncome as $key => $cat) {
+                foreach ($catIncome as $key => $cat) :
                     $isSelected = '';
-                    if (!empty($this->request->data['Transaction']['category_id'])) {
-                        if ($key == $this->request->data['Transaction']['category_id']) {
-                            $isSelected = 'selected';
-                        }
-                    } else {
-                        if ($key == $transactionObj['Transaction']['category_id']) {
-                            $isSelected = 'selected';
-                        }
-                    }
+                    if ($key == $transactionObj['Transaction']['category_id']) :
+                        $isSelected = 'selected';
+                    endif;
                     echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
-                }
+                endforeach;
                 ?>
             </optgroup>
             <optgroup label="Expense">
                 <?php
-                foreach ($catExpense as $key => $cat) {
-                    if (!empty($this->request->data['Transaction']['category_id'])) {
-                        if ($key == $this->request->data['Transaction']['category_id']) {
-                            $isSelected = 'selected';
-                        }
-                    } else {
-                        if ($key == $transactionObj['Transaction']['category_id']) {
-                            $isSelected = 'selected';
-                        }
-                    }
+                foreach ($catExpense as $key => $cat) :
+                    $isSelected = '';
+                    if ($key == $transactionObj['Transaction']['category_id']) :
+                        $isSelected = 'selected';
+                    endif;
                     echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
-                }
+                endforeach;
                 ?>
             </optgroup>
         </select>
@@ -68,7 +57,6 @@ endforeach;
         'type'     => 'text',
         'label'    => 'Money',
         'class'    => 'form-control',
-        'default'  => $transactionObj['Transaction']['amount'],
         'required' => false,
     ));
 
@@ -78,7 +66,6 @@ endforeach;
         'style'    => 'resize: vertical;',
         'label'    => 'Note',
         'class'    => 'form-control',
-        'default'  => $transactionObj['Transaction']['note'],
         'required' => false,
     ));
 
@@ -86,7 +73,6 @@ endforeach;
         'type'     => 'text',
         'label'    => 'Time',
         'class'    => 'form-control',
-        'default'  => date('d-m-Y', $transactionObj['Transaction']['create_time']),
         'required' => false,
     ));
 
@@ -100,7 +86,7 @@ endforeach;
     ?>
 </div>
 <script type="text/javascript">
-    jQuery(document).ready(function () {
-        Transactions.init();
+        jQuery(document).ready(function () {
+    Transactions.init();
     });
 </script>

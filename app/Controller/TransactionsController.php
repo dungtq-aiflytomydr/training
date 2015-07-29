@@ -56,7 +56,7 @@ class TransactionsController extends AppController
                         AuthComponent::user('current_wallet')));
         $this->set('title_for_layout', 'Add Transaction');
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
@@ -142,7 +142,12 @@ class TransactionsController extends AppController
                         AuthComponent::user('current_wallet')));
         $this->set('transactionObj', $transactionObj);
 
-        if (!$this->request->is('post', 'put')) {
+        if (empty($this->request->data)) {
+            $this->request->data                               = $transactionObj;
+            $this->request->data['Transaction']['create_time'] = date('d-m-Y', $transactionObj['Transaction']['create_time']);
+        }
+
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 

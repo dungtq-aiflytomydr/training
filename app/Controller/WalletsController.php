@@ -28,7 +28,7 @@ class WalletsController extends AppController
         $this->set('title_for_layout', "New wallet");
         $this->set('unitObj', $this->Unit->getAllUnit());
 
-        if (!$this->request->is('post', 'put')) {
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
@@ -84,7 +84,7 @@ class WalletsController extends AppController
 
         //convert wallet information
         foreach ($listWallet as $key => $value) {
-            $listWallet[$key]['Unit']              = $this->Unit->getById($value['Wallet']['unit_id'])['Unit'];
+            $listWallet[$key]['Unit'] = $this->Unit->getById($value['Wallet']['unit_id'])['Unit'];
         }
 
         $this->set('listWallet', $listWallet);
@@ -106,7 +106,11 @@ class WalletsController extends AppController
         $this->set('unitObj', $this->Unit->getAllUnit());
         $this->set('wallet', $walletObj);
 
-        if (!$this->request->is('post', 'put')) {
+        if (empty($this->request->data)) {
+            $this->request->data = $walletObj;
+        }
+
+        if (!$this->request->is(array('post', 'put'))) {
             return;
         }
 
