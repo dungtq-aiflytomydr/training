@@ -15,6 +15,12 @@ if (!empty($listWallet)):
     ?>
     <h2>List wallet</h2>
     <hr/>
+    <h4><?php
+        echo $this->Html->link('Add new wallet', array(
+            'controller' => 'wallets',
+            'action'     => 'add',
+        ));
+        ?></h4>
     <div class="table-responsive">
         <table class="table">
             <thead>
