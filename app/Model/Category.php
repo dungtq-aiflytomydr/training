@@ -108,18 +108,10 @@ class Category extends AppModel
      */
     public function deleteCategoriesOfWallet($walletId)
     {
-        //get listCategory will be delete => delete transactions
-        $listCategory = $this->find('all', array(
-            'conditions' => array(
-                'wallet_id' => $walletId,
-            ),
-        ));
         //delete
-        $this->deleteAll(array(
-            'wallet_id' => $walletId,
+        return $this->deleteAll(array(
+                    'wallet_id' => $walletId,
         ));
-
-        return $listCategory;
     }
 
     /**
@@ -129,7 +121,7 @@ class Category extends AppModel
      */
     public function deleteById($id)
     {
-        $this->delete($id);
+        return $this->delete($id);
     }
 
 }

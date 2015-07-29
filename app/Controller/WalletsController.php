@@ -193,14 +193,29 @@ class WalletsController extends AppController
             throw new NotFoundException('Cound not find that wallet.');
         }
 
-        $listCatDel = $this->Category->deleteCategoriesOfWallet($id);
+        //delete data with transaction
+        $dbSource   = $this->Wallet->getDataSource();
+        $dbSource->begin();
+        $flagDelete = true; //flag save status function delete
 
-        //delete all transactions have category_id equal id of category was delete
-        foreach ($listCatDel as $key => $category) {
-            $this->Transaction->deleteTransactionsByCategoryId($category['Category']['id']);
+        if (!$this->Category->deleteCategoriesOfWallet($id)) {
+            $flagDelete = false;
         }
 
-        $this->Wallet->deleteById($id);
+        //delete all transactions have category_id equal id of category was delete
+        if (!$this->Transaction->deleteTransactionsOfWallet($id)) {
+            $flagDelete = false;
+        }
+
+        if (!$this->Wallet->deleteById($id)) {
+            $flagDelete = false;
+        }
+
+        if ($flagDelete) {
+            $dbSource->commit();
+        } else {
+            $dbSource->rollback();
+        }
 
         //if wallet want to delete have id equals current_wallet id => set default wallet for other wallet
         if ($id == AuthComponent::user('current_wallet')) {

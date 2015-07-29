@@ -137,8 +137,23 @@ class CategoriesController extends AppController
             throw new NotFoundException('Could not find that category.');
         }
 
-        $this->Category->deleteById($id);
-        $this->Transaction->deleteTransactionsByCategoryId($id);
+        //using transaction for delete data
+        $dbSource   = $this->Category->getDataSource();
+        $dbSource->begin();
+        $flagDelete = true; //flag save status function delete
+
+        if (!$this->Category->deleteById($id)) {
+            $flagDelete = false;
+        }
+        if (!$this->Transaction->deleteTransactionsByCategoryId($id)) {
+            $flagDelete = false;
+        }
+
+        if ($flagDelete) {
+            $dbSource->commit();
+        } else {
+            $dbSource->rollback();
+        }
 
         return $this->redirect(array(
                     'controller' => 'categories',

@@ -45,7 +45,7 @@ endforeach;
     echo $this->Form->input('wallet_id', array(
         'label'   => 'Choose Wallet',
         'options' => $optionWallet,
-        'default' => AuthComponent::user('current_Wallet'),
+        'default' => AuthComponent::user('current_wallet'),
         'class'   => 'form-control',
     ));
     echo $this->Form->end(array(
