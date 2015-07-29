@@ -1,5 +1,13 @@
 var Categories = function () {
 
+    var processAddCategory = function () {
+        $('#btnCategoryAdd').click(function () {
+            $(this).val('Please waitting...');
+            $(this).attr('disabled', true);
+            $('#CategoryAddForm').submit();
+        });
+    };
+
     var previewIcon = function () {
 
         function readURL(input) {
@@ -30,6 +38,7 @@ var Categories = function () {
 
     return{
         init: function () {
+            processAddCategory();
             previewIcon();
         }
     };

@@ -1,5 +1,13 @@
 var Wallets = function () {
 
+    var processAddWallet = function () {
+        $('#btnWalletAdd').click(function () {
+            $(this).val('Please waitting...');
+            $(this).attr('disabled', true);
+            $('#WalletAddForm').submit();
+        });
+    };
+
     var previewIcon = function () {
 
         function readURL(input) {
@@ -30,6 +38,7 @@ var Wallets = function () {
 
     return{
         init: function () {
+            processAddWallet();
             previewIcon();
         }
     };

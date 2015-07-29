@@ -54,6 +54,7 @@ endforeach;
             'class' => 'form-group'
         ),
         'class' => 'btn btn-default',
+        'id'    => 'btnCategoryAdd',
     ));
     ?>
 </div>

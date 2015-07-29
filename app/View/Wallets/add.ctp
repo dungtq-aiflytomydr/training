@@ -49,6 +49,7 @@
             'class' => 'form-group'
         ),
         'class' => 'btn btn-default',
+        'id'    => 'btnWalletAdd',
     ));
     ?>
 </div>

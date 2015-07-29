@@ -9,7 +9,7 @@ var Transactions = function () {
             depth: "year",
             format: 'MM-yyyy'
         });
-        
+
         var arrUrl = currentUrl.split('/');
 
         $('#rp-date').change(function () {
@@ -29,6 +29,15 @@ var Transactions = function () {
         //process show datepicker for create_time
         $("#TransactionCreateTime").kendoDatePicker({
             format: "dd-MM-yyyy"
+        });
+    };
+
+    var processAddTransaction = function () {
+        $('#btnTransactionAdd').click(function () {
+            $(this).val('Please waitting...');
+            $(this).attr('disabled', true);
+            $('#TransactionAddForm').submit();
+            return true;
         });
     };
 
@@ -57,6 +66,7 @@ var Transactions = function () {
 
     return{
         init: function () {
+            processAddTransaction();
             processCreateTime();
             processSortBy();
             report();

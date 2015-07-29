@@ -22,14 +22,6 @@ endforeach;
             )
         ),
     ));
-
-//    echo $this->Form->input('category_id', array(
-//        'label'    => 'Choose category',
-//        'options'  => array($catIncome),
-//        'empty'    => 'Choose Category',
-//        'class'    => 'form-control',
-//        'required' => false,
-//    ));
     ?>
     <div class="form-group error">
         <label for="TransactionCategoryId">Choose category</label>
@@ -88,11 +80,12 @@ endforeach;
     ));
 
     echo $this->Form->end(array(
-        'label' => 'Save',
+        'label' => 'Create Transaction',
         'div'   => array(
             'class' => 'form-group',
         ),
         'class' => 'btn btn-default',
+        'id'    => 'btnTransactionAdd',
     ));
     ?>
 </div>
