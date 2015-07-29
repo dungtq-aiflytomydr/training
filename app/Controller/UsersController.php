@@ -80,6 +80,10 @@ class UsersController extends AppController
     {
         $this->set('title_for_layout', "Change profile");
 
+        if (empty($this->request->data)) {
+            $this->request->data['User'] = AuthComponent::user();
+        }
+
         if (!$this->request->is(array('post', 'put'))) {
             return;
         }

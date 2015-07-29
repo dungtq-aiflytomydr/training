@@ -18,7 +18,6 @@ if (!empty(AuthComponent::user('avatar'))) {
     echo $this->Form->input('name', array(
         'label'    => 'Your name',
         'class'    => 'form-control',
-        'default'  => AuthComponent::user('name'),
         'required' => false,
     ));
     echo $this->Form->input('avatar', array(
@@ -32,7 +31,6 @@ if (!empty(AuthComponent::user('avatar'))) {
         'label'   => 'Address',
         'class'   => 'form-control',
         'rows'    => 3,
-        'default' => AuthComponent::user('address')
     ));
     echo $this->Form->end(array(
         'label' => 'Update profile',
