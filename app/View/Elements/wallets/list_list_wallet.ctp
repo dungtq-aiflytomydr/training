@@ -11,10 +11,9 @@
     <td><?php echo __convertMoney($wallet['Wallet']['balance']); ?></td>
     <td><?php echo $wallet['Unit']['name'] . ' (' . $wallet['Unit']['signature'] . ')'; ?></td>
     <td><?php
-        echo $this->Html->link('Select', array(
-            'controller' => 'wallets',
-            'action'     => 'select',
-            $wallet['Wallet']['id']));
+        echo $this->Form->postLink(__('Select'), array(
+            'action' => 'select',
+            $wallet['Wallet']['id']), null, null);
         ?></td>
     <td><?php
         echo $this->Html->link('Edit', array(

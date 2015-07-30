@@ -107,6 +107,10 @@ class WalletsController extends AppController
             throw new NotFoundException('Could not find that wallet.');
         }
 
+        if ($walletObj['Wallet']['user_id'] !== AuthComponent::user('id')) {
+            throw new NotFoundException('Access is denied.');
+        }
+
         $this->set('title_for_layout', "Edit wallet");
         $this->set('unitObj', $this->Unit->getAllUnit());
         $this->set('wallet', $walletObj);
@@ -154,9 +158,15 @@ class WalletsController extends AppController
      */
     public function select($id)
     {
+        $this->autoRender = false;
+
+        if (!$this->request->is('post')) {
+            throw new BadRequestException('Request not found.');
+        }
+
         $walletObj = $this->Wallet->getById($id);
         if (empty($walletObj)) {
-            throw new BadRequestException('Could not find that wallet.');
+            throw new NotFoundException('Could not find that wallet.');
         }
 
         $dataUpdate = array(
@@ -176,8 +186,6 @@ class WalletsController extends AppController
                         'action'     => 'listSortByDate',
             ));
         }
-
-        $this->autoRender = false;
     }
 
     /**
