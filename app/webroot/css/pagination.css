@@ -1,0 +1,38 @@
+footer.pagination-area {
+    margin-top: 5%;
+}
+
+div.footer-info {
+    font-size: 18px;
+    color: #525351;
+    margin-bottom: 2%;
+}
+
+div.footer-content {
+    margin: 1% 0 4% 0;
+}
+
+a.num-page, a.page-current {
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    padding: 7px 10px;
+    margin: 2px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    text-decoration: none;
+}
+
+a.num-page {
+    background: #e5e5e5;
+}
+
+a.num-page:hover {
+    background: #ababab;
+}
+
+a.page-current {
+    color: #fff;
+    background: black;
+}

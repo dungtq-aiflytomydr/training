@@ -116,7 +116,7 @@
                 </div>
             </div>
         </div>
-        <footer>
+        <footer id="footer">
             <?php echo 'Copyright by Aiflytomydr'; ?>
         </footer>
     </body>

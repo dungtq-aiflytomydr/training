@@ -34,7 +34,7 @@
     text-align: left;
 }
 
-footer{
+footer#footer{
     position: fixed;
     bottom: 0;
     padding: 15px;

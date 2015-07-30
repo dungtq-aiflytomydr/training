@@ -8,7 +8,8 @@ class TransactionsController extends AppController
      * 
      * @var type 
      */
-    public $uses = array('Transaction', 'Category', 'Unit', 'Wallet');
+    public $uses       = array('Transaction', 'Category', 'Unit', 'Wallet');
+    public $components = array('Paginator', 'Pagination');
 
     /**
      * $helpers
@@ -97,12 +98,24 @@ class TransactionsController extends AppController
         $listTransaction = $this->__convertElementInListTransaction($listTransaction);
         $listTransaction = $this->__processShowByDate($listTransaction);
 
+        //process pagination
+        $url = Router::fullBaseUrl() . '/transactions/listSortByDate';
+        if (!empty($dateTime)) {
+            $url = $url . '/' . $dateTime;
+        }
+        $numPerPage = 4;
+        $this->Pagination->initialize($this);
+        $pagination = $this->Pagination->pagination(count($listTransaction), $numPerPage, $url);
+
+        $listTransaction = $this->__processPagination($listTransaction, $pagination);
+
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
         $this->set('date_time', $findTime['time']);
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
+        $this->set('pagination', $pagination);
     }
 
     /**
@@ -111,12 +124,22 @@ class TransactionsController extends AppController
     public function listSortByCategory($dateTime = null)
     {
         $this->__redirectIfEmptyWallet();
-
         $findTime = $this->__processFindDateTime($dateTime);
 
         $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
         $listTransaction = $this->__convertElementInListTransaction($listTransaction);
         $listTransaction = $this->__processShowByCategory($listTransaction);
+
+        //process pagination
+        $url = Router::fullBaseUrl() . '/transactions/listSortByCategory';
+        if (!empty($dateTime)) {
+            $url = $url . '/' . $dateTime;
+        }
+        $numPerPage = 4;
+        $this->Pagination->initialize($this);
+        $pagination = $this->Pagination->pagination(count($listTransaction), $numPerPage, $url);
+
+        $listTransaction = $this->__processPagination($listTransaction, $pagination);
 
         $statistical_data = $this->__getInfoForStatistical();
 
@@ -124,6 +147,33 @@ class TransactionsController extends AppController
         $this->set('date_time', $findTime['time']);
         $this->set('statistical_data', $statistical_data);
         $this->set('listTransaction', $listTransaction);
+        $this->set('pagination', $pagination);
+    }
+
+    /**
+     * 
+     * @param type $list
+     * @param type $numPerPage
+     * @return type
+     */
+    private function __processPagination($list, $pagination = null)
+    {
+        $newList  = array();
+        //position of first element want to display
+        $startPos = ($pagination['currentPage'] - 1) * $pagination['numPerPage'];
+        //find first element
+        $findPos  = 0;
+        //count nums records want to display
+        $count    = 0;
+
+        foreach ($list as $value) {
+            if ($findPos >= $startPos && $count < $pagination['numPerPage']) {
+                $newList[] = $value;
+                $count++;
+            }
+            $findPos++;
+        }
+        return $newList;
     }
 
     /**

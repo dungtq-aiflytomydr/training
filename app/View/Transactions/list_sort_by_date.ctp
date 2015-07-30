@@ -48,7 +48,16 @@ if (!empty($listTransaction)):
                     </tbody>
                 </table>
             </div>
-        <?php endforeach; ?>
+            <?php
+        endforeach;
+        ?>
+    </div>
+    <div>
+        <?php
+        echo $this->element('pagination/pagination', array(
+            'pagination' => $pagination,
+        ));
+        ?>
     </div>
     <?php
     echo $this->element('transactions/show_statistical');
@@ -59,4 +68,3 @@ else:
         'action'     => 'add',
     ));
 endif;
-?>
