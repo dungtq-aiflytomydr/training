@@ -83,8 +83,13 @@ class WalletsController extends AppController
         $listWallet = $this->Wallet->getWalletsOfUser(AuthComponent::user('id'));
 
         //convert wallet information
-        foreach ($listWallet as $key => $value) {
-            $listWallet[$key]['Unit'] = $this->Unit->getById($value['Wallet']['unit_id'])['Unit'];
+        $listUnit = $this->Unit->getAllUnit();
+        //remove key 'Unit' in $listUnit
+        $listUnit = array_column($listUnit, 'Unit');
+
+        foreach ($listWallet as $key => $wallet) {
+            $keyUnit                  = array_search($wallet['Wallet']['unit_id'], array_column($listUnit, 'id'));
+            $listWallet[$key]['Unit'] = $listUnit[$keyUnit];
         }
 
         $this->set('listWallet', $listWallet);
