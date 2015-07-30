@@ -92,9 +92,23 @@ class Transaction extends AppModel
     }
 
     /**
+     * delete multiple transactions within category id
+     * 
+     * @param int $categoryId Category id
+     * @return mixed
+     */
+    public function deleteTransactionsOfCategory($categoryId)
+    {
+        return $this->deleteAll(array(
+                    'category_id' => $categoryId,
+        ));
+    }
+
+    /**
      * delete multiple transactions within wallet id
      * 
      * @param int $wallet_id Wallet id
+     * @return mixed
      */
     public function deleteTransactionsOfWallet($wallet_id)
     {

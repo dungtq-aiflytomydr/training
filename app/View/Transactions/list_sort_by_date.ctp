@@ -63,8 +63,4 @@ if (!empty($listTransaction)):
     echo $this->element('transactions/show_statistical');
 else:
     echo '<h3>Not found data :)</h3>';
-    echo $this->Html->link('Add new transaction', array(
-        'controller' => 'transactions',
-        'action'     => 'add',
-    ));
 endif;

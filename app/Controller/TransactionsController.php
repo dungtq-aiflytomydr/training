@@ -109,6 +109,7 @@ class TransactionsController extends AppController
 
         $listTransaction = $this->__processPagination($listTransaction, $pagination);
 
+        //information for show statistical
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
@@ -141,6 +142,7 @@ class TransactionsController extends AppController
 
         $listTransaction = $this->__processPagination($listTransaction, $pagination);
 
+        //information for show statistical
         $statistical_data = $this->__getInfoForStatistical();
 
         $this->set('title_for_layout', 'List transaction');
@@ -192,6 +194,10 @@ class TransactionsController extends AppController
         $transactionObj = $this->Transaction->findById($id);
         if (empty($transactionObj)) {
             throw new NotFoundException('Could not find that transaction.');
+        }
+
+        if ($transactionObj['Transaction']['wallet_id'] !== AuthComponent::user('current_wallet')) {
+            throw new NotFoundException('Access is denied.');
         }
 
         $this->set('title_for_layout', 'Edit transaction');

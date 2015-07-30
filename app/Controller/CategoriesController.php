@@ -84,6 +84,11 @@ class CategoriesController extends AppController
             throw new NotFoundException('Could not find that category.');
         }
 
+        if (!empty($catObj['Category']['wallet_id']) &&
+                $catObj['Category']['wallet_id'] !== AuthComponent::user('current_wallet')) {
+            throw new NotFoundException('Access is denied.');
+        }
+
         $this->set('title_for_layout', 'Edit Category');
         $this->set('catObj', $catObj);
         $this->set('listWallet', $this->Wallet->getWalletsOfUser(AuthComponent::user('id')));
@@ -145,7 +150,7 @@ class CategoriesController extends AppController
         if (!$this->Category->deleteById($id)) {
             $flagDelete = false;
         }
-        if (!$this->Transaction->deleteTransactionsByCategoryId($id)) {
+        if (!$this->Transaction->deleteTransactionsOfCategory($id)) {
             $flagDelete = false;
         }
 
