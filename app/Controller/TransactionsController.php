@@ -213,10 +213,15 @@ class TransactionsController extends AppController
 
         $listTransaction = $this->Transaction->getListTransactionsByDate($findTime);
 
+        //get Category information
+        $listCategory = $this->Category->getCategoriesOfWallet(AuthComponent::user('current_wallet'));
+        //remove key 'Category' in $listCategory
+        $listCategory = array_column($listCategory, 'Category');
+
         foreach ($listTransaction as $key => $transaction) {
             //get category's information of each transaction
-            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getById(
-                    $transaction['Transaction']['category_id']);
+            $keyCategory                                           = array_search($transaction['Transaction']['category_id'], array_column($listCategory, 'id'));
+            $listTransaction[$key]['Transaction']['category_info'] = $listCategory[$keyCategory];
 
             //find transaction have max amount within each expense_type
             $this->__maxTransactionByExpenseType($listTransaction[$key]);
@@ -279,11 +284,15 @@ class TransactionsController extends AppController
      */
     private function __convertElementInListTransaction($listTransaction)
     {
+        $listCategory = $this->Category->getCategoriesOfWallet(AuthComponent::user('current_wallet'));
+        //remove key 'Category' in $listCategory
+        $listCategory = array_column($listCategory, 'Category');
+
         foreach ($listTransaction as $key => $transaction) {
 
             //instead 'category_id' property = category's information
-            $listTransaction[$key]['Transaction']['category_info'] = $this->Category->getById(
-                    $transaction['Transaction']['category_id']);
+            $keyCategory                                           = array_search($transaction['Transaction']['category_id'], array_column($listCategory, 'id'));
+            $listTransaction[$key]['Transaction']['category_info'] = $listCategory[$keyCategory];
 
             //process other infor like: total income, total expense...
             $this->__processAmount($listTransaction[$key]);
