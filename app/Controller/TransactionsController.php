@@ -151,10 +151,16 @@ class TransactionsController extends AppController
     }
 
     /**
+     * process array want to display with custom pagination
      * 
-     * @param type $list
-     * @param type $numPerPage
-     * @return type
+     * @param array $list Array want to process
+     * @param array $pagination Array pagination for process, ex(
+     *      $pagination = array(
+     *          'numPerPage' => 4, 
+     *          'currentPage' => 3,
+     *      )
+     * )
+     * @return array
      */
     private function __processPagination($list, $pagination = null)
     {
