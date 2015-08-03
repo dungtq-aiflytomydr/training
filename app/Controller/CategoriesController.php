@@ -11,17 +11,6 @@ class CategoriesController extends AppController
     public $uses = array('Category', 'Transaction', 'Wallet');
 
     /**
-     * Helpers
-     *
-     * @var array
-     */
-    public $helpers = array(
-        'Html',
-        'Form',
-        'Session',
-    );
-
-    /**
      * create category info 
      * 
      * @return mixed
@@ -41,7 +30,7 @@ class CategoriesController extends AppController
 
             //process icon upload
             $catIcon = null;
-            if ($this->request->data['Category']['icon']['size'] > 0) {
+            if (!empty($this->request->data['Category']['icon']['size'])) {
                 $catIcon = $this->__processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
             }
@@ -90,7 +79,6 @@ class CategoriesController extends AppController
         }
 
         $this->set('title_for_layout', 'Edit Category');
-        $this->set('catObj', $catObj);
         $this->set('listWallet', $this->Wallet->getWalletsOfUser(AuthComponent::user('id')));
 
         if (empty($this->request->data)) {
@@ -103,7 +91,7 @@ class CategoriesController extends AppController
 
         //process icon upload
         $catIcon = $catObj['Category']['icon'];
-        if (!empty($this->request->data['Category']['icon']['size'] > 0)) {
+        if (!empty($this->request->data['Category']['icon']['size'])) {
             $catIcon = $this->__processUploadImage(
                     AppConstant::FOLDER_UPL, $this->request->data['Category']['icon']);
         }
@@ -154,12 +142,13 @@ class CategoriesController extends AppController
             $flagDelete = false;
         }
 
-        if ($flagDelete) {
-            $dbSource->commit();
-        } else {
+        if (!$flagDelete) {
             $dbSource->rollback();
+            $this->Session->setFlash("Have error! Please try again.");
+            return;
         }
-
+        
+        $dbSource->commit();
         return $this->redirect(array(
                     'controller' => 'categories',
                     'action'     => 'listCategories',

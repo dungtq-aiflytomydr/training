@@ -3,8 +3,8 @@ echo $this->Html->script('categories/processCategory');
 
 //process category icon
 $icon = '/img/building.png';
-if (!empty($catObj['Category']['icon'])) {
-    $icon = $catObj['Category']['icon'];
+if (!empty($this->request->data['Category']['icon'])) {
+    $icon = $this->request->data['Category']['icon'];
 }
 
 //process option select wallet

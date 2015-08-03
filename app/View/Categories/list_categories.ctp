@@ -12,7 +12,7 @@
                 <?php
                 foreach ($listCategories as $category):
                     if ($category['Category']['expense_type'] == 'in'):
-                        echo $this->element('categories/list_list_category', array(
+                        echo $this->element('categories/item_category', array(
                             'category' => $category,
                         ));
                     endif;
@@ -34,7 +34,7 @@
                 <?php
                 foreach ($listCategories as $category):
                     if ($category['Category']['expense_type'] == 'out'):
-                        echo $this->element('categories/list_list_category', array(
+                        echo $this->element('categories/item_category', array(
                             'category' => $category,
                         ));
                     endif;
