@@ -11,18 +11,12 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AppController
 {
 
-    public $uses = array('User', 'Wallet');
-
     /**
-     * Helpers
-     *
-     * @var array
+     * $uses
+     * 
+     * @var array 
      */
-    public $helpers = array(
-        'Html',
-        'Form',
-        'Session',
-    );
+    public $uses = array('User', 'Wallet');
 
     /**
      * Components
