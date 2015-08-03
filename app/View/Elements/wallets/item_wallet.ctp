@@ -1,11 +1,11 @@
 <tr>
     <td><?php echo ($key + 1); ?></td>
     <td><img class="img-26px" src="<?php
-             if (!empty($wallet['Wallet']['icon'])) {
+             if (!empty($wallet['Wallet']['icon'])) :
                  echo $wallet['Wallet']['icon'];
-             } else {
+             else :
                  echo '/img/wallet.png';
-             }
+             endif;
              ?>"/></td>
     <td><?php echo $wallet['Wallet']['name']; ?></td>
     <td><?php echo __convertMoney($wallet['Wallet']['balance']); ?></td>

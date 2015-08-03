@@ -9,8 +9,8 @@
 
     //process wallet's icon
     $icon = '/img/wallet.png';
-    if (!empty($wallet['Wallet']['icon'])) {
-        $icon = $wallet['Wallet']['icon'];
+    if (!empty($this->request->data['Wallet']['icon'])) {
+        $icon = $this->request->data['Wallet']['icon'];
     }
 
     echo $this->Form->create('Wallet', array(
@@ -25,7 +25,6 @@
         'label'    => "Wallet's name",
         'class'    => 'form-control',
         'required' => false,
-        'default'  => $wallet['Wallet']['name'],
     ));
     echo $this->Form->input('icon', array(
         'label'    => 'Icon',
@@ -39,7 +38,6 @@
         'empty'    => 'Choose unit',
         'class'    => 'form-control',
         'required' => false,
-        'default'  => $wallet['Wallet']['unit_id'],
     ));
     echo $this->Form->end(array(
         'label' => 'Update wallet',

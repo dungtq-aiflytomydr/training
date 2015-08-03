@@ -36,7 +36,7 @@ if (!empty($listWallet)):
             <tbody>
                 <?php
                 foreach ($listWallet as $key => $wallet):
-                    echo $this->element('wallets/list_list_wallet', array(
+                    echo $this->element('wallets/item_wallet', array(
                         'key'    => $key,
                         'wallet' => $wallet,
                     ));

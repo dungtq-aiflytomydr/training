@@ -11,16 +11,6 @@ class WalletsController extends AppController
     public $uses = array('Wallet', 'Unit', 'User', 'Category', 'Transaction');
 
     /**
-     * $helpers
-     * @var array
-     */
-    public $helpers = array(
-        'Form',
-        'Html',
-        'Session',
-    );
-
-    /**
      * add wallet information
      */
     public function add()
@@ -34,7 +24,7 @@ class WalletsController extends AppController
 
         //process wallet's icon
         $walletIcon = null;
-        if ($this->request->data['Wallet']['icon']['size'] > 0) {
+        if (!empty($this->request->data['Wallet']['icon']['size'])) {
             $walletIcon = $this->__processUploadImage(
                     AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
         }
@@ -47,10 +37,10 @@ class WalletsController extends AppController
         if ($this->Wallet->validates()) {
             if ($this->Wallet->createWallet($this->request->data)) {
 
-                //check if user have not anything wallet => set default wallet
-                $manyWallet = $this->Wallet->countUserWallets(AuthComponent::user('id'));
+                //check if user have not any wallet => set default wallet
+                $totalWallet = $this->Wallet->countUserWallets(AuthComponent::user('id'));
 
-                if ($manyWallet == 1) {
+                if ($totalWallet == 1) {
                     $currentWalletId = $this->Wallet->getInsertID();
 
                     $dataUpdate = array(
@@ -113,7 +103,6 @@ class WalletsController extends AppController
 
         $this->set('title_for_layout', "Edit wallet");
         $this->set('unitObj', $this->Unit->getAllUnit());
-        $this->set('wallet', $walletObj);
 
         if (empty($this->request->data)) {
             $this->request->data = $walletObj;
@@ -128,7 +117,7 @@ class WalletsController extends AppController
 
             //process wallet's icon
             $walletIcon = $walletObj['Wallet']['icon'];
-            if ($this->request->data['Wallet']['icon']['size'] > 0) {
+            if (!empty($this->request->data['Wallet']['icon']['size'])) {
                 $walletIcon = $this->__processUploadImage(
                         AppConstant::FOLDER_UPL, $this->request->data['Wallet']['icon']);
             }
