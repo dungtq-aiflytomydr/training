@@ -7,7 +7,7 @@
  */
 App::uses('Component', 'Controller');
 
-class PaginationComponent extends Component
+class MyPaginationComponent extends Component
 {
 
     private $__controller;

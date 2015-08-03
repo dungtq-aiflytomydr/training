@@ -37,7 +37,7 @@ $url         = $pagination['url'];
                     endif;
                 elseif ($i < ($currentPage - 2) || $i > ($currentPage + 2)) :
                     $lbPage = "<a>...</a>";
-                    if (($lbPage === $arrDot[$i - 1])) :
+                    if ($lbPage === $arrDot[$i - 1]) :
                         $lbPage = "";
                     endif;
                 else :
@@ -50,7 +50,7 @@ $url         = $pagination['url'];
                     $lbPage = "<a class='num-page' href='" . $url . "/page:$i'>" . $i . "</a>";
                 elseif ($i < ($currentPage - 2) || $i > ($currentPage + 2)) :
                     $lbPage = "<a>...</a>";
-                    if (($lbPage === $arrDot[$i - 1])) :
+                    if ($lbPage === $arrDot[$i - 1]) :
                         $lbPage = "";
                     endif;
                 else :
