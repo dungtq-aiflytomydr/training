@@ -213,11 +213,13 @@ class WalletsController extends AppController
             $flagDelete = false;
         }
 
-        if ($flagDelete) {
-            $dbSource->commit();
-        } else {
+        if (!$flagDelete) {
             $dbSource->rollback();
+            $this->Session->setFlash("Have error! Please try again.");
+            return;
         }
+
+        $dbSource->commit();
 
         //if wallet want to delete have id equals current_wallet id => set default wallet for other wallet
         if ($id == AuthComponent::user('current_wallet')) {
