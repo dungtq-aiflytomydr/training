@@ -5,12 +5,11 @@ echo $this->Html->script('transactions/processTransaction');
 $catIncome  = $catExpense = array();
 
 foreach ($listCategory as $key => $category) :
-    if ($category['Category']['expense_type'] == 'in') {
+    if ($category['Category']['expense_type'] == 'in') :
         $catIncome[$category['Category']['id']] = $category['Category']['name'];
-    } else {
+    else :
         $catExpense[$category['Category']['id']] = $category['Category']['name'];
-    }
-//    $catSelect[$category['Category']['id']] = $category['Category']['name'];
+    endif;
 endforeach;
 ?>
 <div class="popupForm">
@@ -19,7 +18,7 @@ endforeach;
         'inputDefaults' => array(
             'div' => array(
                 'class' => 'form-group',
-            )
+            ),
         ),
     ));
     ?>
@@ -40,17 +39,17 @@ endforeach;
             </optgroup>
             <optgroup label="Expense">
                 <?php
-                foreach ($catExpense as $key => $cat) {
+                foreach ($catExpense as $key => $cat) :
                     $isSelected = '';
-                    if ($key == $this->request->data['Transaction']['category_id']) {
+                    if ($key == $this->request->data['Transaction']['category_id']) :
                         $isSelected = 'selected';
-                    }
+                    endif;
                     echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
-                }
+                endforeach;
                 ?>
             </optgroup>
         </select>
-        <?php if (!empty($validationsError['category_id'])): ?>
+        <?php if (!empty($validationErrors['category_id'])): ?>
             <div class="error-message">Please select category.</div>
         <?php endif; ?>
     </div>

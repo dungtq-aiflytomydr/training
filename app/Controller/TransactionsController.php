@@ -6,24 +6,19 @@ class TransactionsController extends AppController
     /**
      * $uses
      * 
-     * @var type 
+     * @var array 
      */
-    public $uses       = array('Transaction', 'Category', 'Unit', 'Wallet');
-    public $components = array('Paginator', 'Pagination');
+    public $uses = array('Transaction', 'Category', 'Unit', 'Wallet');
 
     /**
-     * $helpers
+     * $components
      * 
-     * @var type 
+     * @var array
      */
-    public $helpers = array(
-        'Form',
-        'Html',
-        'Session',
-    );
+    public $components = array('MyPagination');
 
     /**
-     * params for get information from transaction like: total income, total expense
+     * params to save any information from transaction like: total income, total expense
      * 
      * @var $__totalIncome int 
      * @var $__totalExpense int 
@@ -78,15 +73,17 @@ class TransactionsController extends AppController
                 return $this->redirect(array(
                             'controller' => 'transactions',
                             'action'     => 'listSortByDate',
-                            $this->__processParamDateTime($create_time),
+                            date('mY', $create_time),
                 ));
             }
         }
-        $this->set('validationsError', $this->Transaction->validationErrors);
+        $this->set('validationErrors', $this->Transaction->validationErrors);
     }
 
     /**
      * show list transaction sort by date (view in month)
+     * 
+     * @param $dateTime String
      */
     public function listSortByDate($dateTime = null)
     {
@@ -103,9 +100,9 @@ class TransactionsController extends AppController
         if (!empty($dateTime)) {
             $url = $url . '/' . $dateTime;
         }
-        $numPerPage = 4;
-        $this->Pagination->initialize($this);
-        $pagination = $this->Pagination->pagination(count($listTransaction), $numPerPage, $url);
+        $numPerPage = 5;
+        $this->MyPagination->initialize($this);
+        $pagination = $this->MyPagination->pagination(count($listTransaction), $numPerPage, $url);
 
         $listTransaction = $this->__processPagination($listTransaction, $pagination);
 
@@ -137,8 +134,8 @@ class TransactionsController extends AppController
             $url = $url . '/' . $dateTime;
         }
         $numPerPage = 4;
-        $this->Pagination->initialize($this);
-        $pagination = $this->Pagination->pagination(count($listTransaction), $numPerPage, $url);
+        $this->MyPagination->initialize($this);
+        $pagination = $this->MyPagination->pagination(count($listTransaction), $numPerPage, $url);
 
         $listTransaction = $this->__processPagination($listTransaction, $pagination);
 
@@ -230,7 +227,7 @@ class TransactionsController extends AppController
                 $this->redirect(array(
                     'controller' => 'transactions',
                     'action'     => 'listSortByDate',
-                    $this->__processParamDateTime($create_time),
+                    date('mY', $create_time),
                 ));
             }
             $this->Session->setFlash("Have error! Please try again.");
@@ -261,7 +258,7 @@ class TransactionsController extends AppController
         return $this->redirect(array(
                     'controller' => 'transactions',
                     'action'     => 'listSortByDate',
-                    $this->__processParamDateTime($transactionObj['Transaction']['create_time']),
+                    date('mY', $transactionObj['Transaction']['create_time']),
         ));
     }
 
@@ -310,25 +307,20 @@ class TransactionsController extends AppController
             $month = substr($dateTime, 0, 2);
             $year  = substr($dateTime, 2, strlen($dateTime));
         } else {
-            $dateTime = date('m-Y', time());
-            $dateTime = explode('-', $dateTime);
-
-            $month = $dateTime[0];
-            $year  = $dateTime[1];
+            $month = date('m', time());
+            $year  = date('Y', time());
         }
 
-        $startTime = strtotime($year . '-' . $month . '-' . '01');
-        $endTime   = strtotime($year . '-' . $month . '-' . '31');
+        $firstDayOfMonth = date_create($year . '-' . $month)
+                ->modify('first day of this month')
+                ->format('d');
 
-        if ($month == '02') {
-            $endTime = strtotime($year . '-' . $month . '-' . '28');
-            if ($year % 4 == 0) {
-                $endTime = strtotime($year . '-' . $month . '-' . '29');
-            }
-        } elseif ($month == '04' ||
-                $month == '06' || $month == '09' || $month == '11') {
-            $endTime = strtotime($year . '-' . $month . '-' . '30');
-        }
+        $lastDayOfMonth = date_create($year . '-' . $month)
+                ->modify('last day of this month')
+                ->format('d');
+
+        $startTime = strtotime($year . '-' . $month . '-' . $firstDayOfMonth);
+        $endTime   = strtotime($year . '-' . $month . '-' . $lastDayOfMonth);
 
         //array datetime want to show report
         return array(
@@ -540,19 +532,6 @@ class TransactionsController extends AppController
             }
         }
         return $newList;
-    }
-
-    /**
-     * set param datetime for redirect when add and edit transactions success
-     * 
-     * @param int $datetime
-     * @return string
-     */
-    private function __processParamDateTime($datetime)
-    {
-        $month = date('m', $datetime);
-        $year  = date('Y', $datetime);
-        return $month . $year;
     }
 
     /**

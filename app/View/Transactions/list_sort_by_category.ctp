@@ -45,7 +45,7 @@ if (!empty($listTransaction)):
                     <tbody>
                         <?php
                         foreach ($listChild['listTransaction'] as $key => $transaction) :
-                            echo $this->element('transactions/list_sort_category', array(
+                            echo $this->element('transactions/item_sort_by_category', array(
                                 'transaction' => $transaction,
                             ));
                         endforeach;

@@ -19,7 +19,7 @@ class Transaction extends AppModel
                 'rule'    => 'numeric',
                 'message' => 'Amount contain only numeric.'
             ),
-        )
+        ),
     );
 
     /**
@@ -66,16 +66,16 @@ class Transaction extends AppModel
     /**
      * Get list transaction within current wallet and array data contain time
      * 
-     * @param array $data Array have time want to find ex: (array('start_time' => 123213, 'end_time' => 200000))
+     * @param array $dateTime Array have time want to find ex: (array('start_time' => 123213, 'end_time' => 200000))
      * @return array
      */
-    public function getListTransactionsByDate($data)
+    public function getListTransactionsByDate($dateTime)
     {
         return $this->find('all', array(
                     'conditions' => array(
                         'Transaction.wallet_id'      => AuthComponent::user('current_wallet'),
-                        'Transaction.create_time >=' => $data['start_time'],
-                        'Transaction.create_time <=' => $data['end_time'],
+                        'Transaction.create_time >=' => $dateTime['start_time'],
+                        'Transaction.create_time <=' => $dateTime['end_time'],
                     ),
                     'order'      => 'create_time DESC',
         ));
