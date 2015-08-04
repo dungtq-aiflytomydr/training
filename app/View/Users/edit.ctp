@@ -1,9 +1,9 @@
 <?php
 echo $this->Html->script('users/processUser');
 $userAva = '/img/ava_default.jpeg';
-if (!empty(AuthComponent::user('avatar'))) {
+if (!empty(AuthComponent::user('avatar'))) :
     $userAva = AuthComponent::user('avatar');
-}
+endif;
 ?>
 <div class="popupForm">
     <?php
@@ -28,9 +28,9 @@ if (!empty(AuthComponent::user('avatar'))) {
         'required' => false,
     ));
     echo $this->Form->input('address', array(
-        'label'   => 'Address',
-        'class'   => 'form-control',
-        'rows'    => 3,
+        'label' => 'Address',
+        'class' => 'form-control',
+        'rows'  => 3,
     ));
     echo $this->Form->end(array(
         'label' => 'Update profile',
