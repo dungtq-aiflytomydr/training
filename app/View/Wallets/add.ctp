@@ -3,8 +3,8 @@
     <?php
     //get list unit
     $optionUnit = array();
-    foreach ($unitObj as $key => $value):
-        $optionUnit[$value['Unit']['id']] = $value['Unit']['name'] . ' (' . $value['Unit']['signature'] . ')';
+    foreach ($listUnit as $key => $unitObj):
+        $optionUnit[$unitObj['Unit']['id']] = $unitObj['Unit']['name'] . ' (' . $unitObj['Unit']['signature'] . ')';
     endforeach;
 
     echo $this->Form->create('Wallet', array(
@@ -38,6 +38,7 @@
         'required'     => false,
     ));
     echo $this->Form->input('unit_id', array(
+        'label'    => 'Select unit',
         'options'  => array($optionUnit),
         'empty'    => 'Choose unit',
         'class'    => 'form-control',
