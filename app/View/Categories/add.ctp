@@ -13,12 +13,12 @@ endforeach;
     echo $this->Form->create('Category', array(
         'inputDefaults' => array(
             'div' => array(
-                'class' => 'form-group'
-            )
+                'class' => 'form-group',
+            ),
         ),
         'url'           => array(
             'controller' => 'Categories',
-            'action'     => 'add'
+            'action'     => 'add',
         ),
         'type'          => 'file',
     ));

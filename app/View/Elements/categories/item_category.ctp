@@ -1,10 +1,10 @@
 <tr>
     <td><img class="img-26px" src="<?php
-             if (!empty($category['Category']['icon'])) {
+             if (!empty($category['Category']['icon'])) :
                  echo $category['Category']['icon'];
-             } else {
+             else :
                  echo '/img/building.png';
-             }
+             endif;
              ?>"/></td>
     <td><?php echo $category['Category']['name']; ?></td>
     <td><?php

@@ -13,7 +13,7 @@ class Category extends AppModel
             'required' => array(
                 'rule'    => 'notBlank',
                 'message' => "Please fill out Category's name."
-            )
+            ),
         ),
         'icon'         => array(
             'fileType' => array(
@@ -32,7 +32,7 @@ class Category extends AppModel
             'required' => array(
                 'rule'    => 'notBlank',
                 'message' => 'Please select expense type.'
-            )
+            ),
         ),
     );
 
@@ -108,7 +108,6 @@ class Category extends AppModel
      */
     public function deleteCategoriesOfWallet($walletId)
     {
-        //delete
         return $this->deleteAll(array(
                     'wallet_id' => $walletId,
         ));
