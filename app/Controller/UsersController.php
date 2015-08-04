@@ -109,7 +109,7 @@ class UsersController extends AppController
                 $this->Session->setFlash("Update profile complete.");
                 return $this->redirect('/');
             }
-            $this->Session->setFlash("Have error. Please try again.");
+            $this->Session->setFlash("Have error! Please try again.");
         }
     }
 
@@ -136,7 +136,7 @@ class UsersController extends AppController
      */
     public function login()
     {
-        $this->set('title_for_layout', "Home");
+        $this->set('title_for_layout', "Login");
 
         if (!$this->request->is(array('post', 'put'))) {
             return;
@@ -188,7 +188,7 @@ class UsersController extends AppController
         );
 
         if ($this->__sendEmail($createdUser['User'], $emailConfig)) {
-            $this->Session->setFlash('Register completed! Please check your email for validation link!');
+            $this->Session->setFlash('Register completed! Please check your email for validation link.');
             return $this->redirect(array(
                         'controller' => 'users',
                         'action'     => 'login',

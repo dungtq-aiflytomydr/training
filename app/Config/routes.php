@@ -29,7 +29,7 @@ Router::connect('/', array('controller' => 'wallets', 'action' => 'listWallet', 
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
-Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+//Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
 
 Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
@@ -42,7 +42,6 @@ Router::connect('/wallets/index', array('controller' => 'wallets', 'action' => '
 
 Router::connect('/categories', array('controller' => 'categories', 'action' => 'listCategories'));
 Router::connect('/categories/index', array('controller' => 'categories', 'action' => 'listCategories'));
-
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on

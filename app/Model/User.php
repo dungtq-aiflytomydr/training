@@ -28,7 +28,7 @@ class User extends AppModel
             'unique'   => array(
                 'rule'    => 'isUnique',
                 'message' => 'This email had been already used.'
-            )
+            ),
         ),
         'password'   => array(
             'required' => array(
@@ -48,7 +48,7 @@ class User extends AppModel
             'length'   => array(
                 'rule'    => array('minLength', 4),
                 'message' => 'Your name length must be greater than 4 characters.'
-            )
+            ),
         ),
         'avatar'     => array(
             'fileType' => array(
@@ -71,7 +71,7 @@ class User extends AppModel
             'checkPassword' => array(
                 'rule'    => 'checkPassword',
                 'message' => 'Password is not correct.'
-            )
+            ),
         ),
         'confirm_pw' => array(
             'required' => array(
@@ -81,7 +81,7 @@ class User extends AppModel
             'match'    => array(
                 'rule'    => 'matchPassword',
                 'message' => 'Passwords do not match.'
-            )
+            ),
         )
     );
 
