@@ -1,6 +1,8 @@
 <?php
 echo $this->element('transactions/select_option_sort');
 
+$totalIncome  = $totalExpense = 0;
+
 /**
  * convert money (ex: 1000 => 1.000)
  * 
@@ -13,24 +15,29 @@ function __convertMoney($money)
 }
 
 if (!empty($listTransaction)):
-    ?>
-    <div>
-        <?php
-        foreach ($listTransaction as $key => $listChild) :
+    $dateCompare    = 253402189200; // <=> 9999-12-31
+    $flagCloseTable = 0;
+
+    foreach ($listTransaction as $key => $tran) :
+        if ($tran['Transaction']['create_time'] < $dateCompare) :
+            if ($flagCloseTable > 0) :
+                ?>
+                </tbody>
+                </table>
+                </div>
+                <?php
+            endif;
+
+            $dateCompare = $tran['Transaction']['create_time'];
+            echo "<h3 class='clr-red'>" . date('Y-m-d', $dateCompare) . "</h3>";
+
+            $flagCloseTable++;
             ?>
-            <h3 class="clr-red"><?php
-                if (date('d-m-Y', $listChild['create_time']) == date('d-m-Y', time())):
-                    echo "Today (" . date('d-m-Y', $listChild['create_time']) . ")";
-                else:
-                    echo date('d-m-Y', $listChild['create_time']);
-                endif;
-                ?></h3>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Icon</th>
-                            <th>Category</th>
+                            <th>Name</th>
                             <th>Amount</th>
                             <th>Expense Type</th>
                             <th>Note</th>
@@ -39,28 +46,39 @@ if (!empty($listTransaction)):
                     </thead>
                     <tbody>
                         <?php
-                        foreach ($listChild['listTransaction'] as $key => $transaction) :
-                            echo $this->element('transactions/item_sort_by_date', array(
-                                'transaction' => $transaction,
-                            ));
-                        endforeach;
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-            <?php
-        endforeach;
-        ?>
-    </div>
-    <div>
+                    endif;
+
+                    //render item_sort_by_date
+                    echo $this->element('transactions/item_sort_by_date', array(
+                        'tran' => $tran,
+                    ));
+
+                    if ($tran['Category']['expense_type'] == 'in') {
+                        $totalIncome += $tran['Transaction']['amount'];
+                    } else {
+                        $totalExpense += $tran['Transaction']['amount'];
+                    }
+
+                endforeach;
+                if ($flagCloseTable > 0) :
+                    ?>
+                </tbody>
+            </table>
+        </div>
         <?php
-        echo $this->element('pagination/pagination', array(
-            'pagination' => $pagination,
-        ));
-        ?>
-    </div>
-    <?php
-    echo $this->element('transactions/show_statistical');
+    endif;
+
+    $statisticalData = array(
+        'income'  => $totalIncome,
+        'expense' => $totalExpense,
+        'total'   => $totalIncome - $totalExpense,
+    );
+
+    echo $this->element('transactions/show_statistical', array(
+        'statisticalData' => $statisticalData,
+        'unitInfo'        => $unitInfo,
+    ));
 else:
     echo '<h3>Not found data :)</h3>';
-endif;
+            endif;
+            

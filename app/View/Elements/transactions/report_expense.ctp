@@ -1,22 +1,22 @@
 <?php
-if (!empty($statistical_data['maxExpense'])):
+if (!empty($listTransaction)):
     ?>
-    <h3>Expense (Total: <?php echo __convertMoney($statistical_data['expense']) . ' ' . $unit; ?>)</h3>
+    <h3>Expense (Total: <?php echo __convertMoney($statistical['totalExpense']) . ' ' . $unit['Unit']['signature']; ?>)</h3>
     <h4>Maximum: <?php
-        echo $statistical_data['maxExpense']['category_info']['name'] .
-        ' (' . __convertMoney($statistical_data['maxExpense']['amount']) . ' ' . $unit . ')'
+        echo $statistical['maxExpense']['Category']['name'] .
+        ' (' . __convertMoney($statistical['maxExpense']['Transaction']['amount']) . ' ' . $unit['Unit']['signature'] . ')'
         ?>
     </h4>
-    <small style="display: block;">Transaction at: <?php echo date('d-m-Y', $statistical_data['maxExpense']['create_time']); ?></small>
+    <small style="display: block;">Transaction at: <?php echo date('Y-m-d', $statistical['maxExpense']['Transaction']['create_time']); ?></small>
     <div class="rp-area">
         <?php
-        foreach ($listTransaction as $key => $transaction) :
-            if ($transaction['category']['expense_type'] == 'out') :
-                $width = round(($transaction['totalMoney'] / $statistical_data['expense'] * 100), 2);
+        foreach ($listTransaction as $key => $tran) :
+            if ($tran['Category']['expense_type'] == 'out') :
+                $width = round(($tran['sumMoney'] / $statistical['totalExpense'] * 100), 2);
                 ?>
                 <div class="rp-row row">
                     <div class="rp-name col-md-3 col-xs-12">
-                        <?php echo $transaction['category']['name'] . ' (' . __convertMoney($transaction['totalMoney']) . ' ' . $unit . ')'; ?>
+                        <?php echo $tran['Category']['name'] . ' (' . __convertMoney($tran['sumMoney']) . ' ' . $unit['Unit']['signature'] . ')'; ?>
                     </div>
                     <div class="rp-progress-bar col-md-8 col-xs-9">
                         <div class="progress">
@@ -32,4 +32,6 @@ if (!empty($statistical_data['maxExpense'])):
         endforeach;
         ?>
     </div>
-<?php endif; ?>
+    <?php
+endif;
+?>

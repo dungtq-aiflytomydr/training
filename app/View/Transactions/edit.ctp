@@ -29,7 +29,7 @@ endforeach;
                 <?php
                 foreach ($catIncome as $key => $cat) :
                     $isSelected = '';
-                    if ($key == $transactionObj['Transaction']['category_id']) :
+                    if ($key == $this->request->data['Transaction']['category_id']) :
                         $isSelected = 'selected';
                     endif;
                     echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
@@ -40,7 +40,7 @@ endforeach;
                 <?php
                 foreach ($catExpense as $key => $cat) :
                     $isSelected = '';
-                    if ($key == $transactionObj['Transaction']['category_id']) :
+                    if ($key == $this->request->data['Transaction']['category_id']) :
                         $isSelected = 'selected';
                     endif;
                     echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";

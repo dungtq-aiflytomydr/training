@@ -48,6 +48,18 @@ class Transaction extends AppModel
     }
 
     /**
+     * get Transaction information by id
+     * 
+     * @param int $id Transaction id
+     * @return array|null
+     */
+    public function getById($id)
+    {
+        $this->bindCategory();
+        return $this->findById($id);
+    }
+
+    /**
      * Get list transaction by wallet id
      * 
      * @param int $walletId Wallet id
@@ -55,6 +67,7 @@ class Transaction extends AppModel
      */
     public function getTransactionsOfWallet($walletId)
     {
+        $this->bindCategory();
         return $this->find('all', array(
                     'conditions' => array(
                         'Transaction.wallet_id' => $walletId,
@@ -64,21 +77,33 @@ class Transaction extends AppModel
     }
 
     /**
-     * Get list transaction within current wallet and array data contain time
+     * Get list transaction within current wallet by from date and to date
      * 
-     * @param array $dateTime Array have time want to find ex: (array('start_time' => 123213, 'end_time' => 200000))
+     * @param int $fromDate From date
+     * @param int $toDate To date
+     * @param mixed $orderBy sort records by ASC or DESC with any field
      * @return array
      */
-    public function getListTransactionsByDate($dateTime)
+    public function getTransactionsByDateRange($fromDate, $toDate, $orderBy = 'Transaction.create_time DESC')
     {
+        $this->bindCategory();
+
         return $this->find('all', array(
                     'conditions' => array(
                         'Transaction.wallet_id'      => AuthComponent::user('current_wallet'),
-                        'Transaction.create_time >=' => $dateTime['start_time'],
-                        'Transaction.create_time <=' => $dateTime['end_time'],
+                        'Transaction.create_time >=' => $fromDate,
+                        'Transaction.create_time <=' => $toDate,
                     ),
-                    'order'      => 'create_time DESC',
+                    'order'      => $orderBy,
         ));
+    }
+
+    /**
+     * bindModel Category in Transaction
+     */
+    public function bindCategory()
+    {
+        $this->bindModel(array('belongsTo' => array('Category')));
     }
 
     /**

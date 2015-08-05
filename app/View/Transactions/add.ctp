@@ -74,7 +74,7 @@ endforeach;
         'type'     => 'text',
         'label'    => 'Time',
         'class'    => 'form-control',
-        'default'  => date('d-m-Y', time()),
+        'default'  => date('Y-m-d', time()),
         'required' => false,
     ));
 

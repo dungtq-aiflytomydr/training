@@ -83,7 +83,7 @@ class Category extends AppModel
      */
     public function getById($id)
     {
-        return $this->findById($id)['Category'];
+        return $this->findById($id);
     }
 
     /**

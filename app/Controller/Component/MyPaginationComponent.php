@@ -19,13 +19,14 @@ class MyPaginationComponent extends Component
     }
 
     /**
-     * pagination - setup pagination
+     * setup pagination
+     * 
      * @param int $totalRecords - total records
      * @param int $numPerPage - numbers of record per one page
      * @param string $url - link
      * @return array
      */
-    public function pagination($totalRecords, $numPerPage, $url)
+    public function setting($totalRecords, $numPerPage, $url)
     {
         //get current page
         $currentPage = 1;
@@ -41,6 +42,38 @@ class MyPaginationComponent extends Component
             'currentPage' => $currentPage,
             'url'         => $url,
         );
+    }
+
+    /**
+     * process array want to display with custom pagination
+     * 
+     * @param array $list Array want to process
+     * @param array $pagination Array pagination for process, ex(
+     *      $pagination = array(
+     *          'numPerPage' => 4, 
+     *          'currentPage' => 3,
+     *      )
+     * )
+     * @return array
+     */
+    public function pagination($list, $pagination = null)
+    {
+        $newList  = array();
+        //position of first element want to display
+        $startPos = ($pagination['currentPage'] - 1) * $pagination['numPerPage'];
+        //find first element
+        $findPos  = 0;
+        //count nums records want to display
+        $count    = 0;
+
+        foreach ($list as $value) {
+            if ($findPos >= $startPos && $count < $pagination['numPerPage']) {
+                $newList[] = $value;
+                $count++;
+            }
+            $findPos++;
+        }
+        return $newList;
     }
 
 }

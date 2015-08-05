@@ -14,16 +14,16 @@ function __convertMoney($money)
 
 if (!empty($listTransaction)) {
 
-    $unit = $statistical_data['unit']['signature'];
-
     echo $this->element('transactions/report_income', array(
-        'unit' => $unit,
+        'unit'        => $unitInfo,
+        'statistical' => $statistical,
     ));
     ?>
     <hr/>
     <?php
     echo $this->element('transactions/report_expense', array(
-        'unit' => $unit,
+        'unit'        => $unitInfo,
+        'statistical' => $statistical,
     ));
 } else {
     echo '<h3>Not found data :)</h3>';

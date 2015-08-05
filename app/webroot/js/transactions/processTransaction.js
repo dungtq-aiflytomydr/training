@@ -7,17 +7,17 @@ var Transactions = function () {
         $('#rp-date').kendoDatePicker({
             start: "year",
             depth: "year",
-            format: 'MM-yyyy'
+            format: 'yyyy-MM'
         });
 
         var arrUrl = currentUrl.split('/');
 
         $('#rp-date').change(function () {
             var date = $(this).val().split('-');
-            var redirectUrl = url + '/transactions/listSortByDate/' + date[0] + date[1];
+            var redirectUrl = url + '/transactions/listSortByDate/' + date[0] + '-' + date[1];
 
             if (arrUrl[2] !== undefined) {
-                redirectUrl = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + date[0] + date[1];
+                redirectUrl = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + date[0] + '-' + date[1];
             }
 
             window.location.href = redirectUrl;
@@ -28,7 +28,7 @@ var Transactions = function () {
     var processCreateTime = function () {
         //process show datepicker for create_time
         $("#TransactionCreateTime").kendoDatePicker({
-            format: "dd-MM-yyyy"
+            format: "yyyy-MM-dd"
         });
     };
 
