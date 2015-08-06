@@ -97,7 +97,7 @@ class TransactionsController extends AppController
     /**
      * show list transaction sort by date (view in month)
      * 
-     * @param $dateTime String
+     * @param $dateTime String datetime
      */
     public function listSortByDate($dateTime = null)
     {
@@ -108,7 +108,7 @@ class TransactionsController extends AppController
         $listTransaction = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate']);
 
         $this->set('listTransaction', $listTransaction);
-        $this->set('datetime', date('Y-m', $findTime['toDate']));
+        $this->set('datetime', date('Y-m', $findTime['fromDate']));
         $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
     }
 
@@ -129,7 +129,7 @@ class TransactionsController extends AppController
         $listTransaction = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate'], $orderBy);
 
         $this->set('listTransaction', $listTransaction);
-        $this->set('datetime', date('Y-m', $findTime['toDate']));
+        $this->set('datetime', date('Y-m', $findTime['fromDate']));
         $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
     }
 
@@ -140,12 +140,12 @@ class TransactionsController extends AppController
      */
     public function edit($id)
     {
-        $transactionObj = $this->Transaction->getById($id);
-        if (empty($transactionObj)) {
+        $tranObj = $this->Transaction->getById($id);
+        if (empty($tranObj)) {
             throw new NotFoundException('Could not find that transaction.');
         }
 
-        if ($transactionObj['Transaction']['wallet_id'] !== AuthComponent::user('current_wallet')) {
+        if ($tranObj['Transaction']['wallet_id'] !== AuthComponent::user('current_wallet')) {
             throw new NotFoundException('Access is denied.');
         }
 
@@ -154,8 +154,8 @@ class TransactionsController extends AppController
                         AuthComponent::user('current_wallet')));
 
         if (empty($this->request->data)) {
-            $this->request->data                               = $transactionObj;
-            $this->request->data['Transaction']['create_time'] = date('Y-m-d', $transactionObj['Transaction']['create_time']);
+            $this->request->data                               = $tranObj;
+            $this->request->data['Transaction']['create_time'] = date('Y-m-d', $tranObj['Transaction']['create_time']);
         }
 
         if (!$this->request->is(array('post', 'put'))) {
@@ -165,16 +165,15 @@ class TransactionsController extends AppController
         //validations
         $this->Transaction->set($this->request->data);
         if (!$this->Transaction->validates()) {
-            $this->set('validationErrors', $this->Transaction->validationErrors);
             return;
         }
 
         //balance relationship within transaction amount
         $balance = AuthComponent::user('current_wallet_info')['balance'];
-        if ($transactionObj['Category']['expense_type'] == 'in') {
-            $balance -= $transactionObj['Transaction']['amount'];
+        if ($tranObj['Category']['expense_type'] == 'in') {
+            $balance -= $tranObj['Transaction']['amount'];
         } else {
-            $balance += $transactionObj['Transaction']['amount'];
+            $balance += $tranObj['Transaction']['amount'];
         }
 
         //process datetime
@@ -213,19 +212,19 @@ class TransactionsController extends AppController
             throw new BadRequestException('Could not found request.');
         }
 
-        $transactionObj = $this->Transaction->getById($id);
-        if (empty($transactionObj)) {
+        $tranObj = $this->Transaction->getById($id);
+        if (empty($tranObj)) {
             throw new NotFoundException('Could not find that transaction.');
         }
 
         $this->Transaction->deleteById($id);
-        $this->__updateBalance($transactionObj['Category']['expense_type'], $transactionObj['Transaction']['amount']);
+        $this->__updateBalance($tranObj['Category']['expense_type'], $tranObj['Transaction']['amount'], null, true);
 
         $this->Session->setFlash("Delete transaction complete.");
         return $this->redirect(array(
                     'controller' => 'transactions',
                     'action'     => 'listSortByDate',
-                    date('Y-m', $transactionObj['Transaction']['create_time']),
+                    date('Y-m', $tranObj['Transaction']['create_time']),
         ));
     }
 
@@ -254,7 +253,7 @@ class TransactionsController extends AppController
         );
 
         $this->set('listTransaction', $listTransaction);
-        $this->set('datetime', date('Y-m', $findTime['toDate']));
+        $this->set('datetime', date('Y-m', $findTime['fromDate']));
         $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
         $this->set('statistical', $statistical);
     }
@@ -264,19 +263,30 @@ class TransactionsController extends AppController
      * 
      * @param string $expenseType Expense_type('in' | 'out')
      * @param int $amount Amount value
+     * @param int $balance Balance (default = null)
+     * @param boolean $isDelete Action delete or not
      */
-    private function __updateBalance($expenseType, $amount, $balance = null)
+    private function __updateBalance($expenseType, $amount, $balance = null, $isDelete = false)
     {
         if (empty($balance)) {
             $balance = AuthComponent::user('current_wallet_info')['balance'];
         }
 
-        if ($expenseType == 'in') {
-            $balance += $amount;
+        if (!$isDelete) {
+            if ($expenseType == 'in') {
+                $balance += $amount;
+            } else {
+                $balance -= $amount;
+            }
         } else {
-            $balance -= $amount;
+            if ($expenseType == 'in') {
+                $balance -= $amount;
+            } else {
+                $balance += $amount;
+            }
         }
 
+        unset($this->Wallet->validate['balance']['naturalNumber']);
         $this->Wallet->updateById(AuthComponent::user('current_wallet'), array(
             'balance' => $balance,
         ));
@@ -300,8 +310,8 @@ class TransactionsController extends AppController
         }
 
         return array(
-            'fromDate' => strtotime(date('01-m-Y', $refDate)),
-            'toDate'   => strtotime('last day of this month', $refDate),
+            'fromDate' => strtotime(date('Y-m-01', $refDate)),
+            'toDate'   => strtotime('first day of next month', $refDate),
         );
     }
 

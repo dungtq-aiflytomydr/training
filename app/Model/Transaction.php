@@ -16,8 +16,8 @@ class Transaction extends AppModel
                 'message' => 'Please fill out amount.'
             ),
             'numeric'  => array(
-                'rule'    => 'numeric',
-                'message' => 'Amount contain only numeric.'
+                'rule'    => array('comparison', '>', 0),
+                'message' => 'Amount must be greater than zero.'
             ),
         ),
     );
@@ -92,7 +92,7 @@ class Transaction extends AppModel
                     'conditions' => array(
                         'Transaction.wallet_id'      => AuthComponent::user('current_wallet'),
                         'Transaction.create_time >=' => $fromDate,
-                        'Transaction.create_time <=' => $toDate,
+                        'Transaction.create_time <'  => $toDate,
                     ),
                     'order'      => $orderBy,
         ));

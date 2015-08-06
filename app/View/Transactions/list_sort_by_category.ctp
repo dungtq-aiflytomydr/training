@@ -15,12 +15,12 @@ function __convertMoney($money)
 }
 
 if (!empty($listTransaction)):
-    $cateCompare    = 0;
-    $flagCloseTable = 0;
+    $catCompare     = 0;
+    $countCloseTable = 0;
 
     foreach ($listTransaction as $key => $tran) :
-        if ($tran['Transaction']['category_id'] > $cateCompare) :
-            if ($flagCloseTable > 0) :
+        if ($tran['Transaction']['category_id'] > $catCompare) :
+            if ($countCloseTable > 0) :
                 ?>
                 </tbody>
                 </table>
@@ -28,14 +28,14 @@ if (!empty($listTransaction)):
                 <?php
             endif;
 
-            $cateCompare = $tran['Transaction']['category_id'];
-            $classClr    = 'clr-red';
+            $catCompare = $tran['Transaction']['category_id'];
+            $classClr   = 'clr-red';
             if ($tran['Category']['expense_type'] == 'in') :
                 $classClr = 'clr-green';
             endif;
             echo "<h3 class='{$classClr}'>{$tran['Category']['name']}</h3>";
 
-            $flagCloseTable++;
+            $countCloseTable++;
             ?>
             <div class="table-responsive">
                 <table class="table">
@@ -52,7 +52,7 @@ if (!empty($listTransaction)):
                         <?php
                     endif;
 
-                    //render item_sort_by_date
+                    //render item_sort_by_category
                     echo $this->element('transactions/item_sort_by_category', array(
                         'tran' => $tran,
                     ));
@@ -64,7 +64,7 @@ if (!empty($listTransaction)):
                     }
 
                 endforeach;
-                if ($flagCloseTable > 0) :
+                if ($countCloseTable > 0) :
                     ?>
                 </tbody>
             </table>

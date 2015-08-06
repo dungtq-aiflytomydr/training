@@ -15,12 +15,12 @@ function __convertMoney($money)
 }
 
 if (!empty($listTransaction)):
-    $dateCompare    = 253402189200; // <=> 9999-12-31
-    $flagCloseTable = 0;
+    $dateCompare     = 253402189200; // <=> 9999-12-31 (because datetime have a type timestamp)
+    $countCloseTable = 0;
 
     foreach ($listTransaction as $key => $tran) :
         if ($tran['Transaction']['create_time'] < $dateCompare) :
-            if ($flagCloseTable > 0) :
+            if ($countCloseTable > 0) :
                 ?>
                 </tbody>
                 </table>
@@ -31,7 +31,7 @@ if (!empty($listTransaction)):
             $dateCompare = $tran['Transaction']['create_time'];
             echo "<h3 class='clr-red'>" . date('Y-m-d', $dateCompare) . "</h3>";
 
-            $flagCloseTable++;
+            $countCloseTable++;
             ?>
             <div class="table-responsive">
                 <table class="table">
@@ -60,7 +60,7 @@ if (!empty($listTransaction)):
                     }
 
                 endforeach;
-                if ($flagCloseTable > 0) :
+                if ($countCloseTable > 0) :
                     ?>
                 </tbody>
             </table>

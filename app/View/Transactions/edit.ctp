@@ -32,7 +32,7 @@ endforeach;
                     if ($key == $this->request->data['Transaction']['category_id']) :
                         $isSelected = 'selected';
                     endif;
-                    echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
+                    echo "<option value='{$key}' {$isSelected}>{$cat}</option>";
                 endforeach;
                 ?>
             </optgroup>
@@ -43,7 +43,7 @@ endforeach;
                     if ($key == $this->request->data['Transaction']['category_id']) :
                         $isSelected = 'selected';
                     endif;
-                    echo "<option value='" . $key . "' " . $isSelected . ">" . $cat . "</option>";
+                    echo "<option value='{$key}' {$isSelected}>{$cat}</option>";
                 endforeach;
                 ?>
             </optgroup>
@@ -86,7 +86,7 @@ endforeach;
     ?>
 </div>
 <script type="text/javascript">
-        jQuery(document).ready(function () {
-    Transactions.init();
+    jQuery(document).ready(function () {
+        Transactions.init();
     });
 </script>

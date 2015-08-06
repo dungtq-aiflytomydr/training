@@ -49,7 +49,7 @@ class Wallet extends AppModel
             ),
         ),
     );
-    
+
     /**
      * if user not setup icon => unset property icon
      * 

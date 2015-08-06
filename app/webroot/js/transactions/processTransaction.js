@@ -48,10 +48,15 @@ var Transactions = function () {
         $('#sortBy').change(function () {
             var redirectUrl = '';
 
-            if ($(this).val() === 'listSortByCategory') {
-                redirectUrl = currentUrl.replace("listSortByDate", "listSortByCategory");
+            if (currentUrl.indexOf('listSortByDate') < 0
+                    && currentUrl.indexOf('listSortByCategory') < 0) {
+                redirectUrl = currentUrl + '/' + $(this).val();
             } else {
-                redirectUrl = currentUrl.replace("listSortByCategory", "listSortByDate");
+                if ($(this).val() === 'listSortByCategory') {
+                    redirectUrl = currentUrl.replace("listSortByDate", "listSortByCategory");
+                } else {
+                    redirectUrl = currentUrl.replace("listSortByCategory", "listSortByDate");
+                }
             }
 
             window.location.href = redirectUrl;
