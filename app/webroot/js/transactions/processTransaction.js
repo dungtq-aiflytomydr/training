@@ -14,10 +14,10 @@ var Transactions = function () {
 
         $('#rp-date').change(function () {
             var date = $(this).val().split('-');
-            var redirectUrl = url + '/transactions/listSortByDate/' + date[0] + '-' + date[1];
+            var redirectUrl = url + '/transactions/view/sortDate' + date[0] + '-' + date[1];
 
-            if (arrUrl[2] !== undefined) {
-                redirectUrl = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + date[0] + '-' + date[1];
+            if (arrUrl[3] !== undefined) {
+                redirectUrl = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + arrUrl[3] + '/' + date[0] + '-' + date[1];
             }
 
             window.location.href = redirectUrl;
@@ -46,17 +46,18 @@ var Transactions = function () {
         setupTime();
 
         $('#sortBy').change(function () {
-            var redirectUrl = '';
+            var redirectUrl = '',
+                oldStr = 'sortCategory';
 
-            if (currentUrl.indexOf('listSortByDate') < 0
-                    && currentUrl.indexOf('listSortByCategory') < 0) {
-                redirectUrl = currentUrl + '/' + $(this).val();
+            if (currentUrl.indexOf('sortDate') < 0
+                    && currentUrl.indexOf('sortCategory') < 0) {
+                redirectUrl = currentUrl + '/view/' + $(this).val();
             } else {
-                if ($(this).val() === 'listSortByCategory') {
-                    redirectUrl = currentUrl.replace("listSortByDate", "listSortByCategory");
-                } else {
-                    redirectUrl = currentUrl.replace("listSortByCategory", "listSortByDate");
+
+                if ($(this).val() === 'sortCategory') {
+                    oldStr = 'sortDate';
                 }
+                redirectUrl = currentUrl.replace(oldStr, $(this).val());
             }
 
             window.location.href = redirectUrl;

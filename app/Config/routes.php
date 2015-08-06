@@ -34,8 +34,8 @@ Router::connect('/', array('controller' => 'wallets', 'action' => 'listWallet', 
 Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 
-Router::connect('/transactions', array('controller' => 'transactions', 'action' => 'listSortByDate'));
-Router::connect('/transactions/index', array('controller' => 'transactions', 'action' => 'listSortByDate'));
+Router::connect('/transactions', array('controller' => 'transactions', 'action' => 'view', 'sortDate'));
+Router::connect('/transactions/index', array('controller' => 'transactions', 'action' => 'view', 'sortDate'));
 
 Router::connect('/wallets', array('controller' => 'wallets', 'action' => 'listWallet'));
 Router::connect('/wallets/index', array('controller' => 'wallets', 'action' => 'listWallet'));

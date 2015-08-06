@@ -88,7 +88,8 @@ class TransactionsController extends AppController
             $this->Session->setFlash('Add new transaction complete.');
             return $this->redirect(array(
                         'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
+                        'action'     => 'view',
+                        'sortDate',
                         date('Y-m', $create_time),
             ));
         }
@@ -97,40 +98,57 @@ class TransactionsController extends AppController
     /**
      * show list transaction sort by date (view in month)
      * 
+     * @param string $option Option sort
      * @param $dateTime String datetime
      */
-    public function listSortByDate($dateTime = null)
+    public function view($option = 'sortDate', $dateTime = null)
     {
         $this->__redirectIfEmptyWallet();
 
         $findTime = $this->__processFindDateTime($dateTime);
 
-        $listTransaction = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate']);
+        if ($option !== 'sortDate' && $option !== 'sortCategory' && $option !== 'report') {
+            return $this->redirect(array(
+                        'controller' => 'transactions',
+                        'action'     => 'view',
+                        'sortDate',
+            ));
+        }
 
-        $this->set('listTransaction', $listTransaction);
-        $this->set('datetime', date('Y-m', $findTime['fromDate']));
-        $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
-    }
-
-    /**
-     * show list transaction sort by category (view in month)
-     * 
-     * @param $dateTime String date time want to display list transaction (e.g 072150)
-     */
-    public function listSortByCategory($dateTime = null)
-    {
-        $this->__redirectIfEmptyWallet();
-
-        $findTime        = $this->__processFindDateTime($dateTime);
-        $orderBy         = array(
-            'Transaction.category_id ASC',
-            'Transaction.create_time DESC',
-        );
+        $orderBy = 'Transaction.create_time DESC';
+        if ($option != 'sortDate') {
+            $orderBy = array(
+                'Transaction.category_id ASC',
+                'Transaction.create_time DESC',
+            );
+        }
         $listTransaction = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate'], $orderBy);
 
+        if ($option == 'report') {
+            if (!empty($listTransaction)) {
+                $listTransaction = $this->__processShowReport($listTransaction);
+            }
+
+            $statistical = array(
+                'totalIncome'  => $this->__totalIncome,
+                'totalExpense' => $this->__totalExpense,
+                'maxIncome'    => $this->__eleMaxIncome,
+                'maxExpense'   => $this->__eleMaxExpense,
+            );
+            $this->set('statistical', $statistical);
+        }
+
         $this->set('listTransaction', $listTransaction);
         $this->set('datetime', date('Y-m', $findTime['fromDate']));
         $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
+
+        if ($option == 'sortDate') {
+            $this->render('list_sort_by_date');
+        } elseif ($option == 'sortCategory') {
+            $this->render('list_sort_by_category');
+        } else {
+            $this->render('report');
+        }
     }
 
     /**
@@ -192,7 +210,8 @@ class TransactionsController extends AppController
             $this->Session->setFlash("Update transaction information complete.");
             return $this->redirect(array(
                         'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
+                        'action'     => 'sortDate',
+                        'view',
                         date('Y-m', $create_time),
             ));
         }
@@ -223,39 +242,10 @@ class TransactionsController extends AppController
         $this->Session->setFlash("Delete transaction complete.");
         return $this->redirect(array(
                     'controller' => 'transactions',
-                    'action'     => 'listSortByDate',
+                    'action'     => 'sortDate',
+                    'view',
                     date('Y-m', $tranObj['Transaction']['create_time']),
         ));
-    }
-
-    /**
-     * Report transactions
-     * 
-     * @param string $dateTime date time want to show report
-     */
-    public function report($dateTime = null)
-    {
-        $this->__redirectIfEmptyWallet();
-
-        $findTime        = $this->__processFindDateTime($dateTime);
-        $orderBy         = array(
-            'Transaction.category_id ASC',
-            'Transaction.create_time DESC',
-        );
-        $listTransaction = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate'], $orderBy);
-        $listTransaction = $this->__processShowReport($listTransaction);
-
-        $statistical = array(
-            'totalIncome'  => $this->__totalIncome,
-            'totalExpense' => $this->__totalExpense,
-            'maxIncome'    => $this->__eleMaxIncome,
-            'maxExpense'   => $this->__eleMaxExpense,
-        );
-
-        $this->set('listTransaction', $listTransaction);
-        $this->set('datetime', date('Y-m', $findTime['fromDate']));
-        $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
-        $this->set('statistical', $statistical);
     }
 
     /**

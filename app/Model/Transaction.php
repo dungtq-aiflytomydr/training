@@ -84,7 +84,7 @@ class Transaction extends AppModel
      * @param mixed $orderBy sort records by ASC or DESC with any field
      * @return array
      */
-    public function getTransactionsByDateRange($fromDate, $toDate, $orderBy = 'Transaction.create_time DESC')
+    public function getTransactionsByDateRange($fromDate, $toDate, $orderBy)
     {
         $this->bindCategory();
 

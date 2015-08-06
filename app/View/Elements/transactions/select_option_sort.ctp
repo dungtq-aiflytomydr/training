@@ -12,7 +12,8 @@ if (empty($datetime)) {
             <?php
             echo '<h4>' . $this->Html->link('View report', array(
                 'controller' => 'transactions',
-                'action'     => 'report',
+                'action'     => 'view',
+                'report',
                 $datetime,
             )) . '</h4>';
             ?>
@@ -20,12 +21,12 @@ if (empty($datetime)) {
         <div class="sort-by-box" style="float: right;">
             <span>Sort by: </span>
             <select id="sortBy" class="form-control" style="width: 120px; display: inline-block;">
-                <option value="listSortByDate" <?php
-                if (strpos(Router::url(), 'listSortByDate') !== false) : echo 'selected';
+                <option value="sortDate" <?php
+                if (strpos(Router::url(), 'sortDate') !== false) : echo 'selected';
                 endif;
                 ?>>Date</option>
-                <option value="listSortByCategory" <?php
-                if (strpos(Router::url(), 'listSortByCategory') !== false) : echo 'selected';
+                <option value="sortCategory" <?php
+                if (strpos(Router::url(), 'sortCategory') !== false) : echo 'selected';
                 endif;
                 ?>>Category</option>
             </select>
@@ -34,7 +35,8 @@ if (empty($datetime)) {
     else:
         echo '<h4>' . $this->Html->link('Back', array(
             'controller' => 'transactions',
-            'action'     => 'listSortByDate',
+            'action'     => 'view',
+            'sortDate',
             $datetime,
         )) . '</h4>';
     endif;

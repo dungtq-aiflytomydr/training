@@ -12,7 +12,7 @@ function __convertMoney($money)
     return number_format($money, null, null, '.');
 }
 
-if (!empty($listTransaction)) {
+if (!empty($listTransaction)) :
 
     echo $this->element('transactions/report_income', array(
         'unit'        => $unitInfo,
@@ -25,6 +25,6 @@ if (!empty($listTransaction)) {
         'unit'        => $unitInfo,
         'statistical' => $statistical,
     ));
-} else {
+else :
     echo '<h3>Not found data :)</h3>';
-}
+endif;
