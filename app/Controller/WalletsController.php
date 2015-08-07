@@ -174,7 +174,8 @@ class WalletsController extends AppController
 
             return $this->redirect(array(
                         'controller' => 'transactions',
-                        'action'     => 'listSortByDate',
+                        'action'     => 'view',
+                        'sortDate',
             ));
         }
     }

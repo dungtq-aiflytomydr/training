@@ -48,8 +48,8 @@ if (!empty($listTransaction)):
                         <?php
                     endif;
 
-                    //render item_sort_by_date
-                    echo $this->element('transactions/item_sort_by_date', array(
+                    //render item_view_by_date
+                    echo $this->element('transactions/item_view_by_date', array(
                         'tran' => $tran,
                     ));
 

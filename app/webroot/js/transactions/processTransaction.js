@@ -14,7 +14,7 @@ var Transactions = function () {
 
         $('#rp-date').change(function () {
             var date = $(this).val().split('-');
-            var redirectUrl = url + '/transactions/view/sortDate' + date[0] + '-' + date[1];
+            var redirectUrl = url + '/transactions/view/sortDate/' + date[0] + '-' + date[1];
 
             if (arrUrl[3] !== undefined) {
                 redirectUrl = url + '/' + arrUrl[1] + '/' + arrUrl[2] + '/' + arrUrl[3] + '/' + date[0] + '-' + date[1];

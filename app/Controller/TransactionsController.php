@@ -1,5 +1,7 @@
 <?php
 
+App::uses('AppController', 'Controller');
+
 class TransactionsController extends AppController
 {
 
@@ -9,22 +11,6 @@ class TransactionsController extends AppController
      * @var array 
      */
     public $uses = array('Transaction', 'Category', 'Unit', 'Wallet');
-
-    /**
-     * paginate
-     * 
-     * @var array 
-     */
-    public $paginate = array(
-        'limit' => 15,
-    );
-
-    /**
-     * $components
-     * 
-     * @var array
-     */
-    public $components = array('Paginator');
 
     /**
      * params to save any information from transaction like: total income, total expense
@@ -96,10 +82,10 @@ class TransactionsController extends AppController
     }
 
     /**
-     * show list transaction sort by date (view in month)
+     * show list transaction by option: sortDate, sortCategory, report (view in month)
      * 
      * @param string $option Option sort
-     * @param $dateTime String datetime
+     * @param string $dateTime Datetime e.g (2015-06)
      */
     public function view($option = 'sortDate', $dateTime = null)
     {
@@ -143,9 +129,9 @@ class TransactionsController extends AppController
         $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
 
         if ($option == 'sortDate') {
-            $this->render('list_sort_by_date');
+            $this->render('view_by_date');
         } elseif ($option == 'sortCategory') {
-            $this->render('list_sort_by_category');
+            $this->render('view_by_category');
         } else {
             $this->render('report');
         }
@@ -313,8 +299,8 @@ class TransactionsController extends AppController
      */
     private function __processShowReport($listTransaction)
     {
-        $newList    = array(); //save category infor within sum amount of transaction through it
-        $catCompare = 0;
+        $newList    = array(); //save category info within sum amount of transaction through it
+        $catCompare = 0; //value for compare with transaction's category_id to show it if have same category
         $sumMoney   = 0; //save sum amount of category
 
         foreach ($listTransaction as $tran) {
@@ -338,8 +324,7 @@ class TransactionsController extends AppController
             if ($tran['Category']['expense_type'] == 'in') {
                 $this->__totalIncome += $tran['Transaction']['amount'];
             } else {
-                $this->__totalExpense += $tran['Transaction'][
-                        'amount'];
+                $this->__totalExpense += $tran['Transaction']['amount'];
             }
 
             $this->__maxTransactionByExpenseType($tran);

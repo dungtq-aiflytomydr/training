@@ -52,8 +52,8 @@ if (!empty($listTransaction)):
                         <?php
                     endif;
 
-                    //render item_sort_by_category
-                    echo $this->element('transactions/item_sort_by_category', array(
+                    //render item_view_by_category
+                    echo $this->element('transactions/item_view_by_category', array(
                         'tran' => $tran,
                     ));
 
