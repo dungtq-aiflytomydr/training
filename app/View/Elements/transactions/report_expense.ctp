@@ -1,10 +1,12 @@
 <h3>Expense (Total: <?php echo __convertMoney($statistical['totalExpense']) . ' ' . $unit['Unit']['signature']; ?>)</h3>
-<h4>Maximum: <?php
-    echo $statistical['maxExpense']['Category']['name'] .
-    ' (' . __convertMoney($statistical['maxExpense']['Transaction']['amount']) . ' ' . $unit['Unit']['signature'] . ')'
-    ?>
-</h4>
-<small style="display: block;">Transaction at: <?php echo date('Y-m-d', $statistical['maxExpense']['Transaction']['create_time']); ?></small>
+<?php if (!empty($statistical['maxExpense'])): ?>
+    <h4>Maximum: <?php
+        echo $statistical['maxExpense']['Category']['name'] .
+        ' (' . __convertMoney($statistical['maxExpense']['Transaction']['amount']) . ' ' . $unit['Unit']['signature'] . ')'
+        ?>
+    </h4>
+    <small style="display: block;">Transaction at: <?php echo date('Y-m-d', $statistical['maxExpense']['Transaction']['create_time']); ?></small>
+<?php endif; ?>
 <div class="rp-area">
     <?php
     foreach ($listTransaction as $key => $tran) :
