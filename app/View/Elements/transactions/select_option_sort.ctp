@@ -8,7 +8,7 @@ if (empty($datetime)) {
 <h3 class="align-center">List transaction</h3>
 <div class="option-sort-area">
     <?php if (strpos(Router::url(), 'report') === false): ?>
-        <div style="float: left">
+        <div style="float: left;">
             <?php
             echo '<h4>' . $this->Html->link('View report', array(
                 'controller' => 'transactions',
@@ -33,18 +33,22 @@ if (empty($datetime)) {
         </div>
         <?php
     else:
+        ?><div style="float: left;">
+        <?php
         echo '<h4>' . $this->Html->link('Back', array(
             'controller' => 'transactions',
             'action'     => 'view',
             'sortDate',
             $datetime,
         )) . '</h4>';
+        ?>
+        </div>
+    <?php
     endif;
     ?>
-
     <div class="rp-box-date">
         <span>View by month: </span>
-        <input style="display: inline-block" id="rp-date" value="<?php echo $datetime; ?>"/>
+        <input id="rp-date" value="<?php echo $datetime; ?>"/>
     </div>
 </div>
 <div>

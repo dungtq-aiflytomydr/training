@@ -124,7 +124,7 @@ img.wl-icon-preview{
 }
 
 .rp-area{
-    margin: 5% 0 5% 0;
+    margin: 5% 0;
     overflow: hidden;
 }
 
@@ -139,4 +139,12 @@ img.wl-icon-preview{
 .rp-box-date{
     float: right;
     margin-right: 3%;
+}
+
+.rp-box-date input{
+    display: inline-block;
+}
+
+.k-input{
+    width: 60% !important;
 }

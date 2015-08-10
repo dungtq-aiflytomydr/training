@@ -321,13 +321,7 @@ class TransactionsController extends AppController
 
             $sumMoney += $tran['Transaction']['amount'];
 
-            if ($tran['Category']['expense_type'] == 'in') {
-                $this->__totalIncome += $tran['Transaction']['amount'];
-            } else {
-                $this->__totalExpense += $tran['Transaction']['amount'];
-            }
-
-            $this->__maxTransactionByExpenseType($tran);
+            $this->__processAmountAndGetMaxTran($tran);
         }
         $newList [count($newList) - 1]['sumMoney'] = $sumMoney;
         return $newList;
@@ -338,14 +332,20 @@ class TransactionsController extends AppController
      * 
      * @param object $tran Transaction object
      */
-    private function __maxTransactionByExpenseType($tran)
+    private function __processAmountAndGetMaxTran($tran)
     {
         if ($tran['Category'] ['expense_type'] == 'in') {
+            //sum transaction income amount
+            $this->__totalIncome += $tran['Transaction']['amount'];
+            //find max transaction income
             if ($tran['Transaction']['amount'] > $this->__maxIncome) {
                 $this->__maxIncome    = $tran['Transaction']['amount'];
                 $this->__eleMaxIncome = $tran;
             }
         } else {
+            //sum transaction expense amount
+            $this->__totalExpense += $tran['Transaction']['amount'];
+            //find max transaction expense
             if ($tran['Transaction']['amount'] > $this->__maxExpense) {
                 $this->__maxExpense    = $tran['Transaction']['amount'];
                 $this->__eleMaxExpense = $tran;
