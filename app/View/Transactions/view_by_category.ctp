@@ -15,7 +15,7 @@ function __convertMoney($money)
 }
 
 if (!empty($listTransaction)):
-    $catCompare     = 0;
+    $catCompare      = 0;
     $countCloseTable = 0;
 
     foreach ($listTransaction as $key => $tran) :
@@ -54,7 +54,8 @@ if (!empty($listTransaction)):
 
                     //render item_view_by_category
                     echo $this->element('transactions/item_view_by_category', array(
-                        'tran' => $tran,
+                        'tran'    => $tran,
+                        'unitObj' => $unitInfo,
                     ));
 
                     if ($tran['Category']['expense_type'] == 'in') {

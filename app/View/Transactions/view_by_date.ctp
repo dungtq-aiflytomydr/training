@@ -50,7 +50,8 @@ if (!empty($listTransaction)):
 
                     //render item_view_by_date
                     echo $this->element('transactions/item_view_by_date', array(
-                        'tran' => $tran,
+                        'tran'    => $tran,
+                        'unitObj' => $unitInfo,
                     ));
 
                     if ($tran['Category']['expense_type'] == 'in') {

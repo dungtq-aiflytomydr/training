@@ -1,6 +1,6 @@
 <tr>
     <td><?php echo date('Y-m-d', $tran['Transaction']['create_time']); ?></td>
-    <td><?php echo __convertMoney($tran['Transaction']['amount']); ?></td>
+    <td><?php echo __convertMoney($tran['Transaction']['amount']) . " ({$unitInfo['Unit']['signature']})"; ?></td>
     <td><?php
         if ($tran['Category']['expense_type'] == 'in'):
             echo 'Income';
