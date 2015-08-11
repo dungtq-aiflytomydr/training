@@ -148,3 +148,45 @@ img.wl-icon-preview{
 .k-input{
     width: 60% !important;
 }
+
+/*set styles for pagination*/
+div.cus-pagination{
+    margin: 2% 0;
+    text-align: center;
+}
+
+.cus-pagination .pagination-info{
+    font-size: 22px;
+    color: #525351;
+}
+
+.cus-pagination span.current{
+    color: #fff;
+    background: black;
+    display: inline-block;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 7px 10px;
+    margin: 2px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+.cus-pagination span a{
+    display: inline-block;
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    padding: 7px 10px;
+    margin: 2px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    background: #e5e5e5;
+    text-decoration: none;
+}
+
+.cus-pagination span a:hover{
+    background: #ababab;
+}

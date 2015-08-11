@@ -5,11 +5,11 @@
         <tbody>
             <tr>
                 <td>Income</td>
-                <td><?php echo __convertMoney($statisticalData['income']) . ' (' . $unitInfo['Unit']['signature'] . ')'; ?></td>
+                <td><?php echo __convertMoney($statistical['totalIncome']) . ' (' . $unitInfo['Unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td>Expense</td>
-                <td><?php echo __convertMoney($statisticalData ['expense']) . ' (' . $unitInfo['Unit']['signature'] . ')'; ?></td>
+                <td><?php echo __convertMoney($statistical ['totalExpense']) . ' (' . $unitInfo['Unit']['signature'] . ')'; ?></td>
             </tr>
             <tr>
                 <td></td>
@@ -17,7 +17,7 @@
             </tr>
             <tr>
                 <td>Total</td>
-                <td><?php echo __convertMoney($statisticalData['total']) . ' (' . $unitInfo['Unit']['signature'] . ')'; ?></td>
+                <td><?php echo __convertMoney($statistical['total']) . ' (' . $unitInfo['Unit']['signature'] . ')'; ?></td>
             </tr>
         </tbody>
     </table>

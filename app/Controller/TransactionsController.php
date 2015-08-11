@@ -10,7 +10,8 @@ class TransactionsController extends AppController
      * 
      * @var array 
      */
-    public $uses = array('Transaction', 'Category', 'Unit', 'Wallet');
+    public $uses       = array('Transaction', 'Category', 'Unit', 'Wallet');
+    public $components = array('Paginator');
 
     /**
      * params to save any information from transaction like: total income, total expense
@@ -103,27 +104,26 @@ class TransactionsController extends AppController
 
         $orderBy = 'Transaction.create_time DESC';
         if ($option != 'sortDate') {
-            $orderBy = array(
-                'Transaction.category_id ASC',
-                'Transaction.create_time DESC',
-            );
+            $orderBy = 'Transaction.category_id ASC, Transaction.create_time DESC';
         }
-        $listTransaction = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate'], $orderBy);
+
+        //get list transaction for process statistical
+        $listTranForStatistical = $this->Transaction->getTransactionsByDateRange($findTime['fromDate'], $findTime['toDate'], $orderBy);
+
+        //get list transaction for pagination
+        $limit                     = 10;
+        $this->Transaction->bindCategory();
+        $this->Paginator->settings = $this->Transaction->settingPaginateTransactionsByDate($findTime['fromDate'], $findTime['toDate'], $orderBy, $limit);
+        $listTransaction           = $this->Paginator->paginate('Transaction');
+
+        //process amount for report
+        $dataProcess = $this->__processShowReport($listTranForStatistical);
 
         if ($option == 'report') {
-            if (!empty($listTransaction)) {
-                $listTransaction = $this->__processShowReport($listTransaction);
-            }
-
-            $statistical = array(
-                'totalIncome'  => $this->__totalIncome,
-                'totalExpense' => $this->__totalExpense,
-                'maxIncome'    => $this->__eleMaxIncome,
-                'maxExpense'   => $this->__eleMaxExpense,
-            );
-            $this->set('statistical', $statistical);
+            $listTransaction = $dataProcess['listTranReport'];
         }
 
+        $this->set('statistical', $dataProcess['statistical']);
         $this->set('listTransaction', $listTransaction);
         $this->set('datetime', date('Y-m', $findTime['fromDate']));
         $this->set('unitInfo', $this->Unit->getById(AuthComponent::user('current_wallet_info')['unit_id']));
@@ -299,6 +299,10 @@ class TransactionsController extends AppController
      */
     private function __processShowReport($listTransaction)
     {
+        if (empty($listTransaction)) {
+            return null;
+        }
+
         $newList    = array(); //save category info within sum amount of transaction through it
         $catCompare = 0; //value for compare with transaction's category_id to show it if have same category
         $sumMoney   = 0; //save sum amount of category
@@ -324,7 +328,17 @@ class TransactionsController extends AppController
             $this->__processAmountAndGetMaxTran($tran);
         }
         $newList [count($newList) - 1]['sumMoney'] = $sumMoney;
-        return $newList;
+
+        return array(
+            'listTranReport' => $newList,
+            'statistical'    => array(
+                'totalIncome'  => $this->__totalIncome,
+                'totalExpense' => $this->__totalExpense,
+                'maxIncome'    => $this->__eleMaxIncome,
+                'maxExpense'   => $this->__eleMaxExpense,
+                'total'        => $this->__totalIncome - $this->__totalExpense,
+            ),
+        );
     }
 
     /**

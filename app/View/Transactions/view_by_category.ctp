@@ -38,14 +38,14 @@ if (!empty($listTransaction)):
             $countCloseTable++;
             ?>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Expense Type</th>
-                            <th>Note</th>
-                            <th colspan="3">Action</th>
+                            <th width="200">Date</th>
+                            <th width="300">Amount</th>
+                            <th width="150">Expense Type</th>
+                            <th width="250">Note</th>
+                            <th colspan="2" width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,16 +72,18 @@ if (!empty($listTransaction)):
         </div>
         <?php
     endif;
+    //pagination
+    echo $this->element('transactions/pagination');
 
-    $statisticalData = array(
-        'income'  => $totalIncome,
-        'expense' => $totalExpense,
-        'total'   => $totalIncome - $totalExpense,
-    );
+//    $statisticalData = array(
+//        'income'  => $totalIncome,
+//        'expense' => $totalExpense,
+//        'total'   => $totalIncome - $totalExpense,
+//    );
 
     echo $this->element('transactions/show_statistical', array(
-        'statisticalData' => $statisticalData,
-        'unitInfo'        => $unitInfo,
+        'statistical' => $statistical,
+        'unitInfo'    => $unitInfo,
     ));
 else:
     echo '<h3>Not found data :)</h3>';

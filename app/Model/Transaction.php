@@ -99,6 +99,28 @@ class Transaction extends AppModel
     }
 
     /**
+     * setting conditions, order, limit for pagination
+     * 
+     * @param string $fromDate Time start get records (e.g: 2015-07-01)
+     * @param string $toDate Time finish get records (e.g: 2015-07-31)
+     * @param string $orderBy Order by
+     * @param int $limit limit get records
+     * @return array
+     */
+    public function settingPaginateTransactionsByDate($fromDate, $toDate, $orderBy, $limit = null)
+    {
+        return array(
+            'conditions' => array(
+                'Transaction.wallet_id'      => AuthComponent::user('current_wallet'),
+                'Transaction.create_time >=' => $fromDate,
+                'Transaction.create_time <'  => $toDate,
+            ),
+            'order'      => $orderBy,
+            'limit'      => $limit,
+        );
+    }
+
+    /**
      * bindModel Category in Transaction
      */
     public function bindCategory()
