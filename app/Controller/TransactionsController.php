@@ -10,7 +10,13 @@ class TransactionsController extends AppController
      * 
      * @var array 
      */
-    public $uses       = array('Transaction', 'Category', 'Unit', 'Wallet');
+    public $uses = array('Transaction', 'Category', 'Unit', 'Wallet');
+
+    /**
+     * $components
+     * 
+     * @var array 
+     */
     public $components = array('Paginator');
 
     /**

@@ -27,7 +27,7 @@ var Users = function () {
         $("#UserAvatar").change(function () {
             readURL(this);
         });
-    }
+    };
 
     return{
         init: function () {
