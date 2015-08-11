@@ -1,4 +1,5 @@
 <?php
+echo $this->element('transactions/lib_datepicker');
 echo $this->element('transactions/select_option_sort');
 
 /**

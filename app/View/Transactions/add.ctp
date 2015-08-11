@@ -1,4 +1,5 @@
 <?php
+echo $this->element('transactions/lib_datepicker');
 echo $this->Html->script('transactions/processTransaction');
 
 //format category for input select option category

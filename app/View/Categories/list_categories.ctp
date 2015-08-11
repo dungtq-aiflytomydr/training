@@ -1,7 +1,7 @@
 <?php if (!empty($listCategories)): ?>
     <div class="table-responsive cat-in">
         <h3 class="align-center">Income</h3>
-        <table class="table">
+        <table class="table table-bordered">
             <thead><tr>
                     <th>Icon</th>
                     <th>Name</th>
@@ -23,7 +23,7 @@
     </div>
     <div class="table-responsive cat-out">
         <h3 class="align-center">Expense</h3>
-        <table class="table">
+        <table class="table table-bordered">
             <thead><tr>
                     <th>Icon</th>
                     <th>Name</th>

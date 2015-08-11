@@ -22,7 +22,7 @@ if (!empty($listWallet)):
         ));
         ?></h4>
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Stt</th>

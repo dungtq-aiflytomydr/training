@@ -16,14 +16,10 @@
         echo $this->fetch('css');
         echo $this->fetch('script');
         ?>
-        <link href="http://cdn.kendostatic.com/2015.2.624/styles/kendo.material.min.css" rel="stylesheet" />
-        <link href="http://cdn.kendostatic.com/2015.2.624/styles/kendo.common-material.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-        <script src="http://cdn.kendostatic.com/2015.2.624/js/kendo.all.min.js"></script>
-
     </head>
     <body>
         <header>
