@@ -1,8 +1,6 @@
 <?php
 echo $this->element('transactions/select_option_sort');
 
-$totalIncome  = $totalExpense = 0;
-
 /**
  * convert money (ex: 1000 => 1.000)
  * 
@@ -54,12 +52,6 @@ if (!empty($listTransaction)):
                         'unitObj' => $unitInfo,
                     ));
 
-                    if ($tran['Category']['expense_type'] == 'in') {
-                        $totalIncome += $tran['Transaction']['amount'];
-                    } else {
-                        $totalExpense += $tran['Transaction']['amount'];
-                    }
-
                 endforeach;
                 if ($countCloseTable > 0) :
                     ?>
@@ -70,12 +62,6 @@ if (!empty($listTransaction)):
     endif;
     //pagination
     echo $this->element('transactions/pagination');
-
-//    $statisticalData = array(
-//        'income'  => $totalIncome,
-//        'expense' => $totalExpense,
-//        'total'   => $totalIncome - $totalExpense,
-//    );
 
     echo $this->element('transactions/show_statistical', array(
         'statistical' => $statistical,
