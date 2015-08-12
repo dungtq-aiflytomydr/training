@@ -141,11 +141,12 @@ img.wl-icon-preview{
     margin-right: 3%;
 }
 
-.rp-box-date input{
-    display: inline-block;
+.form-group .k-datepicker{
+    display: block;
+    width: 100%;
 }
 
-.k-input{
+.rp-box-date .k-datepicker{
     width: 60% !important;
 }
 
